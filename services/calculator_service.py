@@ -6,6 +6,7 @@ import os
 from typing import Dict, List
 from pathlib import Path
 import logging
+from urllib.parse import unquote
 
 from models.calculator import PlantData, VariantData, MutationData, CalculationResponse
 
@@ -39,6 +40,13 @@ class CalculatorService:
             logger.error(f"Data directory does not exist: {self.data_dir}")
         
         self._load_data()
+    
+    def _decode_plant_name(self, plant_name: str) -> str:
+        """Decode URL-encoded plant names (e.g., 'Blue%20Lollipop' -> 'Blue Lollipop')."""
+        decoded_name = unquote(plant_name)
+        if decoded_name != plant_name:
+            logger.info(f"Decoded plant name: '{plant_name}' -> '{decoded_name}'")
+        return decoded_name
     
     def _load_data(self) -> None:
         """Load plant, variant, and mutation data from JSON files."""
@@ -227,13 +235,15 @@ class CalculatorService:
         """
         Calculate plant value using the exact formula from the game.
         """
-        logger.info(f"calculate_plant_value called for plant: {plant_name}, variant: {variant}")
+        # Decode URL-encoded plant names
+        decoded_plant_name = self._decode_plant_name(plant_name)
+        logger.info(f"calculate_plant_value called for plant: '{plant_name}' -> decoded to '{decoded_plant_name}', variant: {variant}")
         
         # Check if plant exists
-        if plant_name not in self.plants:
-            logger.error(f"Plant '{plant_name}' not found in plants dictionary!")
+        if decoded_plant_name not in self.plants:
+            logger.error(f"Plant '{plant_name}' -> decoded to '{decoded_plant_name}' not found in plants dictionary!")
             logger.error(f"Available plants: {list(self.plants.keys())[:10]}...")
-            raise KeyError(f"Plant '{plant_name}' not found")
+            raise KeyError(f"Plant '{decoded_plant_name}' not found")
         
         # Check if variant exists
         if variant not in self.variants:
@@ -241,10 +251,10 @@ class CalculatorService:
             logger.error(f"Available variants: {list(self.variants.keys())}")
             raise KeyError(f"Variant '{variant}' not found")
         
-        plant_data = self.plants[plant_name]
+        plant_data = self.plants[decoded_plant_name]
         variant_data = self.variants[variant]
         
-        logger.info(f"Plant data for {plant_name}: base_weight={plant_data.base_weight}, base_price={plant_data.base_price}")
+        logger.info(f"Plant data for '{decoded_plant_name}': base_weight={plant_data.base_weight}, base_price={plant_data.base_price}")
         logger.info(f"Variant data for {variant}: multiplier={variant_data.multiplier}")
         
         # Calculate base value
@@ -267,10 +277,10 @@ class CalculatorService:
         # Calculate bulk totals
         total_value = round(final_value) * plant_amount
         
-        logger.info(f"Calculation complete for {plant_name}: final_value={final_value}, total_value={total_value}")
+        logger.info(f"Calculation complete for '{decoded_plant_name}': final_value={final_value}, total_value={total_value}")
         
         return CalculationResponse(
-            plant_name=plant_name,
+            plant_name=decoded_plant_name,  # Use decoded name in response
             variant=variant,
             weight=weight,
             mutations=[],  # Will be filled by the calling function
@@ -329,11 +339,14 @@ class CalculatorService:
     
     def get_plant_data(self, plant_name: str) -> PlantData:
         """Get data for a specific plant."""
-        plant_data = self.plants.get(plant_name)
+        # Decode URL-encoded plant names
+        decoded_plant_name = self._decode_plant_name(plant_name)
+        
+        plant_data = self.plants.get(decoded_plant_name)
         if plant_data:
-            logger.info(f"get_plant_data('{plant_name}') - found plant with base_weight: {plant_data.base_weight}")
+            logger.info(f"get_plant_data('{plant_name}') -> decoded to '{decoded_plant_name}' - found plant with base_weight: {plant_data.base_weight}")
         else:
-            logger.error(f"get_plant_data('{plant_name}') - plant not found!")
+            logger.error(f"get_plant_data('{plant_name}') -> decoded to '{decoded_plant_name}' - plant not found!")
             logger.error(f"Available plants: {list(self.plants.keys())[:10]}...")  # First 10 plant names
         return plant_data
     
@@ -342,16 +355,18 @@ class CalculatorService:
         Get expected weight range for a plant (base_weight * 0.7 to base_weight * 1.4).
         Based on the UI version's weight range calculation.
         """
-        logger.info(f"get_weight_range('{plant_name}') called")
+        # Decode URL-encoded plant names
+        decoded_plant_name = self._decode_plant_name(plant_name)
+        logger.info(f"get_weight_range('{plant_name}') -> decoded to '{decoded_plant_name}' called")
         
-        plant_data = self.plants.get(plant_name)
+        plant_data = self.plants.get(decoded_plant_name)
         if not plant_data:
-            logger.error(f"get_weight_range('{plant_name}') - plant not found!")
+            logger.error(f"get_weight_range('{plant_name}') -> decoded to '{decoded_plant_name}' - plant not found!")
             logger.error(f"Available plants: {list(self.plants.keys())[:10]}...")  # First 10 plant names
             return {"min": 0.0, "max": 0.0}
         
         base_weight = plant_data.base_weight
-        logger.info(f"get_weight_range('{plant_name}') - base_weight: {base_weight}")
+        logger.info(f"get_weight_range('{plant_name}') -> decoded to '{decoded_plant_name}' - base_weight: {base_weight}")
         
         min_weight = round(base_weight * 0.7, 4)
         max_weight = round(base_weight * 1.4, 4)
@@ -362,7 +377,7 @@ class CalculatorService:
             "base": base_weight
         }
         
-        logger.info(f"get_weight_range('{plant_name}') - returning: {result}")
+        logger.info(f"get_weight_range('{plant_name}') -> decoded to '{decoded_plant_name}' - returning: {result}")
         return result
 
 
