@@ -4,6 +4,7 @@ Main calculator routes for rendering HTML pages.
 from fastapi import APIRouter, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
+from pathlib import Path
 
 from services.calculator_service import calculator_service
 from services.vercel_shared_results_service import vercel_shared_results_service
@@ -12,7 +13,10 @@ from fastapi import HTTPException
 from datetime import datetime, timedelta
 
 router = APIRouter()
-templates = Jinja2Templates(directory="templates")
+
+# Get the correct templates directory path for Vercel
+templates_dir = Path(__file__).parent.parent / "templates"
+templates = Jinja2Templates(directory=str(templates_dir))
 
 
 @router.get("/", response_class=HTMLResponse)
