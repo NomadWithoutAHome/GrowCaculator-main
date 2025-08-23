@@ -1,0 +1,362 @@
+{% extends "base.html" %}
+
+{% block title %}Mutation Calculator - GrowCalculator{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="p-4 flex flex-col items-center mt-6">
+    <span class="inline-flex items-center space-x-2 bg-green-500/10 text-sm font-bold border border-green-500/20 rounded-full px-4 py-2 mb-2">
+        Mutation Calculator
+    </span>
+    <h1 class="text-4xl font-bold text-center bg-gradient-to-r from-green-400 to-purple-600 bg-clip-text text-transparent">
+        Mutation Calculator
+    </h1>
+    <p class="text-center text-gray-400 text-sm mt-1">
+        Calculate the perfect mutation combination for maximum value!
+    </p>
+</div>
+
+<!-- Main Calculator Section -->
+<main class="w-full max-w-6xl flex flex-col gap-6 mt-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Mutation Selection -->
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold text-green-400 mb-6">Select Mutations</h2>
+            
+            <div class="mb-6">
+                <input type="text" id="mutation-search" placeholder="Search mutations..." 
+                       class="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-green-500">
+            </div>
+
+            <div class="space-y-6">
+                <!-- Environmental Mutations -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-200 mb-3">✨ Environmental Mutations</h3>
+                                         <div class="grid grid-cols-2 lg:grid-cols-3 gap-2 max-h-96 overflow-y-auto custom-scrollbar" id="mutations-grid" style="max-height: calc(6 * 2.5rem + 1rem); overflow-y: auto; scrollbar-width: thin; scrollbar-color: #10b981 #2d3748;">
+                                                 <!-- Weather mutations (now included in environmental) -->
+                         <button class="mutation-btn bg-gray-700 text-gray-300 border border-gray-600 rounded-md p-3 transition-colors" data-mutation="Wet" data-value="2">
+                             Wet (+1)
+                         </button>
+                         <button class="mutation-btn bg-gray-700 text-gray-300 border border-gray-600 rounded-md p-3 transition-colors" data-mutation="Chilled" data-value="2">
+                             Chilled (+1)
+                         </button>
+                         <button class="mutation-btn bg-gray-700 text-gray-300 border border-gray-600 rounded-md p-3 transition-colors" data-mutation="Frozen" data-value="10">
+                             Frozen (+9)
+                         </button>
+                         <button class="mutation-btn bg-gray-700 text-gray-300 border border-gray-600 rounded-md p-3 transition-colors" data-mutation="Drenched" data-value="5">
+                             Drenched (+4)
+                         </button>
+                         
+                         <!-- All other mutations -->
+                         {% for mutation in mutations %}
+                         {% if mutation.name not in ["Wet", "Chilled", "Frozen", "Drenched"] %}
+                         <button class="mutation-btn bg-gray-700 text-gray-300 border border-gray-600 rounded-md p-3 transition-colors" data-mutation="{{ mutation.name }}" data-value="{{ mutation.value_multi }}">
+                             {{ mutation.name }} (+{{ mutation.value_multi - 1 }})
+                         </button>
+                         {% endif %}
+                         {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 flex space-x-3">
+                <button id="clear-all-mutations" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md transition-colors">
+                    Clear All
+                </button>
+                <button id="random-mutations" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors">
+                    Random Mix
+                </button>
+            </div>
+        </div>
+
+        <!-- Results & Analysis -->
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold text-green-400 mb-6">Mutation Analysis</h2>
+            
+            <!-- Selected Mutations -->
+            <div id="selected-mutations-panel" class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-300 mb-3">Selected Mutations</h3>
+                <div id="selected-mutations-list" class="min-h-12 border-2 border-dashed border-gray-600 rounded-lg p-3 flex flex-wrap gap-2 bg-gray-700/50">
+                    <span class="text-gray-400 text-sm">No mutations selected</span>
+                </div>
+            </div>
+
+            <!-- Multiplier Calculation -->
+            <div class="bg-gradient-to-r from-purple-900/30 to-blue-900/30 rounded-lg p-6 mb-6 border border-purple-500/30">
+                <div class="text-center">
+                    <h3 class="text-lg font-semibold text-gray-200 mb-2">Total Multiplier</h3>
+                    <div class="text-4xl font-bold text-purple-400" id="total-multiplier-display">x1.00</div>
+                    <div class="text-sm text-gray-400 mt-2" id="multiplier-breakdown">
+                        Base: 1.00
+                    </div>
+                </div>
+            </div>
+
+            <!-- Value Comparison -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-gray-200">Value Impact Examples</h3>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="border border-gray-600 rounded-lg p-3 bg-gray-700/50">
+                        <div class="text-sm text-gray-400">Basic Carrot (0.24kg)</div>
+                        <div class="text-lg font-semibold text-green-400" id="carrot-value">$18</div>
+                    </div>
+                    <div class="border border-gray-600 rounded-lg p-3 bg-gray-700/50">
+                        <div class="text-sm text-gray-400">Elder Strawberry (6kg)</div>
+                        <div class="text-lg font-semibold text-green-400" id="strawberry-value">$90,000</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mutation Rules -->
+            <div class="mt-6 p-4 bg-yellow-900/20 border border-yellow-600/30 rounded-lg">
+                <h4 class="text-sm font-semibold text-yellow-300 mb-2">Mutation Rules</h4>
+                <ul class="text-xs text-yellow-200 space-y-1">
+                    <li>• Only one growth mutation (Silver, Gold, Rainbow) allowed</li>
+                    <li>• Some mutations conflict (e.g., Wet/Acidic, Paradisal removes Verdant)</li>
+                    <li>• Maximum effective mutations vary by plant rarity</li>
+                    <li>• Weight affects final value quadratically</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Advanced Features -->
+    <div class="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h3 class="text-xl font-bold text-green-400 mb-4">🎯 Optimal Combos</h3>
+            <div class="space-y-3">
+                <button class="w-full text-left p-3 border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors bg-gray-700/50" 
+                        onclick="loadCombo(['Shocked', 'Celestial', 'Paradisal'])">
+                    <div class="font-medium text-gray-200">High Value Mix</div>
+                    <div class="text-sm text-gray-400">Shocked + Celestial + Paradisal</div>
+                    <div class="text-sm text-green-400">~319x multiplier</div>
+                </button>
+                <button class="w-full text-left p-3 border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors bg-gray-700/50"
+                        onclick="loadCombo(['Frozen', 'Wet', 'Pollinated'])">
+                    <div class="font-medium text-gray-200">Beginner Friendly</div>
+                    <div class="text-sm text-gray-400">Frozen + Wet + Pollinated</div>
+                    <div class="text-sm text-green-400">~14x multiplier</div>
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h3 class="text-xl font-bold text-green-400 mb-4">📊 Statistics</h3>
+            <div class="space-y-3">
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Total Mutations:</span>
+                    <span class="font-semibold text-gray-200" id="total-mutations-count">0</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Average Value:</span>
+                    <span class="font-semibold text-gray-200" id="average-mutation-value">0</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Highest Single:</span>
+                    <span class="font-semibold text-gray-200" id="highest-mutation">None</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h3 class="text-xl font-bold text-green-400 mb-4">🔄 Quick Actions</h3>
+            <div class="space-y-3">
+                <button id="export-combo" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md transition-colors">
+                    Export Combination
+                </button>
+                <button id="share-combo" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors">
+                    Share URL
+                </button>
+                <button id="save-favorite" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-md transition-colors">
+                    Save as Favorite
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Mutation calculator specific JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    initializeMutationCalculator();
+    
+    // Search functionality
+    const searchInput = document.getElementById('mutation-search');
+    const mutationsGrid = document.getElementById('mutations-grid');
+    const mutationButtons = mutationsGrid.querySelectorAll('.mutation-btn');
+    
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        
+        mutationButtons.forEach(button => {
+            const mutationName = button.textContent.toLowerCase();
+            if (mutationName.includes(searchTerm)) {
+                button.style.display = 'block';
+            } else {
+                button.style.display = 'none';
+            }
+        });
+    });
+    
+    // Mutation button selection functionality
+    let selectedMutations = [];
+    
+    mutationButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const mutationName = this.dataset.mutation;
+            const isSelected = selectedMutations.includes(mutationName);
+            
+            console.log('Button clicked:', mutationName, 'Currently selected:', isSelected);
+            console.log('Button classes before:', this.className);
+            
+            if (isSelected) {
+                // Remove mutation
+                selectedMutations = selectedMutations.filter(m => m !== mutationName);
+                this.classList.remove('selected');
+                console.log('Removed mutation, classes after:', this.className);
+            } else {
+                // Add mutation
+                selectedMutations.push(mutationName);
+                this.classList.add('selected');
+                console.log('Added mutation, classes after:', this.className);
+            }
+            
+            // Debug: Check computed styles
+            const computedStyle = window.getComputedStyle(this);
+            console.log('Computed background color:', computedStyle.backgroundColor);
+            console.log('Computed text color:', computedStyle.color);
+            
+            updateSelectedMutationsDisplay();
+            updateMultiplierCalculation();
+        });
+    });
+    
+    // Update selected mutations display
+    function updateSelectedMutationsDisplay() {
+        const selectedList = document.getElementById('selected-mutations-list');
+        if (selectedMutations.length === 0) {
+            selectedList.innerHTML = '<span class="text-gray-400 text-sm">No mutations selected</span>';
+        } else {
+            selectedList.innerHTML = selectedMutations.map(mutation => 
+                `<span class="inline-flex items-center gap-2 bg-purple-600/20 text-purple-300 px-3 py-1 rounded-md text-sm border border-purple-500/30">
+                    ${mutation}
+                    <button onclick="removeMutation('${mutation}')" class="text-purple-400 hover:text-purple-200">×</button>
+                </span>`
+            ).join('');
+        }
+    }
+    
+    // Remove mutation from selected list
+    window.removeMutation = function(mutationName) {
+        console.log('Removing mutation:', mutationName);
+        selectedMutations = selectedMutations.filter(m => m !== mutationName);
+        
+        // Update button appearance
+        const button = Array.from(mutationButtons).find(btn => btn.dataset.mutation === mutationName);
+        if (button) {
+            console.log('Button classes before removing selected:', button.className);
+            button.classList.remove('selected');
+            console.log('Button classes after removing selected:', button.className);
+            
+            // Debug computed styles
+            const computedStyle = window.getComputedStyle(button);
+            console.log('Computed background color:', computedStyle.backgroundColor);
+            console.log('Computed text color:', computedStyle.color);
+        }
+        
+        updateSelectedMutationsDisplay();
+        updateMultiplierCalculation();
+    };
+    
+    // Update multiplier calculation
+    function updateMultiplierCalculation() {
+        let totalMultiplier = 1;
+        let breakdown = ['Base: 1.00'];
+        
+        selectedMutations.forEach(mutationName => {
+            const button = Array.from(mutationButtons).find(btn => btn.dataset.mutation === mutationName);
+            if (button) {
+                const value = parseFloat(button.dataset.value);
+                totalMultiplier *= value;
+                breakdown.push(`${mutationName}: x${value.toFixed(2)}`);
+            }
+        });
+        
+        document.getElementById('total-multiplier-display').textContent = `x${totalMultiplier.toFixed(2)}`;
+        document.getElementById('multiplier-breakdown').innerHTML = breakdown.join('<br>');
+        
+        // Update example values
+        updateExampleValues(totalMultiplier);
+    }
+    
+    // Update example values
+    function updateExampleValues(multiplier) {
+        const baseCarrotValue = 18;
+        const baseStrawberryValue = 90000;
+        
+        document.getElementById('carrot-value').textContent = `$${(baseCarrotValue * multiplier).toFixed(0)}`;
+        document.getElementById('strawberry-value').textContent = `$${(baseStrawberryValue * multiplier).toFixed(0)}`;
+    }
+    
+    // Clear all mutations
+    document.getElementById('clear-all-mutations').addEventListener('click', function() {
+        console.log('Clear all clicked');
+        selectedMutations = [];
+        mutationButtons.forEach(button => {
+            console.log('Clearing button:', button.dataset.mutation, 'Classes before:', button.className);
+            button.classList.remove('selected');
+            console.log('Classes after:', button.className);
+            
+            // Debug computed styles
+            const computedStyle = window.getComputedStyle(button);
+            console.log('Computed background color:', computedStyle.backgroundColor);
+            console.log('Computed text color:', computedStyle.color);
+        });
+        updateSelectedMutationsDisplay();
+        updateMultiplierCalculation();
+    });
+    
+    // Random mix functionality
+    document.getElementById('random-mutations').addEventListener('click', function() {
+        console.log('Random mix clicked');
+        // Clear current selection
+        selectedMutations = [];
+        mutationButtons.forEach(button => {
+            button.classList.remove('selected');
+        });
+        
+        // Select 3-5 random mutations
+        const availableMutations = Array.from(mutationButtons).map(btn => btn.dataset.mutation);
+        const numToSelect = Math.floor(Math.random() * 3) + 3; // 3-5 mutations
+        
+        console.log('Selecting', numToSelect, 'random mutations from', availableMutations.length, 'available');
+        
+        for (let i = 0; i < numToSelect; i++) {
+            if (availableMutations.length > 0) {
+                const randomIndex = Math.floor(Math.random() * availableMutations.length);
+                const randomMutation = availableMutations.splice(randomIndex, 1)[0];
+                selectedMutations.push(randomMutation);
+                
+                // Update button appearance
+                const button = Array.from(mutationButtons).find(btn => btn.dataset.mutation === randomMutation);
+                if (button) {
+                    console.log('Adding selected class to:', randomMutation);
+                    button.classList.add('selected');
+                    console.log('Classes after adding selected:', button.className);
+                }
+            }
+        }
+        
+        updateSelectedMutationsDisplay();
+        updateMultiplierCalculation();
+    });
+    
+    // Initialize display
+    updateSelectedMutationsDisplay();
+    updateMultiplierCalculation();
+});
+</script>
+{% endblock %}

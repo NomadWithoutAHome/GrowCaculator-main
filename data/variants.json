@@ -1,0 +1,18 @@
+{
+  "Normal": {
+    "weight": 1000,
+    "multiplier": 1
+  },
+  "Silver": {
+    "weight": 20,
+    "multiplier": 5
+  },
+  "Gold": {
+    "weight": 10,
+    "multiplier": 20
+  },
+  "Rainbow": {
+    "weight": 1,
+    "multiplier": 50
+  }
+}

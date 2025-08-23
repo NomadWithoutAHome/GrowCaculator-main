@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Grow Calculator - Plant Value Calculator for Roblox Grow a Garden{% endblock %}</title>
+    <meta name="description" content="{% block description %}Calculate fruit values for Roblox Grow a Garden! The most accurate calculator for plant mutations, variants, and weight calculations.{% endblock %}">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    
+    <style>
+        .mutation-chip {
+            @apply bg-gray-700/30 text-gray-300 px-3 py-2 rounded-md text-sm font-medium border border-gray-600 cursor-pointer transition-all duration-200;
+        }
+        .mutation-chip:hover {
+            @apply bg-green-800/40 text-white;
+        }
+        .mutation-chip.selected {
+            @apply bg-green-700/50 border-green-500 text-white;
+        }
+        .dark-input {
+            @apply bg-gray-700 border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-green-500;
+        }
+        .dark-button {
+            @apply bg-gray-700 hover:bg-gray-600 text-white border border-gray-600 transition-colors duration-200;
+        }
+        .dark-card {
+            @apply bg-gray-800 rounded-lg shadow-lg;
+        }
+        .dark-card-inner {
+            @apply bg-gray-800 rounded-lg shadow-md;
+        }
+        
+        /* Custom scrollbar for mutations section - prevents flash on load */
+        .mutations-scrollable::-webkit-scrollbar {
+            width: 6px;
+            display: block;
+        }
+        .mutations-scrollable::-webkit-scrollbar-track {
+            background: #2d3748;
+            border-radius: 3px;
+            display: block;
+        }
+        .mutations-scrollable::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border-radius: 3px;
+            min-height: 40px;
+            display: block;
+        }
+        .mutations-scrollable::-webkit-scrollbar-thumb:hover {
+            background: #059669;
+        }
+        .mutations-scrollable::-webkit-scrollbar-button {
+            background: #10b981;
+            height: 12px;
+            border-radius: 2px;
+            display: block;
+        }
+        .mutations-scrollable::-webkit-scrollbar-button:hover {
+            background: #059669;
+        }
+        .mutations-scrollable::-webkit-scrollbar-button:single-button:start {
+            border-radius: 2px 2px 0 0;
+        }
+        .mutations-scrollbar-button:single-button:end {
+            border-radius: 0 0 2px 2px;
+        }
+        
+        /* Custom scrollbar for mutation calculator */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            display: block;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #2d3748;
+            border-radius: 3px;
+            display: block;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border-radius: 3px;
+            min-height: 40px;
+            display: block;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #059669;
+        }
+        .custom-scrollbar::-webkit-scrollbar-button {
+            background: #10b981;
+            height: 12px;
+            border-radius: 2px;
+            display: block;
+        }
+        .custom-scrollbar::-webkit-scrollbar-button:hover {
+            background: #059669;
+        }
+        .custom-scrollbar::-webkit-scrollbar-button:single-button:start {
+            border-radius: 2px 2px 0 0;
+        }
+        .custom-scrollbar::-webkit-scrollbar-button:single-button:end {
+            border-radius: 0 0 2px 2px;
+        }
+        
+        /* Mutation button states */
+        .mutation-btn {
+            transition: all 0.2s ease;
+        }
+        
+        /* Base state - unselected */
+        .mutation-btn:not(.selected) {
+            background-color: #374151 !important; /* bg-gray-700 */
+            color: #d1d5db !important; /* text-gray-300 */
+        }
+        
+        /* Hover state for unselected buttons */
+        .mutation-btn:not(.selected):hover {
+            background-color: #065f46 !important; /* bg-green-800/40 equivalent */
+            color: white !important;
+        }
+        
+        /* Selected state */
+        .mutation-btn.selected {
+            background-color: #9333ea !important; /* bg-purple-600 */
+            color: white !important;
+        }
+    </style>
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gradient-to-b from-gray-900 to-gray-800 text-white min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-gray-900 text-white w-full sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <a class="flex items-center space-x-1" href="/">
+                <span class="text-white text-xl flex items-center">
+                    <img src="/static/img/calcsymbol.png" alt="Calculator Symbol" class="w-6 h-6 mr-2">
+                    <img src="/static/img/title.png" alt="Grow A Garden Calculator" class="h-7">
+                </span>
+            </a>
+            <div class="hidden md:flex space-x-6 text-lg font-medium">
+                <a class="hover:text-green-400 transition-colors" href="/">Home</a>
+                <a class="hover:text-yellow-400 transition-colors text-yellow-300" href="/about">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-10 px-4 mt-16">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
+            <div>
+                <h3 class="flex items-center gap-2 text-white font-bold text-2xl mb-3">
+                    <img src="/static/img/calcsymbol.png" alt="Calculator Symbol" class="w-8 h-8 mr-2">
+                    <img src="/static/img/title.png" alt="Grow A Garden Calculator" class="h-10">
+                </h3>
+                <p class="text-md leading-relaxed">The most accurate plant value calculator for Roblox Grow a Garden. Calculate mutations, variants, and optimize your harvest with 96-100% accuracy!</p>
+            </div>
+            <div>
+                <h3 class="text-white font-bold text-2xl mb-3">Tools</h3>
+                <ul class="space-y-2 text-md">
+                    <li><a href="/" class="hover:text-green-400 transition-colors">Plant Value Calculator</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-white font-bold text-2xl mb-3">Quick Links</h3>
+                <ul class="space-y-2 text-md">
+                    <li><a href="/about" class="hover:text-green-400 transition-colors">About</a></li>
+                    <li><a href="https://www.roblox.com/games/126884695634066/Grow-a-Garden" target="_blank" class="hover:text-green-400 transition-colors">Play Game</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-white/10 mt-12 pt-6">
+            <div class="max-w-7xl mx-auto text-center text-sm text-gray-400">
+                <p>&copy; 2025 Grow Calculator. Made with ❤️ for the Roblox community.</p>
+                <p class="mt-2">This site is not affiliated with Do Big Studios or Grow A Garden. For informational purposes only.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="/static/js/main.js"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

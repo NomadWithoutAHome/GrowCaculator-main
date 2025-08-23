@@ -1,0 +1,218 @@
+{
+  "Acidic": {
+    "value_multi": 15.0
+  },
+  "Alienlike": {
+    "value_multi": 100.0
+  },
+  "Amber": {
+    "value_multi": 10.0
+  },
+  "AncientAmber": {
+    "value_multi": 50.0
+  },
+  "Aromatic": {
+    "value_multi": 3.0
+  },
+  "Aurora": {
+    "value_multi": 90.0
+  },
+  "Blitzshock": {
+    "value_multi": 50.0
+  },
+  "Bloodlit": {
+    "value_multi": 4.0
+  },
+  "Bloom": {
+    "value_multi": 8.0
+  },
+  "Boil": {
+    "value_multi": 15.0
+  },
+  "Burnt": {
+    "value_multi": 4.0
+  },
+  "Celestial": {
+    "value_multi": 120.0
+  },
+  "Ceramic": {
+    "value_multi": 32.0
+  },
+  "Chakra": {
+    "value_multi": 15.0
+  },
+  "Chilled": {
+    "value_multi": 2.0
+  },
+  "Choc": {
+    "value_multi": 2.0
+  },
+  "Clay": {
+    "value_multi": 5.0
+  },
+  "Cloudtouched": {
+    "value_multi": 5.0
+  },
+  "Cooked": {
+    "value_multi": 10.0
+  },
+  "Corrupt": {
+    "value_multi": 20.0
+  },
+  "CorruptChakra": {
+    "value_multi": 15.0
+  },
+  "CorruptFoxfireChakra": {
+    "value_multi": 90.0
+  },
+  "Dawnbound": {
+    "value_multi": 150.0
+  },
+  "Disco": {
+    "value_multi": 125.0
+  },
+  "Drenched": {
+    "value_multi": 5.0
+  },
+  "Eclipsed": {
+    "value_multi": 20.0
+  },
+  "Enchanted": {
+    "value_multi": 50.0
+  },
+  "Enlightened": {
+    "value_multi": 35.0
+  },
+  "Fortune": {
+    "value_multi": 50.0
+  },
+  "FoxfireChakra": {
+    "value_multi": 90.0
+  },
+  "Fried": {
+    "value_multi": 8.0
+  },
+  "Friendbound": {
+    "value_multi": 70.0
+  },
+  "Frozen": {
+    "value_multi": 10.0
+  },
+  "Galactic": {
+    "value_multi": 120.0
+  },
+  "HarmonisedChakra": {
+    "value_multi": 35.0
+  },
+  "HarmonisedFoxfireChakra": {
+    "value_multi": 190.0
+  },
+  "Heavenly": {
+    "value_multi": 5.0
+  },
+  "HoneyGlazed": {
+    "value_multi": 5.0
+  },
+  "Infected": {
+    "value_multi": 75.0
+  },
+  "Jackpot": {
+    "value_multi": 15.0
+  },
+  "Junkshock": {
+    "value_multi": 45.0
+  },
+  "Lightcycle": {
+    "value_multi": 50.0
+  },
+  "Meatball": {
+    "value_multi": 3.0
+  },
+  "Meteoric": {
+    "value_multi": 125.0
+  },
+  "Molten": {
+    "value_multi": 25.0
+  },
+  "Moonlit": {
+    "value_multi": 2.0
+  },
+  "Oil": {
+    "value_multi": 15.0
+  },
+  "OldAmber": {
+    "value_multi": 20.0
+  },
+  "Paradisal": {
+    "value_multi": 100.0
+  },
+  "Pasta": {
+    "value_multi": 3.0
+  },
+  "Plasma": {
+    "value_multi": 5.0
+  },
+  "Pollinated": {
+    "value_multi": 3.0
+  },
+  "Radioactive": {
+    "value_multi": 55.0
+  },
+  "Sandy": {
+    "value_multi": 3.0
+  },
+  "Sauce": {
+    "value_multi": 3.0
+  },
+  "Shocked": {
+    "value_multi": 100.0
+  },
+  "Sliced": {
+    "value_multi": 50.0
+  },
+  "Spaghetti": {
+    "value_multi": 15.0
+  },
+  "Static": {
+    "value_multi": 8.0
+  },
+  "Subzero": {
+    "value_multi": 40.0
+  },
+  "Sundried": {
+    "value_multi": 85.0
+  },
+  "Tempestuous": {
+    "value_multi": 12.0
+  },
+  "Touchdown": {
+    "value_multi": 105.0
+  },
+  "Toxic": {
+    "value_multi": 12.0
+  },
+  "Tranquil": {
+    "value_multi": 20.0
+  },
+  "Twisted": {
+    "value_multi": 5.0
+  },
+  "Verdant": {
+    "value_multi": 4.0
+  },
+  "Voidtouched": {
+    "value_multi": 135.0
+  },
+  "Wet": {
+    "value_multi": 2.0
+  },
+  "Wiltproof": {
+    "value_multi": 4.0
+  },
+  "Windstruck": {
+    "value_multi": 2.0
+  },
+  "Zombified": {
+    "value_multi": 25.0
+  }
+}

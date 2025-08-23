@@ -1,0 +1,882 @@
+{
+  "Carrot": {
+    "base_weight": 0.275,
+    "base_price": 20,
+    "rarity": 100
+  },
+  "Strawberry": {
+    "base_weight": 0.3,
+    "base_price": 15,
+    "rarity": 100
+  },
+  "Blueberry": {
+    "base_weight": 0.2,
+    "base_price": 20,
+    "rarity": 100
+  },
+  "Orange Tulip": {
+    "base_weight": 0.05,
+    "base_price": 850,
+    "rarity": 55
+  },
+  "Tomato": {
+    "base_weight": 0.5,
+    "base_price": 30,
+    "rarity": 100
+  },
+  "Corn": {
+    "base_weight": 2.0,
+    "base_price": 40,
+    "rarity": 100
+  },
+  "Daffodil": {
+    "base_weight": 0.2,
+    "base_price": 1000,
+    "rarity": 45
+  },
+  "Watermelon": {
+    "base_weight": 7.0,
+    "base_price": 3000,
+    "rarity": 70
+  },
+  "Pumpkin": {
+    "base_weight": 8.0,
+    "base_price": 3400,
+    "rarity": 80
+  },
+  "Apple": {
+    "base_weight": 3.0,
+    "base_price": 275,
+    "rarity": 50
+  },
+  "Bamboo": {
+    "base_weight": 4.0,
+    "base_price": 4000,
+    "rarity": 35
+  },
+  "Coconut": {
+    "base_weight": 14.0,
+    "base_price": 400,
+    "rarity": 70
+  },
+  "Cactus": {
+    "base_weight": 7.0,
+    "base_price": 3400,
+    "rarity": 100
+  },
+  "Dragon Fruit": {
+    "base_weight": 12.0,
+    "base_price": 4750,
+    "rarity": 100
+  },
+  "Mango": {
+    "base_weight": 15.0,
+    "base_price": 6500,
+    "rarity": 200
+  },
+  "Grape": {
+    "base_weight": 3.0,
+    "base_price": 7850,
+    "rarity": 200
+  },
+  "Mushroom": {
+    "base_weight": 25.0,
+    "base_price": 151000,
+    "rarity": 220
+  },
+  "Pepper": {
+    "base_weight": 5.0,
+    "base_price": 8000,
+    "rarity": 200
+  },
+  "Cacao": {
+    "base_weight": 8.0,
+    "base_price": 12000,
+    "rarity": 250
+  },
+  "Beanstalk": {
+    "base_weight": 10.0,
+    "base_price": 28000,
+    "rarity": 300
+  },
+  "Ember Lily": {
+    "base_weight": 12.0,
+    "base_price": 66666,
+    "rarity": 450
+  },
+  "Sugar Apple": {
+    "base_weight": 9.0,
+    "base_price": 48000,
+    "rarity": 200
+  },
+  "Burning Bud": {
+    "base_weight": 12.0,
+    "base_price": 70000,
+    "rarity": 500
+  },
+  "Giant Pinecone": {
+    "base_weight": 5.0,
+    "base_price": 72000,
+    "rarity": 375
+  },
+  "Elder Strawberry": {
+    "base_weight": 6.0,
+    "base_price": 90000,
+    "rarity": 280
+  },
+  "Romanesco": {
+    "base_weight": 8.0,
+    "base_price": 166000,
+    "rarity": 160
+  },
+  "Cauliflower": {
+    "base_weight": 5.0,
+    "base_price": 50,
+    "rarity": 150
+  },
+  "Rafflesia": {
+    "base_weight": 8.0,
+    "base_price": 3500,
+    "rarity": 80
+  },
+  "Green Apple": {
+    "base_weight": 3.0,
+    "base_price": 300,
+    "rarity": 200
+  },
+  "Avocado": {
+    "base_weight": 6.5,
+    "base_price": 350,
+    "rarity": 300
+  },
+  "Banana": {
+    "base_weight": 1.5,
+    "base_price": 1750,
+    "rarity": 100
+  },
+  "Pineapple": {
+    "base_weight": 3.0,
+    "base_price": 2000,
+    "rarity": 70
+  },
+  "Kiwi": {
+    "base_weight": 5.0,
+    "base_price": 2750,
+    "rarity": 300
+  },
+  "Bell Pepper": {
+    "base_weight": 8.0,
+    "base_price": 5500,
+    "rarity": 325
+  },
+  "Prickly Pear": {
+    "base_weight": 7.0,
+    "base_price": 7000,
+    "rarity": 375
+  },
+  "Loquat": {
+    "base_weight": 6.5,
+    "base_price": 8000,
+    "rarity": 200
+  },
+  "Pitcher Plant": {
+    "base_weight": 12.0,
+    "base_price": 52000,
+    "rarity": 275
+  },
+  "Feijoa": {
+    "base_weight": 10.0,
+    "base_price": 13000,
+    "rarity": 400
+  },
+  "Wild Carrot": {
+    "base_weight": 1.3,
+    "base_price": 25000,
+    "rarity": 100
+  },
+  "Pear": {
+    "base_weight": 3.0,
+    "base_price": 20000,
+    "rarity": 120
+  },
+  "Cantaloupe": {
+    "base_weight": 5.5,
+    "base_price": 34000,
+    "rarity": 250
+  },
+  "Parasol Flower": {
+    "base_weight": 6.0,
+    "base_price": 200000,
+    "rarity": 350
+  },
+  "Rosy Delight": {
+    "base_weight": 10.0,
+    "base_price": 69000,
+    "rarity": 450
+  },
+  "Elephant Ears": {
+    "base_weight": 18.0,
+    "base_price": 77000,
+    "rarity": 500
+  },
+  "Delphinium": {
+    "base_weight": 0.3,
+    "base_price": 24000,
+    "rarity": 100
+  },
+  "Lily of the Valley": {
+    "base_weight": 6.0,
+    "base_price": 49120,
+    "rarity": 400
+  },
+  "Traveler's Fruit": {
+    "base_weight": 15.0,
+    "base_price": 59000,
+    "rarity": 500
+  },
+  "Peace Lily": {
+    "base_weight": 0.6,
+    "base_price": 24000,
+    "rarity": 100
+  },
+  "Aloe Vera": {
+    "base_weight": 5.5,
+    "base_price": 69000,
+    "rarity": 350
+  },
+  "Guanabana": {
+    "base_weight": 4.0,
+    "base_price": 70500,
+    "rarity": 400
+  },
+  "Chocolate Carrot": {
+    "base_weight": 0.275,
+    "base_price": 11000,
+    "rarity": 100
+  },
+  "Red Lollipop": {
+    "base_weight": 4.0,
+    "base_price": 50000,
+    "rarity": 65
+  },
+  "Blue Lollipop": {
+    "base_weight": 1.0,
+    "base_price": 50000,
+    "rarity": 65
+  },
+  "Candy Sunflower": {
+    "base_weight": 1.5,
+    "base_price": 80000,
+    "rarity": 85
+  },
+  "Easter Egg": {
+    "base_weight": 3.0,
+    "base_price": 2500,
+    "rarity": 20
+  },
+  "Candy Blossom": {
+    "base_weight": 3.0,
+    "base_price": 100000,
+    "rarity": 40
+  },
+  "Peach": {
+    "base_weight": 2.0,
+    "base_price": 300,
+    "rarity": 70
+  },
+  "Raspberry": {
+    "base_weight": 0.75,
+    "base_price": 100,
+    "rarity": 70
+  },
+  "Papaya": {
+    "base_weight": 3.0,
+    "base_price": 1000,
+    "rarity": 60
+  },
+  "Passionfruit": {
+    "base_weight": 3.0,
+    "base_price": 3550,
+    "rarity": 40
+  },
+  "Soul Fruit": {
+    "base_weight": 25.0,
+    "base_price": 7750,
+    "rarity": 200
+  },
+  "Cursed Fruit": {
+    "base_weight": 30.0,
+    "base_price": 25750,
+    "rarity": 200
+  },
+  "Cranberry": {
+    "base_weight": 1.0,
+    "base_price": 3500,
+    "rarity": 50
+  },
+  "Durian": {
+    "base_weight": 8.0,
+    "base_price": 7500,
+    "rarity": 200
+  },
+  "Eggplant": {
+    "base_weight": 5.0,
+    "base_price": 12000,
+    "rarity": 220
+  },
+  "Lotus": {
+    "base_weight": 20.0,
+    "base_price": 35000,
+    "rarity": 650
+  },
+  "Venus Fly Trap": {
+    "base_weight": 10.0,
+    "base_price": 85000,
+    "rarity": 650
+  },
+  "Nightshade": {
+    "base_weight": 0.5,
+    "base_price": 3500,
+    "rarity": 100
+  },
+  "Glowshroom": {
+    "base_weight": 0.75,
+    "base_price": 300,
+    "rarity": 100
+  },
+  "Mint": {
+    "base_weight": 1.0,
+    "base_price": 5250,
+    "rarity": 150
+  },
+  "Moonflower": {
+    "base_weight": 2.0,
+    "base_price": 9500,
+    "rarity": 200
+  },
+  "Starfruit": {
+    "base_weight": 3.0,
+    "base_price": 15000,
+    "rarity": 250
+  },
+  "Moonglow": {
+    "base_weight": 7.0,
+    "base_price": 25000,
+    "rarity": 400
+  },
+  "Moon Blossom": {
+    "base_weight": 3.0,
+    "base_price": 66666,
+    "rarity": 400
+  },
+  "Crimson Vine": {
+    "base_weight": 1.0,
+    "base_price": 1250,
+    "rarity": 100
+  },
+  "Moon Melon": {
+    "base_weight": 8.0,
+    "base_price": 18000,
+    "rarity": 300
+  },
+  "Blood Banana": {
+    "base_weight": 1.5,
+    "base_price": 6000,
+    "rarity": 200
+  },
+  "Celestiberry": {
+    "base_weight": 2.0,
+    "base_price": 10000,
+    "rarity": 200
+  },
+  "Moon Mango": {
+    "base_weight": 15.0,
+    "base_price": 50000,
+    "rarity": 300
+  },
+  "Rose": {
+    "base_weight": 1.0,
+    "base_price": 5000,
+    "rarity": 100
+  },
+  "Foxglove": {
+    "base_weight": 2.0,
+    "base_price": 20000,
+    "rarity": 250
+  },
+  "Lilac": {
+    "base_weight": 3.0,
+    "base_price": 35000,
+    "rarity": 250
+  },
+  "Pink Lily": {
+    "base_weight": 6.0,
+    "base_price": 65000,
+    "rarity": 400
+  },
+  "Purple Dahlia": {
+    "base_weight": 12.0,
+    "base_price": 75000,
+    "rarity": 400
+  },
+  "Sunflower": {
+    "base_weight": 16.5,
+    "base_price": 160000,
+    "rarity": 600
+  },
+  "Lavender": {
+    "base_weight": 0.275,
+    "base_price": 25000,
+    "rarity": 90
+  },
+  "Nectarshade": {
+    "base_weight": 0.8,
+    "base_price": 50000,
+    "rarity": 100
+  },
+  "Nectarine": {
+    "base_weight": 3.0,
+    "base_price": 48000,
+    "rarity": 200
+  },
+  "Hive Fruit": {
+    "base_weight": 8.0,
+    "base_price": 62000,
+    "rarity": 300
+  },
+  "Manuka Flower": {
+    "base_weight": 0.3,
+    "base_price": 25000,
+    "rarity": 200
+  },
+  "Dandelion": {
+    "base_weight": 4.0,
+    "base_price": 50000,
+    "rarity": 300
+  },
+  "Lumira": {
+    "base_weight": 6.0,
+    "base_price": 85000,
+    "rarity": 350
+  },
+  "Honeysuckle": {
+    "base_weight": 12.0,
+    "base_price": 100000,
+    "rarity": 400
+  },
+  "Crocus": {
+    "base_weight": 0.275,
+    "base_price": 30000,
+    "rarity": 150
+  },
+  "Succulent": {
+    "base_weight": 5.0,
+    "base_price": 25000,
+    "rarity": 175
+  },
+  "Violet Corn": {
+    "base_weight": 3.0,
+    "base_price": 50000,
+    "rarity": 250
+  },
+  "Bendboo": {
+    "base_weight": 18.0,
+    "base_price": 155000,
+    "rarity": 275
+  },
+  "Cocovine": {
+    "base_weight": 14.0,
+    "base_price": 66666,
+    "rarity": 275
+  },
+  "Dragon Pepper": {
+    "base_weight": 6.0,
+    "base_price": 88888,
+    "rarity": 300
+  },
+  "Bee Balm": {
+    "base_weight": 1.0,
+    "base_price": 18000,
+    "rarity": 200
+  },
+  "Nectar Thorn": {
+    "base_weight": 7.0,
+    "base_price": 44444,
+    "rarity": 350
+  },
+  "Suncoil": {
+    "base_weight": 10.0,
+    "base_price": 80000,
+    "rarity": 400
+  },
+  "Liberty Lily": {
+    "base_weight": 6.5,
+    "base_price": 30000,
+    "rarity": 350
+  },
+  "Firework Flower": {
+    "base_weight": 20.0,
+    "base_price": 151000,
+    "rarity": 450
+  },
+  "Stonebite": {
+    "base_weight": 1.0,
+    "base_price": 35000,
+    "rarity": 200
+  },
+  "Paradise Petal": {
+    "base_weight": 2.75,
+    "base_price": 25000,
+    "rarity": 250
+  },
+  "Horned Dinoshroom": {
+    "base_weight": 5.0,
+    "base_price": 69000,
+    "rarity": 275
+  },
+  "Boneboo": {
+    "base_weight": 15.0,
+    "base_price": 141141,
+    "rarity": 300
+  },
+  "Firefly Fern": {
+    "base_weight": 5.0,
+    "base_price": 72000,
+    "rarity": 400
+  },
+  "Fossilight": {
+    "base_weight": 4.0,
+    "base_price": 88000,
+    "rarity": 500
+  },
+  "Bone Blossom": {
+    "base_weight": 3.0,
+    "base_price": 200000,
+    "rarity": 40
+  },
+  "Horsetail": {
+    "base_weight": 3.0,
+    "base_price": 30000,
+    "rarity": 75
+  },
+  "Lingonberry": {
+    "base_weight": 0.5,
+    "base_price": 35000,
+    "rarity": 150
+  },
+  "Amber Spine": {
+    "base_weight": 6.0,
+    "base_price": 55000,
+    "rarity": 250
+  },
+  "Grand Volcania": {
+    "base_weight": 7.0,
+    "base_price": 70555,
+    "rarity": 400
+  },
+  "Noble Flower": {
+    "base_weight": 5.0,
+    "base_price": 20000,
+    "rarity": 250
+  },
+  "Ice Cream Bean": {
+    "base_weight": 4.0,
+    "base_price": 4500,
+    "rarity": 200
+  },
+  "Lime": {
+    "base_weight": 1.0,
+    "base_price": 1000,
+    "rarity": 125
+  },
+  "White Mulberry": {
+    "base_weight": 3.0,
+    "base_price": 3000,
+    "rarity": 200
+  },
+  "Merica Mushroom": {
+    "base_weight": 30.0,
+    "base_price": 40000,
+    "rarity": 20
+  },
+  "Monoblooma": {
+    "base_weight": 0.5,
+    "base_price": 22000,
+    "rarity": 150
+  },
+  "Serenity": {
+    "base_weight": 0.25,
+    "base_price": 30000,
+    "rarity": 150
+  },
+  "Taro Flower": {
+    "base_weight": 7.0,
+    "base_price": 120000,
+    "rarity": 300
+  },
+  "Zen Rocks": {
+    "base_weight": 18.0,
+    "base_price": 150000,
+    "rarity": 300
+  },
+  "Hinomai": {
+    "base_weight": 10.0,
+    "base_price": 80000,
+    "rarity": 400
+  },
+  "Maple Apple": {
+    "base_weight": 3.5,
+    "base_price": 77777,
+    "rarity": 350
+  },
+  "Zenflare": {
+    "base_weight": 1.4,
+    "base_price": 25000,
+    "rarity": 90
+  },
+  "Sakura Bush": {
+    "base_weight": 1.5,
+    "base_price": 28575,
+    "rarity": 90
+  },
+  "Soft Sunshine": {
+    "base_weight": 2.0,
+    "base_price": 45000,
+    "rarity": 200
+  },
+  "Spiked Mango": {
+    "base_weight": 15.0,
+    "base_price": 67500,
+    "rarity": 400
+  },
+  "Enkaku": {
+    "base_weight": 5.0,
+    "base_price": 62000,
+    "rarity": 200
+  },
+  "Dezen": {
+    "base_weight": 2.0,
+    "base_price": 29250,
+    "rarity": 40
+  },
+  "Lucky Bamboo": {
+    "base_weight": 5.0,
+    "base_price": 65000,
+    "rarity": 300
+  },
+  "Tranquil Bloom": {
+    "base_weight": 4.0,
+    "base_price": 93333,
+    "rarity": 120
+  },
+  "Onion": {
+    "base_weight": 1.5,
+    "base_price": 10000,
+    "rarity": 50
+  },
+  "Jalapeno": {
+    "base_weight": 4.0,
+    "base_price": 30000,
+    "rarity": 150
+  },
+  "Crown Melon": {
+    "base_weight": 4.5,
+    "base_price": 50000,
+    "rarity": 250
+  },
+  "Sugarglaze": {
+    "base_weight": 5.0,
+    "base_price": 70000,
+    "rarity": 300
+  },
+  "Tall Asparagus": {
+    "base_weight": 8.0,
+    "base_price": 100000,
+    "rarity": 400
+  },
+  "Grand Tomato": {
+    "base_weight": 8.0,
+    "base_price": 88000,
+    "rarity": 300
+  },
+  "Artichoke": {
+    "base_weight": 1.5,
+    "base_price": 30000,
+    "rarity": 75
+  },
+  "Taco Fern": {
+    "base_weight": 9.0,
+    "base_price": 75000,
+    "rarity": 80
+  },
+  "Twisted Tangle": {
+    "base_weight": 3.0,
+    "base_price": 20000,
+    "rarity": 80
+  },
+  "Veinpetal": {
+    "base_weight": 9.0,
+    "base_price": 60000,
+    "rarity": 70
+  },
+  "Rhubarb": {
+    "base_weight": 2.0,
+    "base_price": 15000,
+    "rarity": 80
+  },
+  "Badlands Pepper": {
+    "base_weight": 3.5,
+    "base_price": 45000,
+    "rarity": 125
+  },
+  "King Cabbage": {
+    "base_weight": 9.0,
+    "base_price": 120000,
+    "rarity": 400
+  },
+  "Spring Onion": {
+    "base_weight": 1.5,
+    "base_price": 30000,
+    "rarity": 75
+  },
+  "Butternut Squash": {
+    "base_weight": 5.0,
+    "base_price": 35000,
+    "rarity": 200
+  },
+  "Pricklefruit": {
+    "base_weight": 8.0,
+    "base_price": 80000,
+    "rarity": 300
+  },
+  "Bitter Melon": {
+    "base_weight": 3.5,
+    "base_price": 77000,
+    "rarity": 200
+  },
+  "Golden Egg": {
+    "base_weight": 8.0,
+    "base_price": 250000,
+    "rarity": 50
+  },
+  "Flare Daisy": {
+    "base_weight": 1.5,
+    "base_price": 25000,
+    "rarity": 125
+  },
+  "Duskpuff": {
+    "base_weight": 3.0,
+    "base_price": 35000,
+    "rarity": 150
+  },
+  "Mangosteen": {
+    "base_weight": 1.5,
+    "base_price": 50000,
+    "rarity": 150
+  },
+  "Poseidon Plant": {
+    "base_weight": 3.0,
+    "base_price": 65555,
+    "rarity": 400
+  },
+  "Gleamroot": {
+    "base_weight": 2.5,
+    "base_price": 75000,
+    "rarity": 200
+  },
+  "Princess Thorn": {
+    "base_weight": 12.0,
+    "base_price": 111111,
+    "rarity": 500
+  },
+  "Mandrake": {
+    "base_weight": 3.0,
+    "base_price": 50000,
+    "rarity": 80
+  },
+  "Canary Melon": {
+    "base_weight": 8.0,
+    "base_price": 65000,
+    "rarity": 300
+  },
+  "Amberheart": {
+    "base_weight": 4.0,
+    "base_price": 175000,
+    "rarity": 200
+  },
+  "Mega Mushroom": {
+    "base_weight": 70.0,
+    "base_price": 500,
+    "rarity": 2000000
+  },
+  "Cherry Blossom": {
+    "base_weight": 3.0,
+    "base_price": 500,
+    "rarity": 400
+  },
+  "Purple Cabbage": {
+    "base_weight": 5.0,
+    "base_price": 500,
+    "rarity": 70
+  },
+  "Lemon": {
+    "base_weight": 1.0,
+    "base_price": 350,
+    "rarity": 50
+  },
+  "Pink Tulip": {
+    "base_weight": 0.05,
+    "base_price": 850,
+    "rarity": 55
+  },
+  "Dragon Sapling": {
+    "base_weight": 8.0,
+    "base_price": 69000,
+    "rarity": 275
+  },
+  "Sinisterdrip": {
+    "base_weight": 5.0,
+    "base_price": 69000,
+    "rarity": 275
+  },
+  "Fruitball": {
+    "base_weight": 6.0,
+    "base_price": 35000,
+    "rarity": 90
+  },
+  "Potato": {
+    "base_weight": 4.0,
+    "base_price": 10000,
+    "rarity": 150
+  },
+  "Broccoli": {
+    "base_weight": 4.0,
+    "base_price": 6500,
+    "rarity": 80
+  },
+  "Log Pumpkin": {
+    "base_weight": 10.0,
+    "base_price": 18000,
+    "rarity": 120
+  },
+  "Aura Flora": {
+    "base_weight": 2.9,
+    "base_price": 29000,
+    "rarity": 270
+  },
+  "Mutant Carrot": {
+    "base_weight": 10.0,
+    "base_price": 18000,
+    "rarity": 90
+  },
+  "Cyclamen": {
+    "base_weight": 9.0,
+    "base_price": 6500,
+    "rarity": 80
+  },
+  "King Palm": {
+    "base_weight": 6.0,
+    "base_price": 15000,
+    "rarity": 140
+  }
+}
