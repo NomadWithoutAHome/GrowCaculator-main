@@ -71,17 +71,6 @@ async def startup_event():
     except Exception as e:
         logger.error(f"Error during startup cleanup: {e}")
 
-# Vercel serverless function handler
-def handler(request, context):
-    """Vercel serverless function handler."""
-    from mangum import Mangum
-    
-    # Create Mangum adapter for AWS Lambda/Vercel
-    mangum_handler = Mangum(app, lifespan="off")
-    
-    # Convert Vercel request to ASGI
-    return mangum_handler(request, context)
-
 # For local development
 if __name__ == "__main__":
     import uvicorn
