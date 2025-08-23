@@ -11,9 +11,11 @@ parent_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(parent_dir))
 
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
+from routes import calculator, api
+from services.vercel_shared_results_service import vercel_shared_results_service
 import logging
 
 # Set up logging
@@ -36,16 +38,33 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Test route to verify the app works
-@app.get("/")
-async def root():
-    """Test root endpoint."""
-    return {"message": "GrowCalculator API is working!"}
+# Include routers
+app.include_router(calculator.router)
+app.include_router(api.router, prefix="/api")
 
-@app.get("/health")
-async def health_check():
-    """Health check endpoint."""
-    return {"status": "healthy", "service": "GrowCalculator"}
+# Static files handling for Vercel
+@app.get("/static/{path:path}")
+async def serve_static(path: str):
+    """Serve static files from the static directory."""
+    static_path = parent_dir / "static" / path
+    if static_path.exists():
+        return FileResponse(static_path)
+    return JSONResponse(status_code=404, content={"error": "File not found"})
+
+@app.on_event("startup")
+async def startup_event():
+    """Run on application startup."""
+    logger.info("Starting GrowCalculator application on Vercel...")
+    
+    # Clean up any expired results on startup
+    try:
+        deleted_count = vercel_shared_results_service.cleanup_expired_results()
+        if deleted_count > 0:
+            logger.info(f"Cleaned up {deleted_count} expired shared results on startup")
+        else:
+            logger.info("No expired results found on startup")
+    except Exception as e:
+        logger.error(f"Error during startup cleanup: {e}")
 
 # For local development
 if __name__ == "__main__":
