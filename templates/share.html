@@ -275,12 +275,17 @@ async function calculateAndDisplayResults(data) {
         // Estimate base price using the actual mutation multiplier
         const estimatedBasePrice = Math.round(finalValue / (variantMultiplier * mutationMultiplier));
         
-        // Display results - remove 💰 emoji and replace with = sign
-        const cleanTotalValue = totalValue.replace('💰', '=');
-        document.getElementById('shared-total-value').textContent = cleanTotalValue;
-        document.getElementById('shared-per-plant').textContent = resultValue;
-        document.getElementById('shared-multiplier').textContent = `x${mutationMultiplier.toFixed(2)}`;
-        document.getElementById('shared-base-price').textContent = `$${estimatedBasePrice.toLocaleString()}`;
+        // Check if this is a batch result
+        if (data.type === 'batch') {
+            displayBatchResults(data);
+        } else {
+            // Display single plant results - remove 💰 emoji and replace with = sign
+            const cleanTotalValue = totalValue.replace('💰', '=');
+            document.getElementById('shared-total-value').textContent = cleanTotalValue;
+            document.getElementById('shared-per-plant').textContent = resultValue;
+            document.getElementById('shared-multiplier').textContent = `x${mutationMultiplier.toFixed(2)}`;
+            document.getElementById('shared-base-price').textContent = `$${estimatedBasePrice.toLocaleString()}`;
+        }
 
         // Display breakdown
         document.getElementById('breakdown-base-price').textContent = `$${estimatedBasePrice.toLocaleString()}`;
@@ -311,6 +316,122 @@ async function calculateAndDisplayResults(data) {
         console.error('Error processing results:', error);
         showError('Failed to process results');
     }
+}
+
+/**
+ * Display batch calculation results
+ */
+function displayBatchResults(data) {
+    // Hide single plant display elements
+    const singleElements = [
+        'shared-plant-image', 'shared-plant-name', 'shared-plant-variant',
+        'shared-weight', 'shared-amount', 'shared-base-price', 'shared-weight-range',
+        'shared-total-value', 'shared-per-plant', 'shared-multiplier'
+    ];
+    
+    singleElements.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.style.display = 'none';
+    });
+    
+    // Update header for batch results
+    const header = document.querySelector('.text-4xl.md\\:text-6xl');
+    if (header) header.textContent = 'Shared Batch Results';
+    
+    const subheader = document.querySelector('.text-xl.text-gray-300');
+    if (subheader) subheader.textContent = 'Multiple plant calculation results from Grow Calculator';
+    
+    // Create batch results display
+    const mainContent = document.querySelector('.max-w-4xl');
+    if (mainContent) {
+        mainContent.innerHTML = `
+            <!-- Batch Summary -->
+            <div class="bg-gray-800 rounded-lg shadow-lg p-8 mb-8 border border-gray-600">
+                <h2 class="text-3xl font-bold text-green-400 mb-6 text-center">📊 Batch Summary</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center mb-8">
+                    <div class="bg-gray-700/50 p-6 rounded-lg border border-gray-600">
+                        <p class="text-sm text-gray-400 mb-2">Total Batch Value</p>
+                        <p class="text-4xl font-bold text-green-400">${formatLargeNumber(data.total_value)} sheckles</p>
+                    </div>
+                    <div class="bg-gray-700/50 p-6 rounded-lg border border-gray-600">
+                        <p class="text-sm text-gray-400 mb-2">Total Plants</p>
+                        <p class="text-4xl font-bold text-blue-400">${data.total_plants}</p>
+                    </div>
+                    <div class="bg-gray-700/50 p-6 rounded-lg border border-gray-600">
+                        <p class="text-sm text-gray-400 mb-2">Average per Plant</p>
+                        <p class="text-3xl font-bold text-purple-400">${formatLargeNumber(data.total_value / data.total_plants)} sheckles</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Individual Plant Results -->
+            <div class="bg-gray-800 rounded-lg shadow-lg p-8 mb-8 border border-gray-600">
+                <h2 class="text-2xl font-bold text-green-400 mb-6 text-center">🌱 Individual Plants</h2>
+                <div class="space-y-6">
+                    ${data.plants.map(plant => `
+                        <div class="bg-gray-700/50 p-6 rounded-lg border border-gray-600">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h3 class="text-xl font-bold text-white mb-3">${plant.plant} (${plant.variant})</h3>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-400">Weight:</span>
+                                            <span class="text-blue-300">${plant.weight} kg</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-400">Quantity:</span>
+                                            <span class="text-purple-300">${plant.quantity}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-400">Value per Plant:</span>
+                                            <span class="text-green-300">${formatLargeNumber(plant.result)} sheckles</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-400">Total Value:</span>
+                                            <span class="text-green-400 font-bold">${formatLargeNumber(plant.total)} sheckles</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-200 mb-3">Mutations</h4>
+                                    <div class="space-y-1">
+                                        ${plant.mutations && plant.mutations.length > 0 
+                                            ? plant.mutations.map(mutation => `<div class="text-sm text-gray-300">• ${mutation}</div>`).join('')
+                                            : '<div class="text-sm text-gray-500">None</div>'
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="text-center space-y-4">
+                <button onclick="copyShareLink()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors mr-4">
+                    Copy Share Link
+                </button>
+                <a href="/" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                    Calculate Your Own
+                </a>
+            </div>
+        `;
+    }
+}
+
+/**
+ * Format large numbers with abbreviations
+ */
+function formatLargeNumber(num) {
+    if (num >= 1e21) return (num / 1e21).toFixed(2) + ' Sextillion';
+    if (num >= 1e18) return (num / 1e18).toFixed(2) + ' Quintillion';
+    if (num >= 1e15) return (num / 1e15).toFixed(2) + ' Quadrillion';
+    if (num >= 1e12) return (num / 1e12).toFixed(2) + ' Trillion';
+    if (num >= 1e9) return (num / 1e9).toFixed(2) + ' Billion';
+    if (num >= 1e6) return (num / 1e6).toFixed(2) + ' Million';
+    if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
+    return num.toLocaleString();
 }
 
 // Copy share link to clipboard

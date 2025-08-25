@@ -3,6 +3,7 @@ API routes for calculator functionality.
 """
 from typing import List
 from fastapi import APIRouter, HTTPException
+from datetime import datetime
 
 from models.calculator import (
     CalculationRequest,
@@ -89,3 +90,29 @@ async def get_weight_range(plant_name: str):
         return weight_range
     except KeyError:
         raise HTTPException(status_code=404, detail=f"Plant '{plant_name}' not found")
+
+
+@router.post("/share-batch")
+async def share_batch_results(request: dict):
+    """Share batch calculation results."""
+    try:
+        from services.shared_results_service import shared_results_service
+        
+        # Create batch share data
+        batch_data = {
+            "type": "batch",
+            "plants": request.get("plants", []),
+            "total_value": sum(plant.get("total", 0) for plant in request.get("plants", [])),
+            "total_plants": sum(plant.get("quantity", 0) for plant in request.get("plants", [])),
+            "created_at": datetime.utcnow().isoformat()
+        }
+        
+        # Generate share ID and save
+        share_id = shared_results_service.create_shared_result(batch_data)
+        
+        return {
+            "share_id": share_id,
+            "message": "Batch results shared successfully"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to share batch results: {str(e)}")

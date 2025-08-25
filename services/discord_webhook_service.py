@@ -32,7 +32,11 @@ class DiscordWebhookService:
             return False
         
         try:
-            embed = self._create_calculation_embed(share_data)
+            # Check if this is a batch result
+            if share_data.get('type') == 'batch':
+                embed = self._create_batch_calculation_embed(share_data)
+            else:
+                embed = self._create_calculation_embed(share_data)
             
             webhook_data = {
                 "embeds": [embed],
@@ -154,6 +158,76 @@ class DiscordWebhookService:
             ],
             "footer": {
                 "text": "Grow Calculator • Share your results with others!",
+                "icon_url": "https://www.fruitcalculator.dohmboy64.com/static/img/calcsymbol.png"
+            },
+            "timestamp": datetime.utcnow().isoformat()
+        }
+        
+        return embed
+
+    def _create_batch_calculation_embed(self, share_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Create a Discord embed for batch calculation results."""
+        plants = share_data.get('plants', [])
+        total_value = share_data.get('total_value', 0)
+        total_plants = share_data.get('total_plants', 0)
+        
+        # Format total value using the same logic as the website
+        try:
+            formatted_total = self._format_large_number(total_value)
+        except:
+            formatted_total = f"{total_value:,}"
+        
+        # Create plant summary (show first 3 plants, then +X more if applicable)
+        plant_summaries = []
+        for i, plant in enumerate(plants[:3]):
+            plant_name = plant.get('plant', 'Unknown Plant')
+            variant = plant.get('variant', 'Normal')
+            quantity = plant.get('quantity', 1)
+            weight = round(float(plant.get('weight', 0)), 4)
+            mutations = plant.get('mutations', [])
+            
+            # Format mutations (show first 4, then +X more)
+            if mutations:
+                if len(mutations) <= 4:
+                    mutations_text = ", ".join(mutations)
+                else:
+                    mutations_text = ", ".join(mutations[:4]) + f" (+{len(mutations) - 4} more)"
+            else:
+                mutations_text = "None"
+            
+            plant_summaries.append(f"**{plant_name} ({variant})** - {weight}kg × {quantity} - {mutations_text}")
+        
+        if len(plants) > 3:
+            plant_summaries.append(f"+{len(plants) - 3} more plants")
+        
+        plants_text = "\n".join(plant_summaries)
+        
+        # Calculate average per plant
+        avg_per_plant = total_value / total_plants if total_plants > 0 else 0
+        try:
+            formatted_avg = self._format_large_number(avg_per_plant)
+        except:
+            formatted_avg = f"{avg_per_plant:,}"
+        
+        embed = {
+            "title": "📊 Batch Calculation Shared!",
+            "description": "Someone just shared their batch calculation results!",
+            "url": f"https://www.fruitcalculator.dohmboy64.com/share/{share_data.get('share_id', '')}",
+            "color": 3447003,  # Same blue color
+            "fields": [
+                {
+                    "name": "📦 Batch Summary",
+                    "value": f"**Total Value:** `{formatted_total}` sheckles\n**Total Plants:** {total_plants}\n**Average per Plant:** `{formatted_avg}` sheckles",
+                    "inline": False
+                },
+                {
+                    "name": "🌱 Plants Included",
+                    "value": plants_text,
+                    "inline": False
+                }
+            ],
+            "footer": {
+                "text": "Grow Calculator • Share your batch results with others!",
                 "icon_url": "https://www.fruitcalculator.dohmboy64.com/static/img/calcsymbol.png"
             },
             "timestamp": datetime.utcnow().isoformat()

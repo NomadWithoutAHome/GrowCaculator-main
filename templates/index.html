@@ -38,10 +38,24 @@
      </div>
  </section>
 
+<!-- Calculator Tabs -->
+<section class="w-full max-w-6xl mx-auto px-4 mt-6">
+    <div class="flex space-x-1 bg-gray-700 p-1 rounded-lg">
+        <button id="single-calculator-tab" class="flex-1 py-3 px-6 rounded-md font-medium transition-all duration-200 bg-green-600 text-white shadow-lg">
+            🌱 Single Calculator
+        </button>
+        <button id="batch-calculator-tab" class="flex-1 py-3 px-6 rounded-md font-medium transition-all duration-200 bg-gray-600 text-gray-300 hover:bg-gray-500 hover:text-white">
+            📊 Batch Calculator
+        </button>
+    </div>
+</section>
+
 <!-- Main Calculator Section -->
 <main class="w-full max-w-6xl flex flex-col gap-6 mt-6">
-    <!-- Plant Selection Grid -->
-    <section class="bg-gray-800 p-4 rounded-lg shadow-lg">
+    <!-- Single Calculator Content -->
+    <div id="single-calculator-content">
+        <!-- Plant Selection Grid -->
+        <section class="bg-gray-800 p-4 rounded-lg shadow-lg">
         <h2 class="text-xl font-semibold mb-3 text-gray-200">Select Your Plant</h2>
         <input type="text" id="plant-search" placeholder="Search crops..." 
                class="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-green-500" value="">
@@ -177,6 +191,65 @@
             </div>
         </div>
     </section>
+    </div> <!-- End Single Calculator Content -->
+
+    <!-- Batch Calculator Content -->
+    <div id="batch-calculator-content" class="hidden">
+        <!-- Batch Plant Input Section -->
+        <section class="bg-gray-800 p-4 rounded-lg shadow-lg">
+            <h2 class="text-xl font-semibold mb-3 text-gray-200">🌱 Add Plants to Batch</h2>
+            
+            <!-- Batch Plant Rows Container -->
+            <div id="batch-plant-rows" class="space-y-4">
+                <!-- Initial plant row will be added here -->
+            </div>
+            
+            <!-- Add Plant Button -->
+            <div class="mt-4">
+                <button id="add-plant-row" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-white font-medium transition-colors duration-200">
+                    ➕ Add Another Plant
+                </button>
+            </div>
+        </section>
+
+        <!-- Batch Results Section -->
+        <section class="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold mb-4 text-green-400">📊 Batch Results</h2>
+            
+            <!-- Individual Plant Results -->
+            <div id="batch-individual-results" class="space-y-4 mb-6">
+                <!-- Individual plant results will be displayed here -->
+            </div>
+            
+            <!-- Batch Summary -->
+            <div id="batch-summary" class="bg-gray-900 p-4 rounded-md border-l-4 border-green-500">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                    <div>
+                        <p class="text-sm text-gray-400">Total Batch Value</p>
+                        <p class="text-3xl font-bold text-green-400" id="batch-total-value">0 sheckles</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-400">Total Plants</p>
+                        <p class="text-2xl font-bold text-blue-400" id="batch-total-plants">0</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-400">Average per Plant</p>
+                        <p class="text-2xl font-bold text-purple-400" id="batch-avg-per-plant">0 sheckles</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Batch Action Buttons -->
+            <div class="flex flex-wrap gap-4 mt-6 justify-center">
+                <button class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 px-6 py-3 rounded-lg shadow-lg transition-all duration-200 text-white font-semibold transform hover:scale-105" id="share-batch-result">
+                    Share Batch Results
+                </button>
+                <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded shadow transition text-white" id="clear-batch-all">
+                    Clear All
+                </button>
+            </div>
+        </section>
+    </div> <!-- End Batch Calculator Content -->
 </main>
 
 
