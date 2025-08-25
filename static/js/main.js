@@ -1335,7 +1335,9 @@ function showComingSoonPopup() {
     popup.innerHTML = `
         <div class="bg-gray-800 p-8 rounded-lg shadow-xl max-w-md w-full mx-4 border border-gray-600">
             <div class="text-center">
-                <div class="text-6xl mb-4">🚀</div>
+                <div class="mb-4 flex justify-center">
+                    <img src="/static/img/undercontruction.png" alt="Under Construction" class="w-16 h-16">
+                </div>
                 <h3 class="text-2xl font-bold mb-4 text-green-400">Coming Soon!</h3>
                 <p class="text-lg text-gray-300 mb-6">
                     The <strong>Batch Calculator</strong> feature is currently under development.
