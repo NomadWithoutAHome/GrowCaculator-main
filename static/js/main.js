@@ -1319,17 +1319,59 @@ function initializeTabSystem() {
     
     // Batch calculator tab click
     batchTab.addEventListener('click', function() {
-        batchTab.classList.remove('bg-gray-600', 'text-gray-300');
-        batchTab.classList.add('bg-green-600', 'text-white');
-        singleTab.classList.remove('bg-green-600', 'text-white');
-        singleTab.classList.add('bg-gray-600', 'text-gray-300');
-        
-        batchContent.classList.remove('hidden');
-        singleContent.classList.add('hidden');
-        
-        // Initialize batch calculator if not already done
-        if (batchPlants.length === 0) {
-            addInitialBatchRow();
+        showComingSoonPopup();
+    });
+}
+
+/**
+ * Show "Coming Soon" popup for batch calculator
+ */
+function showComingSoonPopup() {
+    // Create popup overlay
+    const popup = document.createElement('div');
+    popup.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50';
+    popup.id = 'coming-soon-popup';
+    
+    popup.innerHTML = `
+        <div class="bg-gray-800 p-8 rounded-lg shadow-xl max-w-md w-full mx-4 border border-gray-600">
+            <div class="text-center">
+                <div class="text-6xl mb-4">🚀</div>
+                <h3 class="text-2xl font-bold mb-4 text-green-400">Coming Soon!</h3>
+                <p class="text-lg text-gray-300 mb-6">
+                    The <strong>Batch Calculator</strong> feature is currently under development.
+                </p>
+                <p class="text-sm text-gray-400 mb-6">
+                    Soon you'll be able to calculate multiple plants at once with quantities, 
+                    real-time updates, and batch sharing!
+                </p>
+                <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 w-full">
+                    Got it!
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Add to page
+    document.body.appendChild(popup);
+    
+    // Close popup when clicking the button
+    const closeButton = popup.querySelector('button');
+    closeButton.addEventListener('click', () => {
+        popup.remove();
+    });
+    
+    // Close popup when clicking outside
+    popup.addEventListener('click', (e) => {
+        if (e.target === popup) {
+            popup.remove();
+        }
+    });
+    
+    // Close popup with Escape key
+    document.addEventListener('keydown', function closeOnEscape(e) {
+        if (e.key === 'Escape') {
+            popup.remove();
+            document.removeEventListener('keydown', closeOnEscape);
         }
     });
 }
