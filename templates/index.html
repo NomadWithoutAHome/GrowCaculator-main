@@ -1,22 +1,48 @@
 {% extends "base.html" %}
 
-{% block title %}Grow Calculator - Fruit Value Calculator for Roblox Grow a Garden{% endblock %}
+{% block title %}Grow Calculator - Plant Value Calculator for Roblox Grow a Garden | 96-100% Accuracy{% endblock %}
+
+{% block description %}Calculate fruit values for Roblox Grow a Garden with 96-100% accuracy! Free plant mutation calculator, variant multiplier tool, and weight-based pricing calculator. Optimize your harvest today!{% endblock %}
+
+{% block keywords %}roblox grow a garden calculator, plant value calculator, fruit calculator, mutation calculator, plant mutations, plant variants, weight calculator, roblox plant pricing, grow calculator, plant optimization{% endblock %}
 
 {% block content %}
  <!-- Hero Section -->
- <div class="p-4 flex flex-col items-center mt-8">
+ <section class="p-4 flex flex-col items-center mt-8">
      <h1 class="text-4xl font-bold text-center flex items-center justify-center mb-2">
          <img src="/static/img/title.png" alt="Grow a Garden Calculator" class="h-16">
      </h1>
      <div class="text-center">
          <img src="/static/img/subtitletext.png" alt="Calculate fruit values for Roblox Grow a Garden!" class="h-4">
      </div>
- </div>
+     
+     <!-- SEO Content Section -->
+     <div class="mt-6 max-w-4xl text-center">
+         <p class="text-lg text-gray-300 mb-4">
+             The most accurate plant value calculator for Roblox Grow a Garden. Calculate mutations, variants, and optimize your harvest with proven 96-100% accuracy based on actual game source code.
+         </p>
+         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+             <div class="bg-gray-800 p-4 rounded-lg">
+                 <h2 class="text-green-400 font-semibold mb-2">176 Plants</h2>
+                 <p class="text-sm text-gray-300">Complete database with exact base weights, prices, and rarities</p>
+             </div>
+             <div class="bg-gray-800 p-4 rounded-lg">
+                 <h2 class="text-green-400 font-semibold mb-2">72 Mutations</h2>
+                 <p class="text-sm text-gray-300">Precise mutation multipliers for optimal value calculation</p>
+             </div>
+             <div class="bg-gray-800 p-4 rounded-lg">
+                 <h2 class="text-green-400 font-semibold mb-2">4 Variants</h2>
+                 <p class="text-sm text-gray-300">Normal, Silver, Gold, and Rainbow variant calculations</p>
+             </div>
+         </div>
+     </div>
+ </section>
 
 <!-- Main Calculator Section -->
 <main class="w-full max-w-6xl flex flex-col gap-6 mt-6">
     <!-- Plant Selection Grid -->
-    <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
+    <section class="bg-gray-800 p-4 rounded-lg shadow-lg">
+        <h2 class="text-xl font-semibold mb-3 text-gray-200">Select Your Plant</h2>
         <input type="text" id="plant-search" placeholder="Search crops..." 
                class="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-green-500" value="">
         <div class="overflow-y-auto max-h-[300px] custom-scrollbar border border-gray-700 rounded-lg mt-4 notranslate" translate="no">
@@ -41,10 +67,10 @@
                  {% endfor %}
             </div>
         </div>
-    </div>
+    </section>
 
     <!-- Mutations Section -->
-    <div class="bg-gray-800 p-4 rounded-lg shadow-lg space-y-4">
+    <section class="bg-gray-800 p-4 rounded-lg shadow-lg space-y-4">
         <!-- Growth Mutations -->
         <div class="bg-gray-800 p-4 rounded-lg shadow-md">
             <h3 class="text-base sm:text-lg font-semibold mb-3 text-gray-200 flex items-center">
@@ -85,10 +111,10 @@
                 {% endfor %}
             </div>
         </div>
-    </div>
+    </section>
 
     <!-- Calculator Section -->
-    <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+    <section class="bg-gray-800 p-6 rounded-lg shadow-lg">
         <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
             <h2 class="text-2xl font-bold mb-4 text-green-400">Fruit Value Calculator</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 notranslate" translate="no">
@@ -150,7 +176,7 @@
                 <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded shadow transition text-white" id="clear-all" aria-label="Clear All Inputs">Clear All</button>
             </div>
         </div>
-    </div>
+    </section>
 </main>
 
 

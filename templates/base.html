@@ -3,14 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primary Meta Tags -->
     <title>{% block title %}Grow Calculator - Plant Value Calculator for Roblox Grow a Garden{% endblock %}</title>
-    <meta name="description" content="{% block description %}Calculate fruit values for Roblox Grow a Garden! The most accurate calculator for plant mutations, variants, and weight calculations.{% endblock %}">
+    <meta name="description" content="{% block description %}Calculate fruit values for Roblox Grow a Garden! The most accurate calculator for plant mutations, variants, and weight calculations with 96-100% accuracy.{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}roblox grow a garden, plant calculator, fruit calculator, mutation calculator, plant value, roblox calculator, grow calculator, plant mutations, plant variants, weight calculator{% endblock %}">
+    <meta name="author" content="Grow Calculator">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+    <meta name="revisit-after" content="7 days">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{% block og_url %}https://www.fruitcalculator.dohmboy64.com{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}Grow Calculator - Plant Value Calculator for Roblox Grow a Garden{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Calculate fruit values for Roblox Grow a Garden! The most accurate calculator for plant mutations, variants, and weight calculations with 96-100% accuracy.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}https://www.fruitcalculator.dohmboy64.com/static/img/og-image.png{% endblock %}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="Grow Calculator">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{% block twitter_url %}https://www.fruitcalculator.dohmboy64.com{% endblock %}">
+    <meta property="twitter:title" content="{% block twitter_title %}Grow Calculator - Plant Value Calculator for Roblox Grow a Garden{% endblock %}">
+    <meta property="twitter:description" content="{% block twitter_description %}Calculate fruit values for Roblox Grow a Garden! The most accurate calculator for plant mutations, variants, and weight calculations with 96-100% accuracy.{% endblock %}">
+    <meta property="twitter:image" content="{% block twitter_image %}https://www.fruitcalculator.dohmboy64.com/static/img/og-image.png{% endblock %}">
+    
+    <!-- Additional Meta Tags -->
+    <meta name="theme-color" content="#10b981">
+    <meta name="msapplication-TileColor" content="#10b981">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Grow Calculator">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{% block canonical_url %}https://www.fruitcalculator.dohmboy64.com{% endblock %}">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/img/calcsymbol.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/img/calcsymbol.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/img/calcsymbol.png">
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/static/css/style.css">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Grow Calculator",
+        "description": "Calculate fruit values for Roblox Grow a Garden! The most accurate calculator for plant mutations, variants, and weight calculations with 96-100% accuracy.",
+        "url": "https://www.fruitcalculator.dohmboy64.com",
+        "applicationCategory": "Calculator",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "author": {
+            "@type": "Organization",
+            "name": "Grow Calculator"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Grow Calculator"
+        },
+        "keywords": "roblox grow a garden, plant calculator, fruit calculator, mutation calculator, plant value, roblox calculator, grow calculator, plant mutations, plant variants, weight calculator"
+    }
+    </script>
+    
+    <!-- Additional Structured Data for Calculator -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Grow Calculator",
+        "description": "Plant value calculator for Roblox Grow a Garden with mutation and variant calculations",
+        "url": "https://www.fruitcalculator.dohmboy64.com",
+        "softwareVersion": "1.0.0",
+        "operatingSystem": "Web Browser",
+        "applicationCategory": "Calculator",
+        "featureList": [
+            "Plant value calculation",
+            "Mutation multiplier calculation", 
+            "Variant multiplier calculation",
+            "Weight-based pricing",
+            "Bulk plant calculations"
+        ]
+    }
+    </script>
     
     <style>
         .mutation-chip {

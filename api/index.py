@@ -42,6 +42,23 @@ app.add_middleware(
 app.include_router(calculator.router)
 app.include_router(api.router, prefix="/api")
 
+# SEO Routes - Serve robots.txt and sitemap.xml at root level
+@app.get("/robots.txt")
+async def serve_robots():
+    """Serve robots.txt file for search engine crawlers."""
+    robots_path = parent_dir / "robots.txt"
+    if robots_path.exists():
+        return FileResponse(robots_path, media_type="text/plain")
+    return JSONResponse(status_code=404, content={"error": "robots.txt not found"})
+
+@app.get("/sitemap.xml")
+async def serve_sitemap():
+    """Serve sitemap.xml file for search engine indexing."""
+    sitemap_path = parent_dir / "sitemap.xml"
+    if sitemap_path.exists():
+        return FileResponse(sitemap_path, media_type="application/xml")
+    return JSONResponse(status_code=404, content={"error": "sitemap.xml not found"})
+
 # Static files handling for Vercel
 @app.get("/static/{path:path}")
 async def serve_static(path: str):

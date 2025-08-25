@@ -1,0 +1,27 @@
+User-agent: *
+Allow: /
+
+# Allow crawling of main pages
+Allow: /about
+Allow: /mutation-calculator
+Allow: /share/
+
+# Allow API endpoints for search engines that support them
+Allow: /api/plants
+Allow: /api/variants
+Allow: /api/mutations
+
+# Allow static assets
+Allow: /static/css/
+Allow: /static/js/
+Allow: /static/img/
+
+# Disallow admin or internal pages (if you add them later)
+# Disallow: /admin/
+# Disallow: /internal/
+
+# Sitemap location
+Sitemap: https://www.fruitcalculator.dohmboy64.com/sitemap.xml
+
+# Crawl delay (optional - tells crawlers to wait between requests)
+# Crawl-delay: 1
