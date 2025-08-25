@@ -63,31 +63,18 @@ class DiscordWebhookService:
         plant_name = share_data.get('plant', 'Unknown Plant')
         plant_image_url = f"https://www.fruitcalculator.dohmboy64.com/static/img/crop-{plant_name.lower().replace(' ', '-')}.webp"
         
-        # Format mutations for display
+        # Format mutations for display with bullet points
         mutations = share_data.get('mutations', [])
-        mutations_text = ", ".join(mutations) if mutations else "None"
+        mutations_text = "\n".join([f"• {mutation}" for mutation in mutations]) if mutations else "None"
         
-        # Calculate total value (remove currency symbols and convert to int)
-        total_value_str = share_data.get('total_value', '0')
-        try:
-            total_value = int(''.join(filter(str.isdigit, total_value_str)))
-        except:
-            total_value = 0
+        # Use the specific color from your example (3447003 = 0x3498DB - blue)
+        color = 3447003
         
-        # Determine color based on value
-        if total_value >= 1000000:
-            color = 0xFFD700  # Gold for very high values
-        elif total_value >= 100000:
-            color = 0x00FF00  # Green for high values
-        elif total_value >= 10000:
-            color = 0x00FFFF  # Cyan for medium values
-        else:
-            color = 0x808080  # Gray for low values
-        
-        # Create embed
+        # Create embed matching your exact format
         embed = {
             "title": f"🌱 {plant_name} Calculation Shared!",
-            "description": f"Someone just shared their calculation results!",
+            "description": f"{plant_name} ({share_data.get('variant', 'Normal')}) calculation shared! **{share_data.get('amount', 1)} plants**, each weighing **{share_data.get('weight', 0)} kg**.",
+            "url": f"https://www.fruitcalculator.dohmboy64.com/share/{share_data.get('share_id', '')}",
             "color": color,
             "thumbnail": {
                 "url": plant_image_url
@@ -95,7 +82,7 @@ class DiscordWebhookService:
             "fields": [
                 {
                     "name": "🏷️ Plant Details",
-                    "value": f"**Plant:** {plant_name}\n**Variant:** {share_data.get('variant', 'Normal')}\n**Weight:** {share_data.get('weight', 0)} kg\n**Amount:** {share_data.get('amount', 1)}",
+                    "value": f"**Variant:** {share_data.get('variant', 'Normal')}\n**Amount:** {share_data.get('amount', 1)}\n**Weight:** {share_data.get('weight', 0)} kg",
                     "inline": True
                 },
                 {
@@ -105,12 +92,12 @@ class DiscordWebhookService:
                 },
                 {
                     "name": "💰 Value Breakdown",
-                    "value": f"**Per Plant:** {share_data.get('result_value', '0')}\n**Total Value:** {share_data.get('total_value', '0')}\n**Multiplier:** {share_data.get('total_multiplier', '1x')}",
-                    "inline": True
+                    "value": f"**Per Plant:** `{share_data.get('result_value', '0')}` sheckles\n**Total:** `{share_data.get('total_value', '0')}` sheckles\n**Multiplier:** `{share_data.get('total_multiplier', '1x')}`",
+                    "inline": False
                 },
                 {
                     "name": "📊 Weight Range",
-                    "value": f"**Min:** {share_data.get('weight_min', '0')}\n**Max:** {share_data.get('weight_max', '0')}",
+                    "value": f"**Min:** {share_data.get('weight_min', '0')} kg | **Max:** {share_data.get('weight_max', '0')} kg",
                     "inline": True
                 }
             ],
@@ -120,11 +107,6 @@ class DiscordWebhookService:
             },
             "timestamp": datetime.utcnow().isoformat()
         }
-        
-        # Add share link if available
-        share_id = share_data.get('share_id')
-        if share_id:
-            embed["url"] = f"https://www.fruitcalculator.dohmboy64.com/share/{share_id}"
         
         return embed
 
