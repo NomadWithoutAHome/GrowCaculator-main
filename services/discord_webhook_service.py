@@ -57,6 +57,29 @@ class DiscordWebhookService:
             logger.error(f"Error sending Discord webhook: {e}")
             return False
     
+    def _format_large_number(self, num: float) -> str:
+        """Format large numbers into readable abbreviations (Python equivalent of JavaScript formatLargeNumber)."""
+        if num >= 1e21:
+            return f"{num / 1e21:.2f} Sextillion"
+        elif num >= 1e18:
+            return f"{num / 1e18:.2f} Quintillion"
+        elif num >= 1e15:
+            return f"{num / 1e15:.2f} Quadrillion"
+        elif num >= 1e12:
+            return f"{num / 1e12:.2f} Trillion"
+        elif num >= 1e9:
+            return f"{num / 1e9:.2f} Billion"
+        elif num >= 1e6:
+            return f"{num / 1e6:.2f} Million"
+        elif num >= 1e3:
+            return f"{num / 1e3:.2f}K"
+        else:
+            return f"{num:.2f}"
+    
+    def _format_number_with_commas(self, num: float) -> str:
+        """Format numbers with commas (Python equivalent of JavaScript formatNumber)."""
+        return f"{int(num):,}"
+    
     def _create_calculation_embed(self, share_data: Dict[str, Any]) -> Dict[str, Any]:
         """Create a Discord embed for the calculation result."""
         # Get plant image URL
@@ -70,7 +93,25 @@ class DiscordWebhookService:
         # Use the specific color from your example (3447003 = 0x3498DB - blue)
         color = 3447003
         
-        # Create embed matching your exact format
+        # Format values using the same logic as the website
+        try:
+            # Extract numeric values from the formatted strings
+            result_value_str = share_data.get('result_value', '0')
+            total_value_str = share_data.get('total_value', '0')
+            
+            # Try to extract numbers and format them
+            result_value_num = float(''.join(filter(str.isdigit, result_value_str)))
+            total_value_num = float(''.join(filter(str.isdigit, total_value_str)))
+            
+            # Apply the same formatting as the website
+            formatted_result = self._format_large_number(result_value_num)
+            formatted_total = self._format_large_number(total_value_num)
+        except:
+            # Fallback to original values if parsing fails
+            formatted_result = share_data.get('result_value', '0')
+            formatted_total = share_data.get('total_value', '0')
+        
+        # Create embed matching your exact format with proper number formatting
         embed = {
             "title": f"🌱 {plant_name} Calculation Shared!",
             "description": "Someone just shared their calculation results!",
@@ -92,7 +133,7 @@ class DiscordWebhookService:
                 },
                 {
                     "name": "💰 Value Breakdown",
-                    "value": f"**Per Plant:** `{share_data.get('result_value', '0')}` sheckles\n**Total:** `{share_data.get('total_value', '0')}` sheckles\n**Multiplier:** `{share_data.get('total_multiplier', '1x')}`",
+                    "value": f"**Per Plant:** `{formatted_result}` sheckles\n**Total:** `{formatted_total}` sheckles\n**Multiplier:** `{share_data.get('total_multiplier', '1x')}`",
                     "inline": False
                 },
                 {
