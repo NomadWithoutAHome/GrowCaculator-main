@@ -43,6 +43,7 @@ coverage/
 *.dll
 *.exe
 *.pyc
+*.env
 __pycache__/
 *.out
 
