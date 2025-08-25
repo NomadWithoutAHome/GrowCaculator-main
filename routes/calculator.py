@@ -1,13 +1,18 @@
 """
 Main calculator routes for rendering HTML pages.
 """
+import logging
 from fastapi import APIRouter, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from pathlib import Path
 
+# Set up logging
+logger = logging.getLogger(__name__)
+
 from services.calculator_service import calculator_service
 from services.vercel_shared_results_service import vercel_shared_results_service
+from services.discord_webhook_service import discord_webhook_service
 from models.calculator import SharedResult, SharedResultResponse
 from fastapi import HTTPException
 from datetime import datetime, timedelta
@@ -78,6 +83,13 @@ async def create_shared_result(share_data: dict):
         success = vercel_shared_results_service.create_shared_result(share_data)
         
         if success:
+            # Send Discord webhook notification (non-blocking)
+            try:
+                await discord_webhook_service.send_calculation_result(share_data)
+            except Exception as e:
+                logger.error(f"Failed to send Discord webhook: {e}")
+                # Don't fail the share creation if webhook fails
+            
             return SharedResultResponse(
                 success=True,
                 data=SharedResult(**share_data)
