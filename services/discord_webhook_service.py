@@ -86,9 +86,19 @@ class DiscordWebhookService:
         plant_name = share_data.get('plant', 'Unknown Plant')
         plant_image_url = f"https://www.fruitcalculator.dohmboy64.com/static/img/crop-{plant_name.lower().replace(' ', '-')}.webp"
         
-        # Format mutations for display with bullet points
+        # Format mutations for display with bullet points (show first 4, then +X more)
         mutations = share_data.get('mutations', [])
-        mutations_text = "\n".join([f"• {mutation}" for mutation in mutations]) if mutations else "None"
+        if mutations:
+            if len(mutations) <= 4:
+                # Show all mutations if 4 or fewer
+                mutations_text = "\n".join([f"• {mutation}" for mutation in mutations])
+            else:
+                # Show first 4 mutations, then +X more
+                first_four = mutations[:4]
+                remaining_count = len(mutations) - 4
+                mutations_text = "\n".join([f"• {mutation}" for mutation in first_four]) + f"\n+{remaining_count} more"
+        else:
+            mutations_text = "None"
         
         # Use the specific color from your example (3447003 = 0x3498DB - blue)
         color = 3447003
