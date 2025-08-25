@@ -72,8 +72,8 @@ class DiscordWebhookService:
         
         # Create embed matching your exact format
         embed = {
-            "title": f"🌱 {plant_name} Calculation Shared!",
-            "description": f"{plant_name} ({share_data.get('variant', 'Normal')}) calculation shared! **{share_data.get('amount', 1)} plants**, each weighing **{share_data.get('weight', 0)} kg**.",
+            "title": f"🌱 {plant_name} (Gold) Calculation Shared!",
+            "description": "Someone just shared their calculation results!",
             "url": f"https://www.fruitcalculator.dohmboy64.com/share/{share_data.get('share_id', '')}",
             "color": color,
             "thumbnail": {
@@ -82,7 +82,7 @@ class DiscordWebhookService:
             "fields": [
                 {
                     "name": "🏷️ Plant Details",
-                    "value": f"**Variant:** {share_data.get('variant', 'Normal')}\n**Amount:** {share_data.get('amount', 1)}\n**Weight:** {share_data.get('weight', 0)} kg",
+                    "value": f"**Plant:** {plant_name}\n**Variant:** {share_data.get('variant', 'Normal')}\n**Amount:** {share_data.get('amount', 1)}\n**Weight:** {share_data.get('weight', 0)} kg",
                     "inline": True
                 },
                 {
