@@ -72,7 +72,7 @@ class DiscordWebhookService:
         
         # Create embed matching your exact format
         embed = {
-            "title": f"🌱 {plant_name} (Gold) Calculation Shared!",
+            "title": f"🌱 {plant_name} Calculation Shared!",
             "description": "Someone just shared their calculation results!",
             "url": f"https://www.fruitcalculator.dohmboy64.com/share/{share_data.get('share_id', '')}",
             "color": color,
