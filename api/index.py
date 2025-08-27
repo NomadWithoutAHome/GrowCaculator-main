@@ -54,19 +54,36 @@ async def serve_robots():
 @app.get("/sitemap.xml")
 async def serve_sitemap():
     """Serve sitemap.xml file for search engine indexing."""
+    logger.info("Sitemap request received")
     sitemap_path = parent_dir / "sitemap.xml"
+    logger.info(f"Sitemap path: {sitemap_path}")
+    logger.info(f"Sitemap exists: {sitemap_path.exists()}")
+    
     if sitemap_path.exists():
-        # Add additional headers for better SEO compatibility
-        headers = {
-            "Cache-Control": "public, max-age=3600",  # Cache for 1 hour
-            "X-Robots-Tag": "noindex",  # Don't index the sitemap itself
-        }
-        return FileResponse(
-            sitemap_path, 
-            media_type="application/xml",
-            headers=headers
-        )
-    return JSONResponse(status_code=404, content={"error": "sitemap.xml not found"})
+        try:
+            # Read and log the first few lines for debugging
+            with open(sitemap_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+                logger.info(f"Sitemap content length: {len(content)} characters")
+                logger.info(f"First 100 chars: {content[:100]}")
+            
+            # Add additional headers for better SEO compatibility
+            headers = {
+                "Cache-Control": "public, max-age=3600",  # Cache for 1 hour
+                "X-Robots-Tag": "noindex",  # Don't index the sitemap itself
+            }
+            logger.info("Serving sitemap with headers")
+            return FileResponse(
+                sitemap_path, 
+                media_type="application/xml",
+                headers=headers
+            )
+        except Exception as e:
+            logger.error(f"Error serving sitemap: {e}")
+            return JSONResponse(status_code=500, content={"error": f"Sitemap error: {str(e)}"})
+    else:
+        logger.error(f"Sitemap file not found at: {sitemap_path}")
+        return JSONResponse(status_code=404, content={"error": "sitemap.xml not found"})
 
 # Static files handling for Vercel
 @app.get("/static/{path:path}")
