@@ -56,7 +56,16 @@ async def serve_sitemap():
     """Serve sitemap.xml file for search engine indexing."""
     sitemap_path = parent_dir / "sitemap.xml"
     if sitemap_path.exists():
-        return FileResponse(sitemap_path, media_type="application/xml")
+        # Add additional headers for better SEO compatibility
+        headers = {
+            "Cache-Control": "public, max-age=3600",  # Cache for 1 hour
+            "X-Robots-Tag": "noindex",  # Don't index the sitemap itself
+        }
+        return FileResponse(
+            sitemap_path, 
+            media_type="application/xml",
+            headers=headers
+        )
     return JSONResponse(status_code=404, content={"error": "sitemap.xml not found"})
 
 # Static files handling for Vercel
