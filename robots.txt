@@ -20,7 +20,7 @@ Allow: /static/img/
 # Disallow: /admin/
 # Disallow: /internal/
 
-# Sitemap location
+# Sitemap location - must be on its own line
 Sitemap: https://www.fruitcalculator.dohmboy64.com/sitemap.xml
 
 # Crawl delay (optional - tells crawlers to wait between requests)

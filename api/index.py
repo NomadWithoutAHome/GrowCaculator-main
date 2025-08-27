@@ -70,7 +70,8 @@ async def serve_sitemap():
             # Add additional headers for better SEO compatibility
             headers = {
                 "Cache-Control": "public, max-age=3600",  # Cache for 1 hour
-                "X-Robots-Tag": "noindex",  # Don't index the sitemap itself
+                "Content-Disposition": "inline",  # Ensure inline display
+                "X-Content-Type-Options": "nosniff",  # Prevent MIME type sniffing
             }
             logger.info("Serving sitemap with headers")
             return FileResponse(
