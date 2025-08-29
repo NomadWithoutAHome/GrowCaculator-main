@@ -1,0 +1,398 @@
+{% extends "base.html" %}
+
+{% block title %}Plant Traits Explorer - Grow Calculator{% endblock %}
+
+{% block meta_description %}Explore all 176+ plants and their traits in Roblox Grow A Garden. Search by plant name or trait, view statistics, and discover which plants have the most traits.{% endblock %}
+
+{% block meta_keywords %}plant traits, grow a garden traits, plant characteristics, mutation traits, plant search, trait explorer, grow calculator traits{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="text-center py-12 bg-gradient-to-b from-green-600 to-green-800 text-white">
+    <div class="max-w-4xl mx-auto px-4">
+        <h1 class="text-4xl md:text-6xl font-bold mb-4">🌱 Plant Traits Explorer</h1>
+        <p class="text-xl md:text-2xl text-green-100">
+            Discover all 176+ plants and their unique traits in Roblox Grow A Garden
+        </p>
+        <p class="text-lg text-green-200 mt-2">
+            Search by plant name, explore by trait, and see which plants have the most characteristics
+        </p>
+    </div>
+</section>
+
+<!-- Main Content -->
+<main class="w-full max-w-6xl mx-auto px-4 py-8">
+    
+    <!-- Search Section -->
+    <section class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+        <h2 class="text-2xl font-bold mb-6 text-green-400">🔍 Search & Explore</h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Search by Plant -->
+            <div class="bg-gray-700 p-6 rounded-lg">
+                <h3 class="text-xl font-semibold mb-4 text-blue-400 flex items-center">
+                    <span class="mr-2">🌿</span>
+                    Search by Plant
+                </h3>
+                <div class="space-y-4">
+                    <input 
+                        type="text" 
+                        id="plant-search" 
+                        placeholder="Type plant name (e.g., Apple, Blue Lollipop)..." 
+                        class="w-full p-3 rounded-lg bg-gray-600 text-white border border-gray-500 focus:border-blue-400 focus:outline-none transition-colors"
+                    >
+                    <div id="plant-results" class="min-h-[100px] bg-gray-600 rounded-lg p-4">
+                        <p class="text-gray-400 text-center">Search results will appear here...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search by Trait -->
+            <div class="bg-gray-700 p-6 rounded-lg">
+                <h3 class="text-xl font-semibold mb-4 text-purple-400 flex items-center">
+                    <span class="mr-2">🏷️</span>
+                    Search by Trait
+                </h3>
+                <div class="space-y-4">
+                    <input 
+                        type="text" 
+                        id="trait-search" 
+                        placeholder="Type trait name (e.g., Summer, Night, Sweet)..." 
+                        class="w-full p-3 rounded-lg bg-gray-600 text-white border border-gray-500 focus:border-purple-400 focus:outline-none transition-colors"
+                    >
+                    <div id="trait-results" class="min-h-[100px] bg-gray-600 rounded-lg p-4">
+                        <p class="text-gray-400 text-center">Search results will appear here...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Trait Statistics -->
+    <section class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+        <h2 class="text-2xl font-bold mb-6 text-yellow-400">📊 Trait Statistics</h2>
+        
+        <div id="trait-stats" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <!-- Stats will be populated by JavaScript -->
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Most Common Traits -->
+            <div class="bg-gray-700 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold mb-3 text-green-400">🏆 Most Common Traits</h3>
+                <div id="most-common-traits" class="space-y-2">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Plants with Most Traits -->
+            <div class="bg-gray-700 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold mb-3 text-blue-400">🌟 Plants with Most Traits</h3>
+                <div id="plants-most-traits" class="space-y-2">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- All Plants with Traits -->
+    <section class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold mb-6 text-green-400">🌱 All Plants & Traits</h2>
+        
+        <div class="mb-4">
+            <input 
+                type="text" 
+                id="filter-plants" 
+                placeholder="Filter plants..." 
+                class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-green-400 focus:outline-none transition-colors"
+            >
+        </div>
+        
+        <div id="all-plants-traits" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Will be populated by JavaScript -->
+        </div>
+    </section>
+</main>
+
+<!-- Plant Traits Modal -->
+<div id="plant-traits-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="modal-plant-name" class="text-xl font-bold text-green-400"></h3>
+                    <button onclick="closePlantModal()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+                </div>
+                <div id="modal-plant-traits" class="space-y-2">
+                    <!-- Traits will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Traits page specific JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    initializeTraitsExplorer();
+});
+
+function initializeTraitsExplorer() {
+    // Load initial data
+    loadTraitStatistics();
+    loadAllPlantsTraits();
+    
+    // Set up search functionality
+    setupSearchHandlers();
+}
+
+function setupSearchHandlers() {
+    const plantSearch = document.getElementById('plant-search');
+    const traitSearch = document.getElementById('trait-search');
+    const filterPlants = document.getElementById('filter-plants');
+    
+    // Plant search with debouncing
+    let plantSearchTimeout;
+    plantSearch.addEventListener('input', function() {
+        clearTimeout(plantSearchTimeout);
+        plantSearchTimeout = setTimeout(() => {
+            searchPlantTraits(this.value);
+        }, 300);
+    });
+    
+    // Trait search with debouncing
+    let traitSearchTimeout;
+    traitSearch.addEventListener('input', function() {
+        clearTimeout(traitSearchTimeout);
+        traitSearchTimeout = setTimeout(() => {
+            searchTraitPlants(this.value);
+        }, 300);
+    });
+    
+    // Filter plants
+    let filterTimeout;
+    filterPlants.addEventListener('input', function() {
+        clearTimeout(filterTimeout);
+        filterTimeout = setTimeout(() => {
+            filterPlantsDisplay(this.value);
+        }, 300);
+    });
+}
+
+async function searchPlantTraits(query) {
+    if (!query.trim()) {
+        document.getElementById('plant-results').innerHTML = '<p class="text-gray-400 text-center">Search results will appear here...</p>';
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/traits/plant/${encodeURIComponent(query)}`);
+        const data = await response.json();
+        
+        const resultsDiv = document.getElementById('plant-results');
+        
+        if (data.success && data.traits.length > 0) {
+            const traitsHtml = data.traits.map(trait => 
+                `<span class="inline-block bg-blue-600 text-white px-3 py-1 rounded-full text-sm mr-2 mb-2">${trait}</span>`
+            ).join('');
+            
+            resultsDiv.innerHTML = `
+                <div class="text-center">
+                    <h4 class="text-lg font-semibold text-white mb-3">${data.plant}</h4>
+                    <div class="mb-3">
+                        ${traitsHtml}
+                    </div>
+                    <p class="text-green-400 text-sm">${data.traits.length} trait(s) found</p>
+                </div>
+            `;
+        } else {
+            resultsDiv.innerHTML = `
+                <div class="text-center">
+                    <p class="text-red-400">Plant "${query}" not found</p>
+                    <p class="text-gray-400 text-sm mt-2">Try searching for a different plant name</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error searching plant traits:', error);
+        document.getElementById('plant-results').innerHTML = '<p class="text-red-400 text-center">Error searching for plant</p>';
+    }
+}
+
+async function searchTraitPlants(query) {
+    if (!query.trim()) {
+        document.getElementById('trait-results').innerHTML = '<p class="text-gray-400 text-center">Search results will appear here...</p>';
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/traits/search/${encodeURIComponent(query)}`);
+        const data = await response.json();
+        
+        const resultsDiv = document.getElementById('trait-results');
+        
+        if (data.success && data.plants.length > 0) {
+            const plantsHtml = data.plants.slice(0, 8).map(plant => 
+                `<span class="inline-block bg-purple-600 text-white px-3 py-1 rounded-full text-sm mr-2 mb-2 cursor-pointer hover:bg-purple-500" onclick="showPlantTraits('${plant}')">${plant}</span>`
+            ).join('');
+            
+            const moreText = data.plants.length > 8 ? `<p class="text-gray-400 text-sm mt-2">+${data.plants.length - 8} more plants</p>` : '';
+            
+            resultsDiv.innerHTML = `
+                <div class="text-center">
+                    <h4 class="text-lg font-semibold text-white mb-3">Trait: ${data.trait}</h4>
+                    <div class="mb-3">
+                        ${plantsHtml}
+                    </div>
+                    <p class="text-purple-400 text-sm">${data.plants.length} plant(s) found</p>
+                    ${moreText}
+                </div>
+            `;
+        } else {
+            resultsDiv.innerHTML = `
+                <div class="text-center">
+                    <p class="text-red-400">Trait "${query}" not found</p>
+                    <p class="text-gray-400 text-sm mt-2">Try searching for a different trait</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error searching trait plants:', error);
+        document.getElementById('trait-results').innerHTML = '<p class="text-red-400 text-center">Error searching for trait</p>';
+    }
+}
+
+async function loadTraitStatistics() {
+    try {
+        const response = await fetch('/api/traits/statistics');
+        const data = await response.json();
+        
+        if (data.success) {
+            const stats = data.statistics;
+            
+            // Display main stats
+            document.getElementById('trait-stats').innerHTML = `
+                <div class="bg-gray-700 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-green-400">${stats.total_plants}</div>
+                    <div class="text-sm text-gray-300">Total Plants</div>
+                </div>
+                <div class="bg-gray-700 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-blue-400">${stats.total_unique_traits}</div>
+                    <div class="text-sm text-gray-300">Unique Traits</div>
+                </div>
+                <div class="bg-gray-700 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-purple-400">${stats.total_trait_assignments}</div>
+                    <div class="text-sm text-gray-300">Total Assignments</div>
+                </div>
+                <div class="bg-gray-700 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-yellow-400">${stats.average_traits_per_plant}</div>
+                    <div class="text-sm text-gray-300">Avg per Plant</div>
+                </div>
+            `;
+            
+            // Display most common traits
+            const mostCommonHtml = stats.most_common_traits.map((trait, count) => 
+                `<div class="flex justify-between items-center">
+                    <span class="text-white">${trait}</span>
+                    <span class="bg-green-600 text-white px-2 py-1 rounded text-sm">${count}</span>
+                </div>`
+            ).join('');
+            
+            document.getElementById('most-common-traits').innerHTML = mostCommonHtml;
+            
+            // Display plants with most traits
+            const mostTraitsHtml = stats.plants_most_traits.map((plant, count) => 
+                `<div class="flex justify-between items-center cursor-pointer hover:bg-gray-600 p-1 rounded" onclick="showPlantTraits('${plant}')">
+                    <span class="text-white">${plant}</span>
+                    <span class="bg-blue-600 text-white px-2 py-1 rounded text-sm">${count}</span>
+                </div>`
+            ).join('');
+            
+            document.getElementById('plants-most-traits').innerHTML = mostTraitsHtml;
+        }
+    } catch (error) {
+        console.error('Error loading trait statistics:', error);
+    }
+}
+
+async function loadAllPlantsTraits() {
+    try {
+        const response = await fetch('/api/traits/all');
+        const data = await response.json();
+        
+        if (data.success) {
+            displayAllPlantsTraits(data.plants);
+        }
+    } catch (error) {
+        console.error('Error loading all plants traits:', error);
+    }
+}
+
+function displayAllPlantsTraits(plantsData) {
+    const container = document.getElementById('all-plants-traits');
+    
+    const plantsHtml = Object.entries(plantsData).map(([plant, traits]) => {
+        const traitsHtml = traits.map(trait => 
+            `<span class="inline-block bg-gray-600 text-white px-2 py-1 rounded text-xs mr-1 mb-1">${trait}</span>`
+        ).join('');
+        
+        return `
+            <div class="bg-gray-700 p-4 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors" onclick="showPlantTraits('${plant}')">
+                <div class="flex items-center justify-between mb-2">
+                    <h4 class="font-semibold text-white">${plant}</h4>
+                    <span class="bg-green-600 text-white px-2 py-1 rounded text-sm">${traits.length}</span>
+                </div>
+                <div class="mb-2">
+                    ${traitsHtml}
+                </div>
+                <p class="text-gray-400 text-xs">Click to view details</p>
+            </div>
+        `;
+    }).join('');
+    
+    container.innerHTML = plantsHtml;
+}
+
+function filterPlantsDisplay(query) {
+    const plantCards = document.querySelectorAll('#all-plants-traits > div');
+    
+    plantCards.forEach(card => {
+        const plantName = card.querySelector('h4').textContent.toLowerCase();
+        const traits = Array.from(card.querySelectorAll('span')).map(span => span.textContent.toLowerCase());
+        
+        const matchesPlant = plantName.includes(query.toLowerCase());
+        const matchesTrait = traits.some(trait => trait.includes(query.toLowerCase()));
+        
+        if (matchesPlant || matchesTrait) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+async function showPlantTraits(plantName) {
+    try {
+        const response = await fetch(`/api/traits/plant/${encodeURIComponent(plantName)}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            document.getElementById('modal-plant-name').textContent = plantName;
+            
+            const traitsHtml = data.traits.map(trait => 
+                `<span class="inline-block bg-blue-600 text-white px-3 py-1 rounded-full text-sm mr-2 mb-2">${trait}</span>`
+            ).join('');
+            
+            document.getElementById('modal-plant-traits').innerHTML = traitsHtml;
+            document.getElementById('plant-traits-modal').classList.remove('hidden');
+        }
+    } catch (error) {
+        console.error('Error showing plant traits:', error);
+    }
+}
+
+function closePlantModal() {
+    document.getElementById('plant-traits-modal').classList.add('hidden');
+}
+</script>
+{% endblock %}

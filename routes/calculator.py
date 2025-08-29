@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 from services.calculator_service import calculator_service
 from services.vercel_shared_results_service import vercel_shared_results_service
 from services.discord_webhook_service import discord_webhook_service
+from services.traits_service import traits_service
 from models.calculator import SharedResult, SharedResultResponse
 from fastapi import HTTPException
 from datetime import datetime, timedelta
@@ -65,6 +66,15 @@ async def share_result(request: Request, share_id: str):
     return templates.TemplateResponse(
         "share.html",
         {"request": request, "share_id": share_id}
+    )
+
+
+@router.get("/traits", response_class=HTMLResponse)
+async def traits_explorer(request: Request):
+    """Plant traits explorer page."""
+    return templates.TemplateResponse(
+        "traits.html",
+        {"request": request}
     )
 
 
@@ -159,6 +169,61 @@ async def get_share_stats():
         return {
             "success": True,
             "stats": stats
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# Traits API endpoints
+@router.get("/api/traits/plant/{plant_name}")
+async def get_plant_traits(plant_name: str):
+    """Get traits for a specific plant."""
+    try:
+        traits = traits_service.get_plant_traits(plant_name)
+        return {
+            "success": True,
+            "plant": plant_name,
+            "traits": traits
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/api/traits/search/{trait}")
+async def search_traits(trait: str):
+    """Get plants that have a specific trait."""
+    try:
+        plants = traits_service.get_plants_by_trait(trait)
+        return {
+            "success": True,
+            "trait": trait,
+            "plants": plants
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/api/traits/statistics")
+async def get_trait_statistics():
+    """Get comprehensive trait statistics."""
+    try:
+        stats = traits_service.get_trait_statistics()
+        return {
+            "success": True,
+            "statistics": stats
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/api/traits/all")
+async def get_all_plants_traits():
+    """Get all plants with their traits."""
+    try:
+        all_traits = traits_service.get_all_plants_traits()
+        return {
+            "success": True,
+            "plants": all_traits
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
