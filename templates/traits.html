@@ -123,6 +123,12 @@
                     <h3 id="modal-plant-name" class="text-xl font-bold text-green-400"></h3>
                     <button onclick="closePlantModal()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
                 </div>
+                
+                <!-- Plant Image -->
+                <div class="text-center mb-4">
+                    <img id="modal-plant-image" src="" alt="Plant" class="w-24 h-24 mx-auto rounded-lg object-cover bg-gray-700" onerror="this.style.display='none'">
+                </div>
+                
                 <div id="modal-plant-traits" class="space-y-2">
                     <!-- Traits will be populated by JavaScript -->
                 </div>
@@ -380,9 +386,22 @@ function displayAllPlantsTraits(plantsData) {
     const container = document.getElementById('all-plants-traits');
     
     const plantsHtml = Object.entries(plantsData).map(([plant, traits]) => {
-        const traitsHtml = traits.map(trait => 
-            `<span class="inline-block bg-gray-600 text-white px-2 py-1 rounded text-xs mr-1 mb-1">${trait}</span>`
-        ).join('');
+        // Show only first 3 traits, then "+X more" if there are more
+        let traitsHtml = '';
+        if (traits.length <= 3) {
+            traitsHtml = traits.map(trait => 
+                `<span class="inline-block bg-gray-600 text-white px-2 py-1 rounded text-xs mr-1 mb-1">${trait}</span>`
+            ).join('');
+        } else {
+            // Show first 3 traits
+            const firstThreeTraits = traits.slice(0, 3).map(trait => 
+                `<span class="inline-block bg-gray-600 text-white px-2 py-1 rounded text-xs mr-1 mb-1">${trait}</span>`
+            ).join('');
+            
+            // Add "+X more" indicator
+            const remainingCount = traits.length - 3;
+            traitsHtml = firstThreeTraits + `<span class="inline-block bg-blue-600 text-white px-2 py-1 rounded text-xs mr-1 mb-1">+${remainingCount} more</span>`;
+        }
         
         return `
             <div class="bg-gray-700 p-4 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors" onclick="showPlantTraits('${plant}')">
@@ -406,10 +425,13 @@ function filterPlantsDisplay(query) {
     
     plantCards.forEach(card => {
         const plantName = card.querySelector('h4').textContent.toLowerCase();
+        // Get all trait spans, but exclude the "+X more" indicator
         const traits = Array.from(card.querySelectorAll('span')).map(span => span.textContent.toLowerCase());
         
         const matchesPlant = plantName.includes(query.toLowerCase());
-        const matchesTrait = traits.some(trait => trait.includes(query.toLowerCase()));
+        const matchesTrait = traits.some(trait => 
+            trait.includes(query.toLowerCase()) && !trait.startsWith('+') && !trait.endsWith('more')
+        );
         
         if (matchesPlant || matchesTrait) {
             card.style.display = 'block';
@@ -426,6 +448,12 @@ async function showPlantTraits(plantName) {
         
         if (data.success) {
             document.getElementById('modal-plant-name').textContent = plantName;
+            
+            // Set plant image
+            const plantImage = document.getElementById('modal-plant-image');
+            const imageName = plantName.toLowerCase().replace(/\s+/g, '-');
+            plantImage.src = `/static/img/crop-${imageName}.webp`;
+            plantImage.style.display = 'block'; // Show image in case it was hidden from previous error
             
             const traitsHtml = data.traits.map(trait => 
                 `<span class="inline-block bg-blue-600 text-white px-3 py-1 rounded-full text-sm mr-2 mb-2">${trait}</span>`
