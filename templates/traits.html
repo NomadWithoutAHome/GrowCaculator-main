@@ -293,7 +293,7 @@ async function searchTraitPlants(query) {
                 `<span class="inline-block bg-purple-600 text-white px-3 py-1 rounded-full text-sm mr-2 mb-2 cursor-pointer hover:bg-purple-500" onclick="showPlantTraits('${plant}')">${plant}</span>`
             ).join('');
             
-            const moreText = data.plants.length > 8 ? `<p class="text-gray-400 text-sm mt-2">+${data.plants.length - 8} more plants</p>` : '';
+                         const moreText = data.plants.length > 8 ? `<p class="text-blue-400 text-sm mt-2 cursor-pointer hover:text-blue-300 underline" onclick="showAllPlantsForTrait('${data.trait}', ${JSON.stringify(data.plants).replace(/"/g, '&quot;')})">+${data.plants.length - 8} more plants</p>` : '';
             
             resultsDiv.innerHTML = `
                 <div class="text-center">
@@ -472,6 +472,29 @@ async function showPlantTraits(plantName) {
 
 function closePlantModal() {
     document.getElementById('plant-traits-modal').classList.add('hidden');
+}
+
+function showAllPlantsForTrait(traitName, allPlants) {
+    const resultsDiv = document.getElementById('trait-results');
+    
+    // Create HTML for all plants
+    const allPlantsHtml = allPlants.map(plant => 
+        `<span class="inline-block bg-purple-600 text-white px-3 py-1 rounded-full text-sm mr-2 mb-2 cursor-pointer hover:bg-purple-500" onclick="showPlantTraits('${plant}')">${plant}</span>`
+    ).join('');
+    
+    // Show all plants with a "Show Less" option
+    resultsDiv.innerHTML = `
+        <div class="text-center">
+            <h4 class="text-lg font-semibold text-white mb-3">Trait: ${traitName}</h4>
+            <div class="mb-3">
+                ${allPlantsHtml}
+            </div>
+            <p class="text-purple-400 text-sm mb-2">${allPlants.length} plant(s) found</p>
+            <button onclick="searchTraitPlants('${traitName}')" class="text-blue-400 hover:text-blue-300 underline text-sm">
+                ← Show Less (First 8)
+            </button>
+        </div>
+    `;
 }
 </script>
 {% endblock %}
