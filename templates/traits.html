@@ -291,7 +291,7 @@ async function loadTraitStatistics() {
             `;
             
             // Display most common traits
-            const mostCommonHtml = stats.most_common_traits.map((trait, count) => 
+            const mostCommonHtml = stats.most_common_traits.map(([trait, count]) => 
                 `<div class="flex justify-between items-center">
                     <span class="text-white">${trait}</span>
                     <span class="bg-green-600 text-white px-2 py-1 rounded text-sm">${count}</span>
@@ -301,7 +301,7 @@ async function loadTraitStatistics() {
             document.getElementById('most-common-traits').innerHTML = mostCommonHtml;
             
             // Display plants with most traits
-            const mostTraitsHtml = stats.plants_most_traits.map((plant, count) => 
+            const mostTraitsHtml = stats.plants_most_traits.map(([plant, count]) => 
                 `<div class="flex justify-between items-center cursor-pointer hover:bg-gray-600 p-1 rounded" onclick="showPlantTraits('${plant}')">
                     <span class="text-white">${plant}</span>
                     <span class="bg-blue-600 text-white px-2 py-1 rounded text-sm">${count}</span>
