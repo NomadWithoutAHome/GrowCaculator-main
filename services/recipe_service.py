@@ -21,9 +21,23 @@ class RecipeService:
     def _load_data(self) -> None:
         """Load recipe, cooking, and traits data from JSON files."""
         try:
-            # Use the same path resolution as other services
-            current_file = Path(__file__)
-            data_dir = current_file.parent.parent / "data"
+            # Try multiple path resolution strategies for Vercel compatibility
+            possible_paths = [
+                Path(__file__).parent.parent / "data",  # Local development
+                Path("/var/task/data"),  # Vercel serverless
+                Path("data"),  # Current working directory
+            ]
+            
+            data_dir = None
+            for path in possible_paths:
+                if path.exists():
+                    data_dir = path
+                    logger.info(f"Found data directory at: {data_dir}")
+                    break
+            
+            if not data_dir:
+                logger.error("Could not find data directory in any of the expected locations")
+                return
             
             # Load recipes data
             recipes_file = data_dir / "recipes.json"
@@ -31,6 +45,8 @@ class RecipeService:
                 with open(recipes_file, 'r', encoding='utf-8') as f:
                     self.recipes_data = json.load(f)
                 logger.info(f"Loaded {len(self.recipes_data)} recipes")
+            else:
+                logger.error(f"Recipes file not found at: {recipes_file}")
             
             # Load cooking data
             cooking_file = data_dir / "cooking.json"
@@ -38,6 +54,8 @@ class RecipeService:
                 with open(cooking_file, 'r', encoding='utf-8') as f:
                     self.cooking_data = json.load(f)
                 logger.info(f"Loaded {len(self.cooking_data)} cooking items")
+            else:
+                logger.error(f"Cooking file not found at: {cooking_file}")
             
             # Load traits data
             traits_file = data_dir / "traits.json"
@@ -45,9 +63,13 @@ class RecipeService:
                 with open(traits_file, 'r', encoding='utf-8') as f:
                     self.traits_data = json.load(f)
                 logger.info(f"Loaded {len(self.traits_data)} plants with traits")
+            else:
+                logger.error(f"Traits file not found at: {traits_file}")
             
         except Exception as e:
             logger.error(f"Failed to load recipe data: {e}")
+            import traceback
+            logger.error(f"Traceback: {traceback.format_exc()}")
     
     def _build_category_mapping(self) -> None:
         """Build reverse mapping: category -> items from cooking.json."""
@@ -160,23 +182,38 @@ class RecipeService:
     
     def get_recipe_categories(self) -> Dict[str, List[str]]:
         """Get all ingredient categories and their available items."""
-        categories = {}
-        # Only include categories that actually have resolvers defined
-        # This ensures we don't try to resolve categories that don't exist
-        all_categories = set(self.category_to_items.keys()) | {
-            "Fruit", "Vegetable", "Sweet", "Filling", "Main",
-            "Sauce", "Cone", "Cream", "Base", "Icing", "Sprinkles", 
-            "CandyCoating", "Sweetener", "HerbalBase", "Bamboo", "Wrap",
-            "Rice", "Apple", "Batter", "Vegetables", "Stick", "Woody", "Pasta"
-        }
-        
-        for cat in all_categories:
-            try:
-                categories[cat] = self.resolve_category(cat)
-            except Exception as e:
-                logger.warning(f"Failed to resolve category '{cat}': {e}")
-                categories[cat] = []  # Return empty list for failed categories
-        return categories
+        try:
+            logger.info("get_recipe_categories called")
+            logger.info(f"category_to_items keys: {list(self.category_to_items.keys())}")
+            
+            categories = {}
+            # Only include categories that actually have resolvers defined
+            # This ensures we don't try to resolve categories that don't exist
+            all_categories = set(self.category_to_items.keys()) | {
+                "Fruit", "Vegetable", "Sweet", "Filling", "Main",
+                "Sauce", "Cone", "Cream", "Base", "Icing", "Sprinkles", 
+                "CandyCoating", "Sweetener", "HerbalBase", "Bamboo", "Wrap",
+                "Rice", "Apple", "Batter", "Vegetables", "Stick", "Woody", "Pasta"
+            }
+            
+            logger.info(f"Processing {len(all_categories)} categories")
+            
+            for cat in all_categories:
+                try:
+                    categories[cat] = self.resolve_category(cat)
+                    logger.debug(f"Category {cat}: {len(categories[cat])} items")
+                except Exception as e:
+                    logger.warning(f"Failed to resolve category '{cat}': {e}")
+                    categories[cat] = []  # Return empty list for failed categories
+            
+            logger.info(f"Successfully processed {len(categories)} categories")
+            return categories
+            
+        except Exception as e:
+            logger.error(f"get_recipe_categories failed: {e}")
+            import traceback
+            logger.error(f"Traceback: {traceback.format_exc()}")
+            raise
     
     def get_recipes_by_difficulty(self, difficulty: str = None) -> List[Tuple[str, Dict]]:
         """Get recipes filtered by difficulty (Easy: 1-2 ingredients, Medium: 3-4, Hard: 5+)"""
