@@ -73,11 +73,19 @@ class RecipeService:
     
     def _build_category_mapping(self) -> None:
         """Build reverse mapping: category -> items from cooking.json."""
-        self.category_to_items = {}
-        for item, cats in self.cooking_data.items():
-            for cat in cats:
-                self.category_to_items.setdefault(cat, []).append(item)
-        logger.info(f"Built category mapping for {len(self.category_to_items)} categories")
+        try:
+            logger.info(f"Building category mapping from {len(self.cooking_data)} cooking items")
+            self.category_to_items = {}
+            for item, cats in self.cooking_data.items():
+                for cat in cats:
+                    self.category_to_items.setdefault(cat, []).append(item)
+            logger.info(f"Built category mapping for {len(self.category_to_items)} categories")
+            logger.info(f"Category keys: {list(self.category_to_items.keys())}")
+        except Exception as e:
+            logger.error(f"Failed to build category mapping: {e}")
+            import traceback
+            logger.error(f"Traceback: {traceback.format_exc()}")
+            self.category_to_items = {}
     
     def resolve_trait(self, trait: str) -> List[str]:
         """Return all items in traits.json that have a given trait."""
@@ -185,6 +193,14 @@ class RecipeService:
         try:
             logger.info("get_recipe_categories called")
             logger.info(f"category_to_items keys: {list(self.category_to_items.keys())}")
+            logger.info(f"cooking_data loaded: {len(self.cooking_data)} items")
+            logger.info(f"traits_data loaded: {len(self.traits_data)} items")
+            
+            # Safety check - if category_to_items is empty, rebuild it
+            if not self.category_to_items:
+                logger.warning("category_to_items is empty, rebuilding...")
+                self._build_category_mapping()
+                logger.info(f"Rebuilt category mapping: {len(self.category_to_items)} categories")
             
             categories = {}
             # Only include categories that actually have resolvers defined
