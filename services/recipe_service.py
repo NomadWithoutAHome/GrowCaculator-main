@@ -159,10 +159,14 @@ class RecipeService:
     
     def generate_random_recipe(self, recipe_name: str) -> Dict:
         """Generate a random recipe with random ingredient combinations."""
-        if recipe_name not in self.recipes_data:
-            raise ValueError(f"Recipe '{recipe_name}' not found")
+        # Handle URL-encoded recipe names (e.g., "Corn%20Dog" -> "Corn Dog")
+        import urllib.parse
+        decoded_recipe_name = urllib.parse.unquote(recipe_name)
         
-        recipe = self.recipes_data[recipe_name]
+        if decoded_recipe_name not in self.recipes_data:
+            raise ValueError(f"Recipe '{decoded_recipe_name}' not found")
+        
+        recipe = self.recipes_data[decoded_recipe_name]
         requirements = recipe["ingredients"]
         
         chosen = {}
@@ -186,7 +190,10 @@ class RecipeService:
     
     def get_recipe(self, recipe_name: str) -> Optional[Dict]:
         """Get a specific recipe by name."""
-        return self.recipes_data.get(recipe_name)
+        # Handle URL-encoded recipe names (e.g., "Corn%20Dog" -> "Corn Dog")
+        import urllib.parse
+        decoded_recipe_name = urllib.parse.unquote(recipe_name)
+        return self.recipes_data.get(decoded_recipe_name)
     
     def get_recipe_categories(self) -> Dict[str, List[str]]:
         """Get all ingredient categories and their available items."""
