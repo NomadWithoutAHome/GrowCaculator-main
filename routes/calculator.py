@@ -309,13 +309,19 @@ async def generate_random_recipe(recipe_name: str):
 async def get_recipe_categories():
     """Get all ingredient categories and their available items."""
     try:
+        logger.info("get_recipe_categories called")
         categories = recipe_service.get_recipe_categories()
+        logger.info(f"get_recipe_categories success: {len(categories)} categories")
         return {
             "success": True,
             "categories": categories
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"get_recipe_categories error: {e}")
+        logger.error(f"Error type: {type(e)}")
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 
 @router.get("/api/recipes/difficulty/{difficulty}")
