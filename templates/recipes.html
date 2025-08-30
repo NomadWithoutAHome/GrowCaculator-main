@@ -229,8 +229,6 @@ function displayRecipesGrid(recipes) {
     const recipesHtml = Object.entries(recipes).map(([name, recipe]) => {
         const difficulty = getDifficulty(recipe.count);
         const difficultyColor = getDifficultyColor(difficulty);
-        const combinations = recipe.possible_combinations || 0;
-        const combinationsFormatted = recipe.combinations_formatted || combinations.toString();
         
         return `
             <div class="bg-gray-700 p-4 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors" onclick="showRecipeDetails('${name}')">
@@ -239,12 +237,6 @@ function displayRecipesGrid(recipes) {
                     <span class="bg-${difficultyColor} text-white px-2 py-1 rounded text-sm">${difficulty}</span>
                 </div>
                 <p class="text-gray-400 text-sm mb-2">${recipe.description}</p>
-                
-                <!-- Combination Statistics - Highlighted -->
-                <div class="bg-gradient-to-r from-purple-600 to-blue-600 p-3 rounded-lg mb-3 text-center">
-                    <div class="text-white font-bold text-lg">🎲 ${combinationsFormatted}</div>
-                    <div class="text-purple-200 text-xs">Possible Combinations</div>
-                </div>
                 
                 <div class="flex justify-between text-xs text-gray-500">
                     <span>⏱️ ${recipe.base_time}s</span>
@@ -409,9 +401,23 @@ async function showRecipeDetails(recipeName) {
                 `<span class="inline-block bg-blue-600 text-white px-3 py-1 rounded-full text-sm mr-2 mb-2">${category}: ${count}</span>`
             ).join('');
             
+            // Get combinations data for this recipe
+            const combinationsResponse = await fetch(`/api/recipes/all-with-stats`);
+            const combinationsData = await combinationsResponse.json();
+            const recipeWithCombinations = combinationsData.recipes[recipeName];
+            const combinations = recipeWithCombinations ? recipeWithCombinations.possible_combinations : 0;
+            const combinationsFormatted = recipeWithCombinations ? recipeWithCombinations.combinations_formatted : combinations.toString();
+            
             document.getElementById('modal-recipe-content').innerHTML = `
                 <div class="text-center">
                     <p class="text-gray-300 mb-4">${recipe.description}</p>
+                    
+                    <!-- Possible Combinations Info -->
+                    <div class="bg-gradient-to-r from-purple-600 to-blue-600 p-3 rounded-lg mb-4 text-center">
+                        <div class="text-white font-bold text-lg">🎲 ${combinationsFormatted}</div>
+                        <div class="text-purple-200 text-xs">Possible Combinations</div>
+                    </div>
+                    
                     <div class="mb-4">
                         <h4 class="text-lg font-semibold text-white mb-2">Required Ingredients:</h4>
                         ${ingredientsHtml}
