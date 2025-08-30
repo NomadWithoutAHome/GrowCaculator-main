@@ -160,17 +160,21 @@ class RecipeService:
     def get_recipe_categories(self) -> Dict[str, List[str]]:
         """Get all ingredient categories and their available items."""
         categories = {}
-        # Include ALL categories that the resolvers can handle
-        # This combines cooking.json categories with trait-based and special categories
+        # Only include categories that actually have resolvers defined
+        # This ensures we don't try to resolve categories that don't exist
         all_categories = set(self.category_to_items.keys()) | {
-            "Fruit", "Vegetable", "Sweet", "Woody", "Filling", "Main",
+            "Fruit", "Vegetable", "Sweet", "Filling", "Main",
             "Sauce", "Cone", "Cream", "Base", "Icing", "Sprinkles", 
             "CandyCoating", "Sweetener", "HerbalBase", "Bamboo", "Wrap",
-            "Rice", "Apple", "Batter", "Pasta", "Vegetables", "Stick"
+            "Rice", "Apple", "Batter", "Vegetables", "Stick"
         }
         
         for cat in all_categories:
-            categories[cat] = self.resolve_category(cat)
+            try:
+                categories[cat] = self.resolve_category(cat)
+            except Exception as e:
+                logger.warning(f"Failed to resolve category '{cat}': {e}")
+                categories[cat] = []  # Return empty list for failed categories
         return categories
     
     def get_recipes_by_difficulty(self, difficulty: str = None) -> List[Tuple[str, Dict]]:
