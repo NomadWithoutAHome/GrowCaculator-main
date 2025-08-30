@@ -21,7 +21,7 @@
     "results": ["Soup"],
     "description": "Simple soup using any available ingredient"
   },
-  "Corndog": {
+  "Corn Dog": {
     "id": "cdog",
     "image_id": "rbxassetid://123984061977008",
     "priority": 5,
@@ -29,10 +29,10 @@
     "base_weight": 1.5,
     "ingredients": {"Stick": 1, "Meat": 1, "Batter": 1},
     "count": 2,
-    "results": ["Corndog"],
+    "results": ["Corn Dog"],
     "description": "Meat on a stick with corn batter coating"
   },
-  "HotDog": {
+  "Hot Dog": {
     "id": "e",
     "image_id": "rbxassetid://136455657586960",
     "priority": 5,
@@ -40,7 +40,7 @@
     "base_weight": 1.5,
     "ingredients": {"Bread": 1, "Meat": 1},
     "count": 2,
-    "results": ["HotDog"],
+    "results": ["Hot Dog"],
     "description": "Meat in a bread bun"
   },
   "Sandwich": {
@@ -120,7 +120,7 @@
     "results": ["Donut"],
     "description": "Sweet donut with bread base, icing, and sprinkles"
   },
-  "IceCream": {
+  "Ice Cream": {
     "id": "n",
     "image_id": "rbxassetid://80440750183765",
     "priority": 10,
@@ -128,7 +128,7 @@
     "base_weight": 2,
     "ingredients": {"Cone": 1, "Cream": 1},
     "count": 2,
-    "results": ["IceCream"],
+    "results": ["Ice Cream"],
     "description": "Creamy ice cream in a bread cone"
   },
   "Cake": {
@@ -175,7 +175,7 @@
     "results": ["Spaghetti"],
     "description": "Classic spaghetti with pasta, tomato sauce, meat, and vegetables"
   },
-  "CandyApple": {
+  "Candy Apple": {
     "id": "v",
     "image_id": "rbxassetid://98794672893031",
     "priority": 10,
@@ -183,10 +183,10 @@
     "base_weight": 0.7,
     "ingredients": {"Apple": 1, "CandyCoating": 1},
     "count": 2,
-    "results": ["CandyApple"],
+    "results": ["Candy Apple"],
     "description": "Sweet candy-coated apple treat"
   },
-  "SweetTea": {
+  "Sweet Tea": {
     "id": "y",
     "image_id": "rbxassetid://114245564378378",
     "priority": 4,
@@ -194,7 +194,7 @@
     "base_weight": 0.5,
     "ingredients": {"HerbalBase": 1, "Sweetener": 1},
     "count": 2,
-    "results": ["SweetTea"],
+    "results": ["Sweet Tea"],
     "description": "Refreshing sweet tea with herbal base and natural sweetener"
   }
 }
