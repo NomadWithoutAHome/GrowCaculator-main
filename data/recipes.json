@@ -1,0 +1,200 @@
+{
+  "Burger": {
+    "id": "c",
+    "image_id": "rbxassetid://100029889334054",
+    "priority": 10,
+    "base_time": 400,
+    "base_weight": 2,
+    "ingredients": {"Bread": 1, "Meat": 1, "Leafy": 1},
+    "count": 3,
+    "results": ["Burger"],
+    "description": "Classic burger with bread, meat, and leafy vegetables"
+  },
+  "Soup": {
+    "id": "d",
+    "image_id": "rbxassetid://122580735203073",
+    "priority": 0,
+    "base_time": 300,
+    "base_weight": 0.5,
+    "ingredients": {"Any": 1},
+    "count": 1,
+    "results": ["Soup"],
+    "description": "Simple soup using any available ingredient"
+  },
+  "Corndog": {
+    "id": "cdog",
+    "image_id": "rbxassetid://123984061977008",
+    "priority": 5,
+    "base_time": 400,
+    "base_weight": 1.5,
+    "ingredients": {"Stick": 1, "Meat": 1, "Batter": 1},
+    "count": 2,
+    "results": ["Corndog"],
+    "description": "Meat on a stick with corn batter coating"
+  },
+  "HotDog": {
+    "id": "e",
+    "image_id": "rbxassetid://136455657586960",
+    "priority": 5,
+    "base_time": 400,
+    "base_weight": 1.5,
+    "ingredients": {"Bread": 1, "Meat": 1},
+    "count": 2,
+    "results": ["HotDog"],
+    "description": "Meat in a bread bun"
+  },
+  "Sandwich": {
+    "id": "f",
+    "image_id": "rbxassetid://139763254124497",
+    "priority": 3,
+    "base_time": 350,
+    "base_weight": 1,
+    "ingredients": {"Bread": 1, "Leafy": 1, "Tomato": 1},
+    "count": 3,
+    "results": ["Sandwich"],
+    "description": "Fresh sandwich with bread, leafy greens, and tomato"
+  },
+  "Salad": {
+    "id": "g",
+    "image_id": "rbxassetid://96781873740831",
+    "priority": 2,
+    "base_time": 350,
+    "base_weight": 0.2,
+    "ingredients": {"Leafy": 1, "Vegetable": 1},
+    "count": 2,
+    "results": ["Salad"],
+    "description": "Light salad with leafy greens and vegetables"
+  },
+  "Pie": {
+    "id": "i",
+    "image_id": "rbxassetid://126935428774858",
+    "priority": 8,
+    "base_time": 400,
+    "base_weight": 3,
+    "ingredients": {"Pastry": 1, "Filling": 1},
+    "count": 2,
+    "results": ["Pie"],
+    "description": "Savory pie with pastry crust and vegetable/meat filling"
+  },
+  "Waffle": {
+    "id": "j",
+    "image_id": "rbxassetid://112367385396275",
+    "priority": 6,
+    "base_time": 350,
+    "base_weight": 1.2,
+    "ingredients": {"Pastry": 1, "Sweet": 1},
+    "count": 2,
+    "results": ["Waffle"],
+    "description": "Sweet waffle with pastry base and sweet toppings"
+  },
+  "Pizza": {
+    "id": "k",
+    "image_id": "rbxassetid://99865068747737",
+    "priority": 7,
+    "base_time": 500,
+    "base_weight": 2,
+    "ingredients": {"Bread": 1, "Meat": 1, "Vegetable": 1, "Sauce": 1},
+    "count": 4,
+    "results": ["Pizza"],
+    "description": "Delicious pizza with bread base, meat, vegetables, and fruit sauce"
+  },
+  "Sushi": {
+    "id": "l",
+    "image_id": "rbxassetid://124413058833848",
+    "priority": 20,
+    "base_time": 300,
+    "base_weight": 2,
+    "ingredients": {"Bamboo": 1, "Wrap": 1, "Main": 1, "Rice": 1},
+    "count": 3,
+    "results": ["Sushi"],
+    "description": "Elegant sushi with bamboo, leafy wrap, meat/vegetables, and rice"
+  },
+  "Donut": {
+    "id": "m",
+    "image_id": "rbxassetid://103702025640123",
+    "priority": 9,
+    "base_time": 200,
+    "base_weight": 2,
+    "ingredients": {"Bread": 1, "Icing": 1, "Sprinkles": 1},
+    "count": 3,
+    "results": ["Donut"],
+    "description": "Sweet donut with bread base, icing, and sprinkles"
+  },
+  "IceCream": {
+    "id": "n",
+    "image_id": "rbxassetid://80440750183765",
+    "priority": 10,
+    "base_time": 300,
+    "base_weight": 2,
+    "ingredients": {"Cone": 1, "Cream": 1},
+    "count": 2,
+    "results": ["IceCream"],
+    "description": "Creamy ice cream in a bread cone"
+  },
+  "Cake": {
+    "id": "o",
+    "image_id": "rbxassetid://133935704392240",
+    "priority": 10,
+    "base_time": 350,
+    "base_weight": 2,
+    "ingredients": {"Bread": 1, "Icing": 1, "Filling": 1, "Fruit": 1},
+    "count": 4,
+    "results": ["Cake"],
+    "description": "Decadent cake with bread base, icing, sweet filling, and fruit"
+  },
+  "Smoothie": {
+    "id": "p",
+    "image_id": "rbxassetid://99520717630343",
+    "priority": 10,
+    "base_time": 400,
+    "base_weight": 1.2,
+    "ingredients": {"Fruit": 2},
+    "count": 2,
+    "results": ["Smoothie"],
+    "description": "Refreshing smoothie made with two fruits"
+  },
+  "Porridge": {
+    "id": "r",
+    "image_id": "rbxassetid://121467388211046",
+    "priority": 3,
+    "base_time": 250,
+    "base_weight": 2,
+    "ingredients": {"Base": 1, "Cream": 1, "Fruit": 1},
+    "count": 3,
+    "results": ["Porridge"],
+    "description": "Warm porridge with bread base, cream, and fruit"
+  },
+  "Spaghetti": {
+    "id": "t",
+    "image_id": "rbxassetid://118816141566924",
+    "priority": 6,
+    "base_time": 350,
+    "base_weight": 2.5,
+    "ingredients": {"Pasta": 1, "Sauce": 1, "Meat": 1, "Vegetables": 1},
+    "count": 4,
+    "results": ["Spaghetti"],
+    "description": "Classic spaghetti with pasta, tomato sauce, meat, and vegetables"
+  },
+  "CandyApple": {
+    "id": "v",
+    "image_id": "rbxassetid://98794672893031",
+    "priority": 10,
+    "base_time": 200,
+    "base_weight": 0.7,
+    "ingredients": {"Apple": 1, "CandyCoating": 1},
+    "count": 2,
+    "results": ["CandyApple"],
+    "description": "Sweet candy-coated apple treat"
+  },
+  "SweetTea": {
+    "id": "y",
+    "image_id": "rbxassetid://114245564378378",
+    "priority": 4,
+    "base_time": 270,
+    "base_weight": 0.5,
+    "ingredients": {"HerbalBase": 1, "Sweetener": 1},
+    "count": 2,
+    "results": ["SweetTea"],
+    "description": "Refreshing sweet tea with herbal base and natural sweetener"
+  }
+}

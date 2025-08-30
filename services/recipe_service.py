@@ -1,0 +1,209 @@
+"""
+Recipe service for managing food recipes and generating random ingredient combinations.
+"""
+import json
+import logging
+import random
+from pathlib import Path
+from typing import Dict, List, Tuple, Optional
+
+logger = logging.getLogger(__name__)
+
+class RecipeService:
+    def __init__(self):
+        self.recipes_data: Dict = {}
+        self.cooking_data: Dict = {}
+        self.traits_data: Dict = {}
+        self.category_to_items: Dict[str, List[str]] = {}
+        self._load_data()
+        self._build_category_mapping()
+    
+    def _load_data(self) -> None:
+        """Load recipe, cooking, and traits data from JSON files."""
+        try:
+            # Use the same path resolution as other services
+            current_file = Path(__file__)
+            data_dir = current_file.parent.parent / "data"
+            
+            # Load recipes data
+            recipes_file = data_dir / "recipes.json"
+            if recipes_file.exists():
+                with open(recipes_file, 'r', encoding='utf-8') as f:
+                    self.recipes_data = json.load(f)
+                logger.info(f"Loaded {len(self.recipes_data)} recipes")
+            
+            # Load cooking data
+            cooking_file = data_dir / "cooking.json"
+            if cooking_file.exists():
+                with open(cooking_file, 'r', encoding='utf-8') as f:
+                    self.cooking_data = json.load(f)
+                logger.info(f"Loaded {len(self.cooking_data)} cooking items")
+            
+            # Load traits data
+            traits_file = data_dir / "traits.json"
+            if traits_file.exists():
+                with open(traits_file, 'r', encoding='utf-8') as f:
+                    self.traits_data = json.load(f)
+                logger.info(f"Loaded {len(self.traits_data)} plants with traits")
+            
+        except Exception as e:
+            logger.error(f"Failed to load recipe data: {e}")
+    
+    def _build_category_mapping(self) -> None:
+        """Build reverse mapping: category -> items from cooking.json."""
+        self.category_to_items = {}
+        for item, cats in self.cooking_data.items():
+            for cat in cats:
+                self.category_to_items.setdefault(cat, []).append(item)
+        logger.info(f"Built category mapping for {len(self.category_to_items)} categories")
+    
+    def resolve_trait(self, trait: str) -> List[str]:
+        """Return all items in traits.json that have a given trait."""
+        return [item for item, ts in self.traits_data.items() if trait in ts]
+    
+    def resolve_herbalbase(self) -> List[str]:
+        """Return flowers that are not toxic, plus Mint if available."""
+        items = [item for item, ts in self.traits_data.items() 
+                 if "Flower" in ts and "Toxic" not in ts]
+        if "Mint" in self.traits_data:
+            items.append("Mint")
+        return items
+    
+    def resolve_filling(self) -> List[str]:
+        """Filling = all vegetables + meat items (composite category)."""
+        vegetable_items = self.resolve_trait("Vegetable")
+        meat_items = self.category_to_items.get("Meat", [])
+        return list(set(vegetable_items + meat_items))
+    
+    def resolve_category(self, cat: str) -> List[str]:
+        """
+        Return all possible items for a category.
+        Merges cooking.json fixed items and traits.json items for trait-based categories.
+        """
+        # Category resolvers (exact copy from Python tool)
+        CATEGORY_RESOLVERS = {
+            "Bread": lambda: self.category_to_items.get("Bread", []),
+            "Meat": lambda: self.category_to_items.get("Meat", []),
+            "Leafy": lambda: self.category_to_items.get("Leafy", []),
+            "Pastry": lambda: self.category_to_items.get("Pastry", []),
+            "Tomato": lambda: self.category_to_items.get("Tomato", []),
+            "Fruit": lambda: self.resolve_trait("Fruit"),
+            "Vegetable": lambda: self.resolve_trait("Vegetable"),
+            "Sweet": lambda: self.resolve_trait("Sweet"),
+            "Sauce": lambda: self.resolve_trait("Fruit"),
+            "Cone": lambda: self.category_to_items.get("Bread", []),
+            "Cream": lambda: self.category_to_items.get("Bread", []),
+            "Base": lambda: self.category_to_items.get("Bread", []),
+            "Stick": lambda: self.resolve_trait("Woody"),
+            "Icing": lambda: self.resolve_trait("Sweet"),
+            "Sprinkles": lambda: self.resolve_trait("Sweet"),
+            "CandyCoating": lambda: self.resolve_trait("Sweet"),
+            "Sweetener": lambda: self.resolve_trait("Sweet"),
+            "HerbalBase": lambda: self.resolve_herbalbase(),
+            "Filling": lambda: self.resolve_filling(),
+            "Bamboo": lambda: self.category_to_items.get("Bamboo", []),
+            "Wrap": lambda: self.category_to_items.get("Wrap", []),
+            "Rice": lambda: self.category_to_items.get("Rice", []),
+            "Apple": lambda: self.category_to_items.get("Apple", []),
+            "Batter": lambda: self.category_to_items.get("Batter", []),
+            "Pasta": lambda: self.category_to_items.get("Pasta", []),
+            "Vegetables": lambda: self.resolve_trait("Vegetable"),
+            "Main": lambda: list(set(self.category_to_items.get("Meat", []) + self.resolve_trait("Vegetable")))
+        }
+        
+        resolver = CATEGORY_RESOLVERS.get(cat)
+        items = resolver() if callable(resolver) else []
+        
+        # Merge with cooking.json fixed items if not already included
+        fixed_items = self.category_to_items.get(cat, [])
+        return list(set(items) | set(fixed_items))
+    
+    def pick_items(self, cat: str, count: int) -> List[Dict]:
+        """Randomly pick items for a category, respecting count."""
+        items = self.resolve_category(cat)
+        if not items:
+            return []
+        picks = random.sample(items, min(count, len(items)))
+        return [{"item": p, "traits": self.traits_data.get(p, [])} for p in picks]
+    
+    def generate_random_recipe(self, recipe_name: str) -> Dict:
+        """Generate a random recipe with random ingredient combinations."""
+        if recipe_name not in self.recipes_data:
+            raise ValueError(f"Recipe '{recipe_name}' not found")
+        
+        recipe = self.recipes_data[recipe_name]
+        requirements = recipe["ingredients"]
+        
+        chosen = {}
+        for cat, count in requirements.items():
+            if cat == "Any":
+                # For "Any" category, pick from all available plants
+                items = random.sample(list(self.traits_data.keys()), min(count, len(self.traits_data)))
+                chosen[cat] = [{"item": p, "traits": self.traits_data.get(p, [])} for p in items]
+            else:
+                chosen[cat] = self.pick_items(cat, count)
+        
+        return {
+            "recipe_name": recipe_name,
+            "recipe_data": recipe,
+            "ingredients": chosen
+        }
+    
+    def get_all_recipes(self) -> Dict:
+        """Get all available recipes."""
+        return self.recipes_data
+    
+    def get_recipe(self, recipe_name: str) -> Optional[Dict]:
+        """Get a specific recipe by name."""
+        return self.recipes_data.get(recipe_name)
+    
+    def get_recipe_categories(self) -> Dict[str, List[str]]:
+        """Get all ingredient categories and their available items."""
+        categories = {}
+        for cat in set(self.category_to_items.keys()):
+            categories[cat] = self.resolve_category(cat)
+        return categories
+    
+    def get_recipes_by_difficulty(self, difficulty: str = None) -> List[Tuple[str, Dict]]:
+        """Get recipes filtered by difficulty (Easy: 1-2 ingredients, Medium: 3-4, Hard: 5+)"""
+        recipes = []
+        for name, recipe in self.recipes_data.items():
+            ingredient_count = recipe["count"]
+            if difficulty == "Easy" and ingredient_count <= 2:
+                recipes.append((name, recipe))
+            elif difficulty == "Medium" and 3 <= ingredient_count <= 4:
+                recipes.append((name, recipe))
+            elif difficulty == "Hard" and ingredient_count >= 5:
+                recipes.append((name, recipe))
+            elif difficulty is None:
+                recipes.append((name, recipe))
+        
+        # Sort by priority (lower number = higher priority)
+        recipes.sort(key=lambda x: x[1]["priority"])
+        return recipes
+    
+    def search_recipes(self, query: str) -> List[Tuple[str, Dict]]:
+        """Search recipes by name or description."""
+        query = query.lower()
+        results = []
+        
+        for name, recipe in self.recipes_data.items():
+            if (query in name.lower() or 
+                query in recipe.get("description", "").lower()):
+                results.append((name, recipe))
+        
+        return results
+    
+    def get_cooking_mechanics(self) -> Dict:
+        """Get information about how cooking works in the game."""
+        return {
+            "base_time": "Cooking time in seconds (base value)",
+            "base_weight": "Weight of the cooked food in kg",
+            "priority": "Recipe priority (lower number = higher priority)",
+            "count": "Number of ingredient categories required",
+            "ingredients": "Ingredient categories and quantities needed",
+            "categories": "Available ingredient categories and what plants can be used"
+        }
+
+# Global instance
+recipe_service = RecipeService()

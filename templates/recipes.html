@@ -1,0 +1,414 @@
+{% extends "base.html" %}
+
+{% block title %}Food Recipe Generator - Grow Calculator{% endblock %}
+
+{% block meta_description %}Generate random food recipes in Roblox Grow A Garden. Discover cooking mechanics, ingredient combinations, and create unique dishes with our recipe generator.{% endblock %}
+
+{% block meta_keywords %}food recipes, grow a garden cooking, recipe generator, cooking mechanics, ingredient combinations, food crafting{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="text-center py-12 bg-gradient-to-b from-orange-600 to-orange-800 text-white">
+    <div class="max-w-4xl mx-auto px-4">
+        <h1 class="text-4xl md:text-6xl font-bold mb-4">🍽️ Food Recipe Generator</h1>
+        <p class="text-xl md:text-2xl text-orange-100">
+            Discover cooking mechanics and generate random recipes in Roblox Grow A Garden
+        </p>
+        <p class="text-lg text-orange-200 mt-2">
+            Learn how cooking works, explore ingredient categories, and create unique dishes
+        </p>
+    </div>
+</section>
+
+<!-- Main Content -->
+<main class="w-full max-w-6xl mx-auto px-4 py-8">
+    
+    <!-- Recipe Generator Section -->
+    <section class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+        <h2 class="text-2xl font-bold mb-6 text-orange-400">🎲 Random Recipe Generator</h2>
+        
+        <div class="bg-gray-700 p-6 rounded-lg">
+            <div class="flex flex-col lg:flex-row gap-4 items-center">
+                <select id="recipe-selector" class="flex-1 p-3 rounded-lg bg-gray-600 text-white border border-gray-500 focus:border-orange-400 focus:outline-none">
+                    <option value="">Select a recipe...</option>
+                </select>
+                <button id="generate-recipe" class="px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg transition-colors">
+                    🎲 Generate Recipe
+                </button>
+            </div>
+            
+            <div id="recipe-result" class="mt-6 min-h-[200px] bg-gray-600 rounded-lg p-4">
+                <p class="text-gray-400 text-center">Select a recipe and click generate to see random ingredient combinations!</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Cooking Mechanics Section -->
+    <section class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+        <h2 class="text-2xl font-bold mb-6 text-green-400">📚 How Cooking Works</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="bg-gray-700 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-green-400 mb-2">⏱️ Cooking Time</h3>
+                <p class="text-gray-300 text-sm">Each recipe has a base cooking time in seconds. More complex recipes take longer to prepare.</p>
+            </div>
+            
+            <div class="bg-gray-700 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-blue-400 mb-2">⚖️ Food Weight</h3>
+                <p class="text-gray-300 text-sm">Cooked food has a specific weight that affects storage and transportation in the game.</p>
+            </div>
+            
+            <div class="bg-gray-700 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-purple-400 mb-2">🏆 Priority System</h3>
+                <p class="text-gray-300 text-sm">Recipes have priority levels. Lower numbers mean higher priority and better value.</p>
+            </div>
+            
+            <div class="bg-gray-700 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-yellow-400 mb-2">🧪 Ingredient Categories</h3>
+                <p class="text-gray-300 text-sm">Ingredients are grouped by categories like Bread, Meat, Leafy, Sweet, etc.</p>
+            </div>
+            
+            <div class="bg-gray-700 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-red-400 mb-2">🔄 Random Generation</h3>
+                <p class="text-gray-300 text-sm">Each category can use different plants, creating unique recipe variations every time.</p>
+            </div>
+            
+            <div class="bg-gray-700 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-indigo-400 mb-2">🌱 Plant Traits</h3>
+                <p class="text-gray-300 text-sm">Plants with specific traits can be used in multiple ingredient categories.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Recipe Browser Section -->
+    <section class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+        <h2 class="text-2xl font-bold mb-6 text-yellow-400">🍳 Recipe Browser</h2>
+        
+        <div class="mb-4">
+            <div class="flex flex-wrap gap-2 mb-4">
+                <button class="difficulty-filter px-3 py-2 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition-colors" data-difficulty="">All Recipes</button>
+                <button class="difficulty-filter px-3 py-2 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition-colors" data-difficulty="Easy">Easy (1-2 ingredients)</button>
+                <button class="difficulty-filter px-3 py-2 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition-colors" data-difficulty="Medium">Medium (3-4 ingredients)</button>
+                <button class="difficulty-filter px-3 py-2 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition-colors" data-difficulty="Hard">Hard (5+ ingredients)</button>
+            </div>
+            
+            <input 
+                type="text" 
+                id="recipe-search" 
+                placeholder="Search recipes..." 
+                class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-yellow-400 focus:outline-none transition-colors"
+            >
+        </div>
+        
+        <div id="recipes-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Recipes will be populated by JavaScript -->
+        </div>
+    </section>
+    
+    <!-- Ingredient Categories Section -->
+    <section class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold mb-6 text-blue-400">🥬 Ingredient Categories</h2>
+        
+        <div id="categories-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Categories will be populated by JavaScript -->
+        </div>
+    </section>
+</main>
+
+<!-- Recipe Details Modal -->
+<div id="recipe-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="relative flex items-center justify-center mb-4">
+                    <h3 id="modal-recipe-name" class="text-xl font-bold text-orange-400"></h3>
+                    <button onclick="closeRecipeModal()" class="absolute right-0 text-gray-400 hover:text-white text-2xl">&times;</button>
+                </div>
+                
+                <div id="modal-recipe-content">
+                    <!-- Recipe details will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Recipes page specific JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    initializeRecipeGenerator();
+});
+
+function initializeRecipeGenerator() {
+    // Load initial data
+    loadAllRecipes();
+    loadRecipeCategories();
+    
+    // Set up event handlers
+    setupEventHandlers();
+}
+
+function setupEventHandlers() {
+    const recipeSelector = document.getElementById('recipe-selector');
+    const generateButton = document.getElementById('generate-recipe');
+    const difficultyFilters = document.querySelectorAll('.difficulty-filter');
+    const recipeSearch = document.getElementById('recipe-search');
+    
+    // Recipe generation
+    generateButton.addEventListener('click', generateRandomRecipe);
+    
+    // Difficulty filtering
+    difficultyFilters.forEach(button => {
+        button.addEventListener('click', function() {
+            difficultyFilters.forEach(btn => btn.classList.remove('bg-orange-600'));
+            this.classList.add('bg-orange-600');
+            loadRecipesByDifficulty(this.dataset.difficulty);
+        });
+    });
+    
+    // Recipe search
+    let searchTimeout;
+    recipeSearch.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            searchRecipes(this.value);
+        }, 300);
+    });
+}
+
+async function loadAllRecipes() {
+    try {
+        const response = await fetch('/api/recipes/all');
+        const data = await response.json();
+        
+        if (data.success) {
+            populateRecipeSelector(data.recipes);
+            displayRecipesGrid(data.recipes);
+        }
+    } catch (error) {
+        console.error('Error loading recipes:', error);
+    }
+}
+
+function populateRecipeSelector(recipes) {
+    const selector = document.getElementById('recipe-selector');
+    selector.innerHTML = '<option value="">Select a recipe...</option>';
+    
+    Object.keys(recipes).forEach(recipeName => {
+        const option = document.createElement('option');
+        option.value = recipeName;
+        option.textContent = recipeName;
+        selector.appendChild(option);
+    });
+}
+
+function displayRecipesGrid(recipes) {
+    const grid = document.getElementById('recipes-grid');
+    
+    const recipesHtml = Object.entries(recipes).map(([name, recipe]) => {
+        const difficulty = getDifficulty(recipe.count);
+        const difficultyColor = getDifficultyColor(difficulty);
+        
+        return `
+            <div class="bg-gray-700 p-4 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors" onclick="showRecipeDetails('${name}')">
+                <div class="flex items-center justify-between mb-2">
+                    <h4 class="font-semibold text-white">${name}</h4>
+                    <span class="bg-${difficultyColor} text-white px-2 py-1 rounded text-sm">${difficulty}</span>
+                </div>
+                <p class="text-gray-400 text-sm mb-2">${recipe.description}</p>
+                <div class="flex justify-between text-xs text-gray-500">
+                    <span>⏱️ ${recipe.base_time}s</span>
+                    <span>⚖️ ${recipe.base_weight}kg</span>
+                    <span>🏆 ${recipe.priority}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    grid.innerHTML = recipesHtml;
+}
+
+function getDifficulty(count) {
+    if (count <= 2) return "Easy";
+    if (count <= 4) return "Medium";
+    return "Hard";
+}
+
+function getDifficultyColor(difficulty) {
+    switch(difficulty) {
+        case "Easy": return "green-600";
+        case "Medium": return "yellow-600";
+        case "Hard": return "red-600";
+        default: return "gray-600";
+    }
+}
+
+async function generateRandomRecipe() {
+    const recipeName = document.getElementById('recipe-selector').value;
+    if (!recipeName) {
+        alert('Please select a recipe first!');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/recipes/generate/${encodeURIComponent(recipeName)}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            displayGeneratedRecipe(data.recipe);
+        }
+    } catch (error) {
+        console.error('Error generating recipe:', error);
+        document.getElementById('recipe-result').innerHTML = '<p class="text-red-400 text-center">Error generating recipe</p>';
+    }
+}
+
+function displayGeneratedRecipe(recipe) {
+    const resultDiv = document.getElementById('recipe-result');
+    
+    const ingredientsHtml = Object.entries(recipe.ingredients).map(([category, items]) => {
+        const itemsHtml = items.map(item => {
+            const traitsStr = item.traits.length > 0 ? ` (${item.traits.join(', ')})` : '';
+            return `<span class="inline-block bg-blue-600 text-white px-3 py-1 rounded-full text-sm mr-2 mb-2">${item.item}${traitsStr}</span>`;
+        }).join('');
+        
+        return `
+            <div class="mb-3">
+                <h4 class="text-lg font-semibold text-white mb-2">${category}</h4>
+                <div>${itemsHtml}</div>
+            </div>
+        `;
+    }).join('');
+    
+    resultDiv.innerHTML = `
+        <div class="text-center">
+            <h3 class="text-2xl font-bold text-orange-400 mb-4">${recipe.recipe_name}</h3>
+            <div class="mb-4">
+                ${ingredientsHtml}
+            </div>
+            <div class="grid grid-cols-3 gap-4 text-sm">
+                <div class="bg-gray-700 p-2 rounded">
+                    <span class="text-orange-400">⏱️ Time:</span> ${recipe.recipe_data.base_time}s
+                </div>
+                <div class="bg-gray-700 p-2 rounded">
+                    <span class="text-blue-400">⚖️ Weight:</span> ${recipe.recipe_data.base_weight}kg
+                </div>
+                <div class="bg-gray-700 p-2 rounded">
+                    <span class="text-purple-400">🏆 Priority:</span> ${recipe.recipe_data.priority}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+async function loadRecipesByDifficulty(difficulty) {
+    try {
+        const url = difficulty ? `/api/recipes/difficulty/${difficulty}` : '/api/recipes/all';
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.success) {
+            const recipes = difficulty ? data.recipes : data.recipes;
+            displayRecipesGrid(Object.fromEntries(recipes));
+        }
+    } catch (error) {
+        console.error('Error loading recipes by difficulty:', error);
+    }
+}
+
+async function searchRecipes(query) {
+    if (!query.trim()) {
+        loadAllRecipes();
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/recipes/search/${encodeURIComponent(query)}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            const recipes = Object.fromEntries(data.results);
+            displayRecipesGrid(recipes);
+        }
+    } catch (error) {
+        console.error('Error searching recipes:', error);
+    }
+}
+
+async function loadRecipeCategories() {
+    try {
+        const response = await fetch('/api/recipes/categories');
+        const data = await response.json();
+        
+        if (data.success) {
+            displayCategoriesGrid(data.categories);
+        }
+    } catch (error) {
+        console.error('Error loading categories:', error);
+    }
+}
+
+function displayCategoriesGrid(categories) {
+    const grid = document.getElementById('categories-grid');
+    
+    const categoriesHtml = Object.entries(categories).map(([category, items]) => {
+        return `
+            <div class="bg-gray-700 p-4 rounded-lg">
+                <h4 class="font-semibold text-white mb-2">${category}</h4>
+                <p class="text-gray-400 text-sm mb-2">${items.length} available items</p>
+                <div class="text-xs text-gray-500">
+                    ${items.slice(0, 5).join(', ')}${items.length > 5 ? ` +${items.length - 5} more` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    grid.innerHTML = categoriesHtml;
+}
+
+async function showRecipeDetails(recipeName) {
+    try {
+        const response = await fetch(`/api/recipes/${encodeURIComponent(recipeName)}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            const recipe = data.recipe;
+            document.getElementById('modal-recipe-name').textContent = recipeName;
+            
+            const ingredientsHtml = Object.entries(recipe.ingredients).map(([category, count]) => 
+                `<span class="inline-block bg-blue-600 text-white px-3 py-1 rounded-full text-sm mr-2 mb-2">${category}: ${count}</span>`
+            ).join('');
+            
+            document.getElementById('modal-recipe-content').innerHTML = `
+                <div class="text-center">
+                    <p class="text-gray-300 mb-4">${recipe.description}</p>
+                    <div class="mb-4">
+                        <h4 class="text-lg font-semibold text-white mb-2">Required Ingredients:</h4>
+                        ${ingredientsHtml}
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 text-sm">
+                        <div class="bg-gray-700 p-2 rounded">
+                            <span class="text-orange-400">⏱️ Time:</span> ${recipe.base_time}s
+                        </div>
+                        <div class="bg-gray-700 p-2 rounded">
+                            <span class="text-blue-400">⚖️ Weight:</span> ${recipe.base_weight}kg
+                        </div>
+                        <div class="bg-gray-700 p-2 rounded">
+                            <span class="text-purple-400">🏆 Priority:</span> ${recipe.priority}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('recipe-modal').classList.remove('hidden');
+        }
+    } catch (error) {
+        console.error('Error showing recipe details:', error);
+    }
+}
+
+function closeRecipeModal() {
+    document.getElementById('recipe-modal').classList.add('hidden');
+}
+</script>
+{% endblock %}

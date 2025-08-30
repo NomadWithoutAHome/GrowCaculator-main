@@ -18,6 +18,9 @@ from models.calculator import SharedResult, SharedResultResponse
 from fastapi import HTTPException
 from datetime import datetime, timedelta
 
+# Import the recipe service
+from services.recipe_service import recipe_service
+
 router = APIRouter()
 
 # Get the correct templates directory path for Vercel
@@ -69,13 +72,16 @@ async def share_result(request: Request, share_id: str):
     )
 
 
-@router.get("/traits", response_class=HTMLResponse)
-async def traits_explorer(request: Request):
-    """Plant traits explorer page."""
-    return templates.TemplateResponse(
-        "traits.html",
-        {"request": request}
-    )
+@router.get("/traits")
+async def traits_page(request: Request):
+    """Render the traits page."""
+    return templates.TemplateResponse("traits.html", {"request": request})
+
+
+@router.get("/recipes")
+async def recipes_page(request: Request):
+    """Render the recipes page."""
+    return templates.TemplateResponse("recipes.html", {"request": request})
 
 
 @router.post("/api/share", response_model=SharedResultResponse)
@@ -238,6 +244,106 @@ async def get_all_plants_traits():
         return {
             "success": True,
             "plants": all_traits
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# Recipe API endpoints
+@router.get("/api/recipes/all")
+async def get_all_recipes():
+    """Get all available recipes."""
+    try:
+        recipes = recipe_service.get_all_recipes()
+        return {
+            "success": True,
+            "recipes": recipes
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/api/recipes/{recipe_name}")
+async def get_recipe(recipe_name: str):
+    """Get a specific recipe by name."""
+    try:
+        recipe = recipe_service.get_recipe(recipe_name)
+        if recipe:
+            return {
+                "success": True,
+                "recipe": recipe
+            }
+        else:
+            raise HTTPException(status_code=404, detail=f"Recipe '{recipe_name}' not found")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/api/recipes/generate/{recipe_name}")
+async def generate_random_recipe(recipe_name: str):
+    """Generate a random recipe with random ingredient combinations."""
+    try:
+        random_recipe = recipe_service.generate_random_recipe(recipe_name)
+        return {
+            "success": True,
+            "recipe": random_recipe
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/api/recipes/categories")
+async def get_recipe_categories():
+    """Get all ingredient categories and their available items."""
+    try:
+        categories = recipe_service.get_recipe_categories()
+        return {
+            "success": True,
+            "categories": categories
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/api/recipes/difficulty/{difficulty}")
+async def get_recipes_by_difficulty(difficulty: str):
+    """Get recipes filtered by difficulty (Easy, Medium, Hard)."""
+    try:
+        if difficulty not in ["Easy", "Medium", "Hard"]:
+            raise HTTPException(status_code=400, detail="Difficulty must be Easy, Medium, or Hard")
+        
+        recipes = recipe_service.get_recipes_by_difficulty(difficulty)
+        return {
+            "success": True,
+            "difficulty": difficulty,
+            "recipes": recipes
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/api/recipes/search/{query}")
+async def search_recipes(query: str):
+    """Search recipes by name or description."""
+    try:
+        results = recipe_service.search_recipes(query)
+        return {
+            "success": True,
+            "query": query,
+            "results": results
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/api/recipes/mechanics")
+async def get_cooking_mechanics():
+    """Get information about how cooking works in the game."""
+    try:
+        mechanics = recipe_service.get_cooking_mechanics()
+        return {
+            "success": True,
+            "mechanics": mechanics
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -1,0 +1,41 @@
+{
+  "Corn": ["Bread", "Batter"],
+  "Violet Corn": ["Bread", "Batter"],
+  "Cauliflower": ["Bread"],
+  "Banana": ["Bread"],
+  "Sugarglaze": ["Bread", "Pastry"],
+  
+  "Pepper": ["Meat"],
+  "Bell Pepper": ["Meat", "Leafy"],
+  "Ember Lily": ["Meat"],
+  "Cactus": ["Meat"],
+  "Mushroom": ["Meat"],
+  "Eggplant": ["Meat"],
+  "Venus Fly Trap": ["Meat"],
+  "Glowshroom": ["Meat"],
+  "Bone Blossom": ["Meat"],
+  "Tall Asparagus": ["Meat"],
+  "Taco Fern": ["Meat"],
+
+  "Tomato": ["Leafy", "Tomato", "Sauce"],
+  "Grand Tomato": ["Leafy", "Tomato", "Sauce"],
+  "Bamboo": ["Leafy", "Bamboo", "Wrap"],
+  "Taro Flower": ["Leafy"],
+  "Sunflower": ["Leafy"],
+  "Avocado": ["Leafy"],
+  "Pineapple": ["Leafy"],
+  "Onion": ["Leafy"],
+  "Jalapeno": ["Leafy"],
+  "Artichoke": ["Leafy"],
+
+  "Coconut": ["Pastry", "Rice"],
+  "Pumpkin": ["Pastry"],
+  "Crown Melon": ["Pastry"],
+
+  "Apple": ["Apple"],
+  "Green Apple": ["Apple"],
+  "Sugar Apple": ["Apple"],
+  "Maple Apple": ["Apple"],
+
+  "Mint": ["HerbalBase"]
+}
