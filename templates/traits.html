@@ -247,7 +247,7 @@ async function searchTraitPlants(query) {
                 `<span class="inline-block bg-purple-600 text-white px-3 py-1 rounded-full text-sm mr-2 mb-2 cursor-pointer hover:bg-purple-500" onclick="showPlantTraits('${plant}')">${plant}</span>`
             ).join('');
             
-                         const moreText = data.plants.length > 8 ? `<p class="text-blue-400 text-sm mt-2 cursor-pointer hover:text-blue-300 underline" onclick="showAllPlantsForTrait('${data.trait}', ${JSON.stringify(data.plants).replace(/"/g, '&quot;')})">+${data.plants.length - 8} more plants</p>` : '';
+            const moreText = data.plants.length > 8 ? `<p class="text-blue-400 text-sm mt-2 cursor-pointer hover:text-blue-300 underline" onclick="showAllPlantsForTrait('${data.trait}', ${JSON.stringify(data.plants).replace(/"/g, '&quot;')})">+${data.plants.length - 8} more plants</p>` : '';
             
             resultsDiv.innerHTML = `
                 <div class="text-center">
