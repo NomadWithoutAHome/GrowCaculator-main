@@ -62,9 +62,24 @@ class TraitsService:
     
     def get_plant_traits(self, plant_name: str) -> List[str]:
         """Get traits for a specific plant."""
-        plant_name = self._decode_plant_name(plant_name)
-        traits = self.traits_data.get(plant_name, [])
-        logger.info(f"Plant '{plant_name}' has {len(traits)} traits: {traits}")
+        logger.info(f"get_plant_traits called with: '{plant_name}'")
+        decoded_name = self._decode_plant_name(plant_name)
+        logger.info(f"Decoded plant name: '{plant_name}' -> '{decoded_name}'")
+        
+        # Try exact match first
+        traits = self.traits_data.get(decoded_name, [])
+        
+        # If no exact match, try case-insensitive search
+        if not traits:
+            logger.info(f"No exact match found for '{decoded_name}', trying case-insensitive search")
+            for stored_name in self.traits_data.keys():
+                if stored_name.lower() == decoded_name.lower():
+                    logger.info(f"Found case-insensitive match: '{stored_name}'")
+                    traits = self.traits_data[stored_name]
+                    decoded_name = stored_name  # Use the actual stored name
+                    break
+        
+        logger.info(f"Plant '{decoded_name}' has {len(traits)} traits: {traits}")
         return traits
     
     def get_plants_by_trait(self, trait: str) -> List[str]:

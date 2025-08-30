@@ -179,10 +179,24 @@ async def get_share_stats():
 async def get_plant_traits(plant_name: str):
     """Get traits for a specific plant."""
     try:
+        # Get traits and the actual plant name (handles case-insensitive matching)
         traits = traits_service.get_plant_traits(plant_name)
+        
+        # Find the actual plant name in the data (case-insensitive)
+        actual_plant_name = None
+        decoded_search_name = traits_service._decode_plant_name(plant_name)
+        
+        for stored_name in traits_service.traits_data.keys():
+            if stored_name.lower() == decoded_search_name.lower():
+                actual_plant_name = stored_name
+                break
+        
+        if not actual_plant_name:
+            actual_plant_name = decoded_search_name
+        
         return {
             "success": True,
-            "plant": plant_name,
+            "plant": actual_plant_name,
             "traits": traits
         }
     except Exception as e:
@@ -197,7 +211,7 @@ async def search_traits(trait: str):
         return {
             "success": True,
             "trait": trait,
-            "plants": plants
+            "plants": plants  # These are already decoded by the service
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
