@@ -104,9 +104,10 @@ class RecipeService:
             "Bamboo": lambda: self.category_to_items.get("Bamboo", []),
             "Wrap": lambda: self.category_to_items.get("Wrap", []),
             "Rice": lambda: self.category_to_items.get("Rice", []),
+            "Woody": lambda: self.resolve_trait("Woody"),  # Woody trait for Stick ingredients
             "Apple": lambda: self.category_to_items.get("Apple", []),
             "Batter": lambda: self.category_to_items.get("Batter", []),
-            "Pasta": lambda: self.category_to_items.get("Pasta", []),
+            "Pasta": lambda: self.category_to_items.get("Bread", []),  # Pasta uses same plants as Bread
             "Vegetables": lambda: self.resolve_trait("Vegetable"),
             "Main": lambda: list(set(self.category_to_items.get("Meat", []) + self.resolve_trait("Vegetable")))
         }
@@ -166,7 +167,7 @@ class RecipeService:
             "Fruit", "Vegetable", "Sweet", "Filling", "Main",
             "Sauce", "Cone", "Cream", "Base", "Icing", "Sprinkles", 
             "CandyCoating", "Sweetener", "HerbalBase", "Bamboo", "Wrap",
-            "Rice", "Apple", "Batter", "Vegetables", "Stick"
+            "Rice", "Apple", "Batter", "Vegetables", "Stick", "Woody", "Pasta"
         }
         
         for cat in all_categories:
