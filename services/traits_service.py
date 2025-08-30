@@ -74,7 +74,9 @@ class TraitsService:
         
         for plant, traits in self.traits_data.items():
             if any(t.lower() == trait for t in traits):
-                matching_plants.append(plant)
+                # Decode plant name before adding to results
+                decoded_plant = self._decode_plant_name(plant)
+                matching_plants.append(decoded_plant)
         
         logger.info(f"Trait '{trait}' found in {len(matching_plants)} plants")
         return matching_plants
@@ -107,7 +109,12 @@ class TraitsService:
     
     def get_all_plants_traits(self) -> Dict[str, List[str]]:
         """Get all plants with their traits."""
-        return self.traits_data
+        # Decode all plant names to ensure consistency
+        decoded_data = {}
+        for plant_name, traits in self.traits_data.items():
+            decoded_name = self._decode_plant_name(plant_name)
+            decoded_data[decoded_name] = traits
+        return decoded_data
     
     def search_plants(self, query: str) -> List[str]:
         """Search plants by name (partial match)."""
@@ -116,7 +123,9 @@ class TraitsService:
         
         for plant_name in self.traits_data.keys():
             if query in plant_name.lower():
-                matching_plants.append(plant_name)
+                # Decode plant name before adding to results
+                decoded_plant = self._decode_plant_name(plant_name)
+                matching_plants.append(decoded_plant)
         
         logger.info(f"Plant search '{query}' found {len(matching_plants)} matches")
         return matching_plants
