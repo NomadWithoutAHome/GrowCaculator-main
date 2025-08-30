@@ -312,16 +312,31 @@ async def get_recipe_categories():
         logger.info("get_recipe_categories called")
         categories = recipe_service.get_recipe_categories()
         logger.info(f"get_recipe_categories success: {len(categories)} categories")
+        
+        # Add debug info to the response
         return {
             "success": True,
-            "categories": categories
+            "categories": categories,
+            "debug_info": {
+                "total_categories": len(categories),
+                "category_names": list(categories.keys()),
+                "sample_category": list(categories.items())[0] if categories else None
+            }
         }
     except Exception as e:
         logger.error(f"get_recipe_categories error: {e}")
         logger.error(f"Error type: {type(e)}")
         import traceback
         logger.error(f"Traceback: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+        
+        # Return the actual error details in the response instead of raising HTTPException
+        return {
+            "success": False,
+            "error": str(e),
+            "error_type": str(type(e).__name__),
+            "traceback": traceback.format_exc(),
+            "categories": {}
+        }
 
 
 @router.get("/api/recipes/difficulty/{difficulty}")

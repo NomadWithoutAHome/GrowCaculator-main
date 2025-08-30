@@ -64,3 +64,4 @@ __pycache__/
 *.tar
 *.gz
 *.rar
+.vercel
