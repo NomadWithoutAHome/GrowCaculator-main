@@ -106,7 +106,6 @@
                 <button class="difficulty-filter px-3 py-2 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition-colors" data-difficulty="">All Recipes</button>
                 <button class="difficulty-filter px-3 py-2 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition-colors" data-difficulty="Easy">Easy (1-2 ingredients)</button>
                 <button class="difficulty-filter px-3 py-2 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition-colors" data-difficulty="Medium">Medium (3-4 ingredients)</button>
-                <button class="difficulty-filter px-3 py-2 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition-colors" data-difficulty="Hard">Hard (5+ ingredients)</button>
             </div>
             
             <input 
@@ -250,14 +249,13 @@ function displayRecipesGrid(recipes) {
 function getDifficulty(count) {
     if (count <= 2) return "Easy";
     if (count <= 4) return "Medium";
-    return "Hard";
+    return "Medium"; // All recipes with 4+ ingredients are now Medium
 }
 
 function getDifficultyColor(difficulty) {
     switch(difficulty) {
         case "Easy": return "green-600";
         case "Medium": return "yellow-600";
-        case "Hard": return "red-600";
         default: return "gray-600";
     }
 }
