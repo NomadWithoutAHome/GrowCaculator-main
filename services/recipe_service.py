@@ -160,7 +160,16 @@ class RecipeService:
     def get_recipe_categories(self) -> Dict[str, List[str]]:
         """Get all ingredient categories and their available items."""
         categories = {}
-        for cat in set(self.category_to_items.keys()):
+        # Include ALL categories that the resolvers can handle
+        # This combines cooking.json categories with trait-based and special categories
+        all_categories = set(self.category_to_items.keys()) | {
+            "Fruit", "Vegetable", "Sweet", "Woody", "Filling", "Main",
+            "Sauce", "Cone", "Cream", "Base", "Icing", "Sprinkles", 
+            "CandyCoating", "Sweetener", "HerbalBase", "Bamboo", "Wrap",
+            "Rice", "Apple", "Batter", "Pasta", "Vegetables", "Stick"
+        }
+        
+        for cat in all_categories:
             categories[cat] = self.resolve_category(cat)
         return categories
     
