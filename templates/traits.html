@@ -195,29 +195,9 @@ async function searchPlantTraits(query) {
     }
     
     try {
-        // First try exact match
+        // Use backend API for all searches - it handles decoding properly
         let response = await fetch(`/api/traits/plant/${encodeURIComponent(query)}`);
         let data = await response.json();
-        
-        // If no exact match, try case-insensitive search
-        if (!data.success || data.traits.length === 0) {
-            response = await fetch('/api/traits/all');
-            const allData = await response.json();
-            
-            if (allData.success) {
-                const matchingPlant = Object.keys(allData.plants).find(plant => 
-                    plant.toLowerCase() === query.toLowerCase()
-                );
-                
-                if (matchingPlant) {
-                    data = {
-                        success: true,
-                        plant: matchingPlant,
-                        traits: allData.plants[matchingPlant]
-                    };
-                }
-            }
-        }
         
         const resultsDiv = document.getElementById('plant-results');
         
@@ -256,35 +236,9 @@ async function searchTraitPlants(query) {
     }
     
     try {
-        // First try exact match
+        // Use backend API for all searches - it handles decoding properly
         let response = await fetch(`/api/traits/search/${encodeURIComponent(query)}`);
         let data = await response.json();
-        
-        // If no exact match, try case-insensitive search
-        if (!data.success || data.plants.length === 0) {
-            response = await fetch('/api/traits/all');
-            const allData = await response.json();
-            
-            if (allData.success) {
-                const matchingTrait = Object.values(allData.plants).flat().find(trait => 
-                    trait.toLowerCase() === query.toLowerCase()
-                );
-                
-                if (matchingTrait) {
-                    const plantsWithTrait = Object.entries(allData.plants)
-                        .filter(([plant, traits]) => 
-                            traits.some(t => t.toLowerCase() === query.toLowerCase())
-                        )
-                        .map(([plant]) => plant);
-                    
-                    data = {
-                        success: true,
-                        trait: matchingTrait,
-                        plants: plantsWithTrait
-                    };
-                }
-            }
-        }
         
         const resultsDiv = document.getElementById('trait-results');
         
