@@ -263,6 +263,19 @@ async def get_all_recipes():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/api/recipes/all-with-stats")
+async def get_all_recipes_with_stats():
+    """Get all available recipes with combination statistics."""
+    try:
+        recipes = recipe_service.get_all_recipes_with_stats()
+        return {
+            "success": True,
+            "recipes": recipes
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/api/recipes/{recipe_name}")
 async def get_recipe(recipe_name: str):
     """Get a specific recipe by name."""

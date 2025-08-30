@@ -204,6 +204,69 @@ class RecipeService:
             "ingredients": "Ingredient categories and quantities needed",
             "categories": "Available ingredient categories and what plants can be used"
         }
+    
+    def calculate_recipe_combinations(self, recipe_name: str) -> int:
+        """Calculate total possible combinations for a recipe."""
+        if recipe_name not in self.recipes_data:
+            return 0
+        
+        recipe = self.recipes_data[recipe_name]
+        total_combinations = 1
+        
+        for category, count in recipe["ingredients"].items():
+            if category == "Any":
+                # For "Any" category, use all available plants
+                available_items = len(self.traits_data)
+                # Calculate combinations: C(n, r) = n! / (r! * (n-r)!)
+                if count <= available_items:
+                    combinations = self._calculate_combinations(available_items, count)
+                    total_combinations *= combinations
+            else:
+                available_items = len(self.resolve_category(category))
+                if available_items > 0 and count <= available_items:
+                    combinations = self._calculate_combinations(available_items, count)
+                    total_combinations *= combinations
+        
+        return total_combinations
+    
+    def _calculate_combinations(self, n: int, r: int) -> int:
+        """Calculate C(n,r) = n! / (r! * (n-r)!)"""
+        if r > n:
+            return 0
+        if r == 0 or r == n:
+            return 1
+        
+        # Use a more efficient calculation to avoid large numbers
+        r = min(r, n - r)
+        result = 1
+        for i in range(r):
+            result = result * (n - i) // (i + 1)
+        return result
+    
+    def get_all_recipes_with_stats(self) -> Dict:
+        """Get all recipes with combination statistics."""
+        recipes_with_stats = {}
+        
+        for name, recipe in self.recipes_data.items():
+            combinations = self.calculate_recipe_combinations(name)
+            recipes_with_stats[name] = {
+                **recipe,
+                "possible_combinations": combinations,
+                "combinations_formatted": self._format_large_number(combinations)
+            }
+        
+        return recipes_with_stats
+    
+    def _format_large_number(self, num: int) -> str:
+        """Format large numbers with K, M, B suffixes."""
+        if num < 1000:
+            return str(num)
+        elif num < 1000000:
+            return f"{num/1000:.1f}K"
+        elif num < 1000000000:
+            return f"{num/1000000:.1f}M"
+        else:
+            return f"{num/1000000000:.1f}B"
 
 # Global instance
 recipe_service = RecipeService()

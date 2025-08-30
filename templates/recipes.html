@@ -20,6 +20,26 @@
     </div>
 </section>
 
+<!-- Statistics Summary Section -->
+<section class="bg-gray-900 py-8">
+    <div class="max-w-6xl mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="text-center">
+                <div class="text-4xl font-bold text-orange-400 mb-2" id="total-recipes">-</div>
+                <div class="text-gray-300">Total Recipes</div>
+            </div>
+            <div class="text-center">
+                <div class="text-4xl font-bold text-blue-400 mb-2" id="total-combinations">-</div>
+                <div class="text-gray-300">Total Combinations</div>
+            </div>
+            <div class="text-center">
+                <div class="text-4xl font-bold text-green-400 mb-2" id="avg-combinations">-</div>
+                <div class="text-gray-300">Avg per Recipe</div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Main Content -->
 <main class="w-full max-w-6xl mx-auto px-4 py-8">
     
@@ -141,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initializeRecipeGenerator() {
     // Load initial data
-    loadAllRecipes();
+    loadAllRecipesWithStats();
     loadRecipeCategories();
     
     // Set up event handlers
@@ -176,7 +196,7 @@ function setupEventHandlers() {
     });
 }
 
-async function loadAllRecipes() {
+async function loadAllRecipesWithStats() {
     try {
         const response = await fetch('/api/recipes/all');
         const data = await response.json();
@@ -184,6 +204,9 @@ async function loadAllRecipes() {
         if (data.success) {
             populateRecipeSelector(data.recipes);
             displayRecipesGrid(data.recipes);
+            document.getElementById('total-recipes').textContent = data.total_recipes;
+            document.getElementById('total-combinations').textContent = data.total_combinations;
+            document.getElementById('avg-combinations').textContent = data.average_combinations.toFixed(2);
         }
     } catch (error) {
         console.error('Error loading recipes:', error);
