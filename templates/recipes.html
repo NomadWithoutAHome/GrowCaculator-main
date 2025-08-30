@@ -198,15 +198,13 @@ function setupEventHandlers() {
 
 async function loadAllRecipesWithStats() {
     try {
-        const response = await fetch('/api/recipes/all');
+        const response = await fetch('/api/recipes/all-with-stats');
         const data = await response.json();
         
         if (data.success) {
             populateRecipeSelector(data.recipes);
             displayRecipesGrid(data.recipes);
-            document.getElementById('total-recipes').textContent = data.total_recipes;
-            document.getElementById('total-combinations').textContent = data.total_combinations;
-            document.getElementById('avg-combinations').textContent = data.average_combinations.toFixed(2);
+            updateStatistics(data.recipes);
         }
     } catch (error) {
         console.error('Error loading recipes:', error);
@@ -231,6 +229,8 @@ function displayRecipesGrid(recipes) {
     const recipesHtml = Object.entries(recipes).map(([name, recipe]) => {
         const difficulty = getDifficulty(recipe.count);
         const difficultyColor = getDifficultyColor(difficulty);
+        const combinations = recipe.possible_combinations || 0;
+        const combinationsFormatted = recipe.combinations_formatted || combinations.toString();
         
         return `
             <div class="bg-gray-700 p-4 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors" onclick="showRecipeDetails('${name}')">
@@ -239,6 +239,13 @@ function displayRecipesGrid(recipes) {
                     <span class="bg-${difficultyColor} text-white px-2 py-1 rounded text-sm">${difficulty}</span>
                 </div>
                 <p class="text-gray-400 text-sm mb-2">${recipe.description}</p>
+                
+                <!-- Combination Statistics - Highlighted -->
+                <div class="bg-gradient-to-r from-purple-600 to-blue-600 p-3 rounded-lg mb-3 text-center">
+                    <div class="text-white font-bold text-lg">🎲 ${combinationsFormatted}</div>
+                    <div class="text-purple-200 text-xs">Possible Combinations</div>
+                </div>
+                
                 <div class="flex justify-between text-xs text-gray-500">
                     <span>⏱️ ${recipe.base_time}s</span>
                     <span>⚖️ ${recipe.base_weight}kg</span>
@@ -432,6 +439,48 @@ async function showRecipeDetails(recipeName) {
 
 function closeRecipeModal() {
     document.getElementById('recipe-modal').classList.add('hidden');
+}
+
+function updateStatistics(recipes) {
+    const totalRecipes = Object.keys(recipes).length;
+    const easyCount = Object.values(recipes).filter(r => r.count <= 2).length;
+    const mediumCount = Object.values(recipes).filter(r => r.count > 2 && r.count <= 4).length;
+    const hardCount = Object.values(recipes).filter(r => r.count > 4).length;
+
+    // Update total recipes
+    const totalRecipesDiv = document.getElementById('total-recipes');
+    if (totalRecipesDiv) {
+        totalRecipesDiv.textContent = totalRecipes;
+    }
+
+    // Calculate total possible combinations
+    const totalCombinations = Object.values(recipes).reduce((sum, r) => {
+        return sum + (r.possible_combinations || 0);
+    }, 0);
+    
+    const totalCombinationsDiv = document.getElementById('total-combinations');
+    if (totalCombinationsDiv) {
+        totalCombinationsDiv.textContent = formatLargeNumber(totalCombinations);
+    }
+
+    // Calculate average combinations per recipe
+    const avgCombinationsDiv = document.getElementById('avg-combinations');
+    if (avgCombinationsDiv) {
+        const average = totalRecipes > 0 ? totalCombinations / totalRecipes : 0;
+        avgCombinationsDiv.textContent = formatLargeNumber(average);
+    }
+}
+
+function formatLargeNumber(num) {
+    if (num < 1000) {
+        return num.toString();
+    } else if (num < 1000000) {
+        return (num / 1000).toFixed(1) + 'K';
+    } else if (num < 1000000000) {
+        return (num / 1000000).toFixed(1) + 'M';
+    } else {
+        return (num / 1000000000).toFixed(1) + 'B';
+    }
 }
 </script>
 {% endblock %}
