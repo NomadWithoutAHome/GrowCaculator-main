@@ -292,17 +292,7 @@ async def get_recipe(recipe_name: str):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/api/recipes/generate/{recipe_name}")
-async def generate_random_recipe(recipe_name: str):
-    """Generate a random recipe with random ingredient combinations."""
-    try:
-        random_recipe = recipe_service.generate_random_recipe(recipe_name)
-        return {
-            "success": True,
-            "recipe": random_recipe
-        }
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+
 
 
 @router.get("/api/recipes/categories")
@@ -381,3 +371,29 @@ async def get_cooking_mechanics():
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/api/recipes/shop-seeds")
+async def get_shop_seeds():
+    """Get list of shop seeds (basic seeds available in the shop)."""
+    try:
+        shop_seeds = recipe_service.get_shop_seeds()
+        return {
+            "success": True,
+            "shop_seeds": shop_seeds
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/api/recipes/generate/{recipe_name}")
+async def generate_random_recipe(recipe_name: str, shop_seeds_only: bool = False):
+    """Generate a random recipe with random ingredient combinations."""
+    try:
+        random_recipe = recipe_service.generate_random_recipe(recipe_name, shop_seeds_only)
+        return {
+            "success": True,
+            "recipe": random_recipe
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

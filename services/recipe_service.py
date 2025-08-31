@@ -14,6 +14,7 @@ class RecipeService:
         self.recipes_data: Dict = {}
         self.cooking_data: Dict = {}
         self.traits_data: Dict = {}
+        self.shop_seeds: List[str] = []
         self.category_to_items: Dict[str, List[str]] = {}
         self._load_data()
         self._build_category_mapping()
@@ -65,6 +66,17 @@ class RecipeService:
                 logger.info(f"Loaded {len(self.traits_data)} plants with traits")
             else:
                 logger.error(f"Traits file not found at: {traits_file}")
+            
+            # Load shop seeds data
+            shop_seeds_file = data_dir / "shopseeds.json"
+            if shop_seeds_file.exists():
+                with open(shop_seeds_file, 'r', encoding='utf-8') as f:
+                    shop_seeds_data = json.load(f)
+                    self.shop_seeds = shop_seeds_data.get("shopseeds", [])
+                logger.info(f"Loaded {len(self.shop_seeds)} shop seeds")
+            else:
+                logger.error(f"Shop seeds file not found at: {shop_seeds_file}")
+                self.shop_seeds = []
             
         except Exception as e:
             logger.error(f"Failed to load recipe data: {e}")
@@ -149,15 +161,23 @@ class RecipeService:
         fixed_items = self.category_to_items.get(cat, [])
         return list(set(items) | set(fixed_items))
     
-    def pick_items(self, cat: str, count: int) -> List[Dict]:
+    def pick_items(self, cat: str, count: int, shop_seeds_only: bool = False) -> List[Dict]:
         """Randomly pick items for a category, respecting count."""
         items = self.resolve_category(cat)
         if not items:
             return []
+        
+        # Filter to shop seeds only if requested
+        if shop_seeds_only:
+            items = [item for item in items if item in self.shop_seeds]
+            if not items:
+                logger.warning(f"No shop seeds available for category '{cat}', using all items")
+                items = self.resolve_category(cat)
+        
         picks = random.sample(items, min(count, len(items)))
         return [{"item": p, "traits": self.traits_data.get(p, [])} for p in picks]
     
-    def generate_random_recipe(self, recipe_name: str) -> Dict:
+    def generate_random_recipe(self, recipe_name: str, shop_seeds_only: bool = False) -> Dict:
         """Generate a random recipe with random ingredient combinations."""
         # Handle URL-encoded recipe names (e.g., "Corn%20Dog" -> "Corn Dog")
         import urllib.parse
@@ -173,16 +193,27 @@ class RecipeService:
         for cat, count in requirements.items():
             if cat == "Any":
                 # For "Any" category, pick from all available plants
-                items = random.sample(list(self.traits_data.keys()), min(count, len(self.traits_data)))
+                available_items = list(self.traits_data.keys())
+                if shop_seeds_only:
+                    available_items = [item for item in available_items if item in self.shop_seeds]
+                    if not available_items:
+                        logger.warning("No shop seeds available for 'Any' category, using all items")
+                        available_items = list(self.traits_data.keys())
+                
+                items = random.sample(available_items, min(count, len(available_items)))
                 chosen[cat] = [{"item": p, "traits": self.traits_data.get(p, [])} for p in items]
             else:
-                chosen[cat] = self.pick_items(cat, count)
+                chosen[cat] = self.pick_items(cat, count, shop_seeds_only)
         
         return {
             "recipe_name": decoded_recipe_name,
             "recipe_data": recipe,
             "ingredients": chosen
         }
+    
+    def get_shop_seeds(self) -> List[str]:
+        """Get list of shop seeds (basic seeds available in the shop)."""
+        return self.shop_seeds
     
     def get_all_recipes(self) -> Dict:
         """Get all available recipes."""
