@@ -168,6 +168,7 @@ function initializeRecipeGenerator() {
     // Load initial data
     loadAllRecipesWithStats();
     loadRecipeCategories();
+    loadShopSeeds();
     
     // Set up event handlers
     setupEventHandlers();
@@ -297,7 +298,10 @@ function displayGeneratedRecipe(recipe) {
     const ingredientsHtml = Object.entries(recipe.ingredients).map(([category, items]) => {
         const itemsHtml = items.map(item => {
             const traitsStr = item.traits.length > 0 ? ` (${item.traits.join(', ')})` : '';
-            return `<span class="inline-block bg-blue-600 text-white px-3 py-1 rounded-full text-sm mr-2 mb-2">${item.item}${traitsStr}</span>`;
+            const isShopSeed = window.shopSeeds && window.shopSeeds.includes(item.item);
+            const bgColor = isShopSeed ? 'bg-green-600' : 'bg-blue-600';
+            const shopSeedIcon = isShopSeed ? '🌱 ' : '';
+            return `<span class="inline-block ${bgColor} text-white px-3 py-1 rounded-full text-sm mr-2 mb-2">${shopSeedIcon}${item.item}${traitsStr}</span>`;
         }).join('');
         
         return `
@@ -377,6 +381,20 @@ async function loadRecipeCategories() {
         }
     } catch (error) {
         console.error('Error loading categories:', error);
+    }
+}
+
+async function loadShopSeeds() {
+    try {
+        const response = await fetch('/api/recipes/shop-seeds');
+        const data = await response.json();
+        
+        if (data.success) {
+            window.shopSeeds = data.shop_seeds;
+        }
+    } catch (error) {
+        console.error('Error loading shop seeds:', error);
+        window.shopSeeds = [];
     }
 }
 
