@@ -179,7 +179,7 @@ class RecipeService:
                 chosen[cat] = self.pick_items(cat, count)
         
         return {
-            "recipe_name": recipe_name,
+            "recipe_name": decoded_recipe_name,
             "recipe_data": recipe,
             "ingredients": chosen
         }
