@@ -62,6 +62,9 @@
   "Cooked": {
     "value_multi": 10.0
   },
+  "Corrosive": {
+    "value_multi": 40.0
+  },
   "Corrupt": {
     "value_multi": 20.0
   },
@@ -70,6 +73,9 @@
   },
   "CorruptFoxfireChakra": {
     "value_multi": 90.0
+  },
+  "Cosmic": {
+    "value_multi": 210.0
   },
   "Cyclonic": {
     "value_multi": 50.0
@@ -110,8 +116,11 @@
   "Galactic": {
     "value_multi": 120.0
   },
+  "Glimmering": {
+    "value_multi": 2.0
+  },
   "Glitched": {
-    "value_multi": 5.0
+    "value_multi": 85.0
   },
   "Gloom": {
     "value_multi": 30.0
@@ -200,6 +209,9 @@
   "Static": {
     "value_multi": 8.0
   },
+  "Stormcharged": {
+    "value_multi": 220.0
+  },
   "Subzero": {
     "value_multi": 40.0
   },
@@ -213,7 +225,7 @@
     "value_multi": 105.0
   },
   "Toxic": {
-    "value_multi": 12.0
+    "value_multi": 15.0
   },
   "Tranquil": {
     "value_multi": 20.0

@@ -17,6 +17,9 @@
   "Aurora": {
     "value_multi": 90.0
   },
+  "Beanbound": {
+    "value_multi": 100.0
+  },
   "Blitzshock": {
     "value_multi": 50.0
   },
@@ -28,6 +31,9 @@
   },
   "Boil": {
     "value_multi": 15.0
+  },
+  "Brainrot": {
+    "value_multi": 100.0
   },
   "Burnt": {
     "value_multi": 4.0
@@ -65,6 +71,9 @@
   "CorruptFoxfireChakra": {
     "value_multi": 90.0
   },
+  "Cyclonic": {
+    "value_multi": 50.0
+  },
   "Dawnbound": {
     "value_multi": 150.0
   },
@@ -101,6 +110,15 @@
   "Galactic": {
     "value_multi": 120.0
   },
+  "Glitched": {
+    "value_multi": 5.0
+  },
+  "Gloom": {
+    "value_multi": 30.0
+  },
+  "Gnomed": {
+    "value_multi": 15.0
+  },
   "HarmonisedChakra": {
     "value_multi": 35.0
   },
@@ -124,6 +142,9 @@
   },
   "Lightcycle": {
     "value_multi": 50.0
+  },
+  "Maelstrom": {
+    "value_multi": 100.0
   },
   "Meatball": {
     "value_multi": 3.0
@@ -157,6 +178,9 @@
   },
   "Radioactive": {
     "value_multi": 55.0
+  },
+  "Rot": {
+    "value_multi": 8.0
   },
   "Sandy": {
     "value_multi": 3.0
@@ -202,6 +226,9 @@
   },
   "Voidtouched": {
     "value_multi": 135.0
+  },
+  "Warped": {
+    "value_multi": 75.0
   },
   "Wet": {
     "value_multi": 2.0
