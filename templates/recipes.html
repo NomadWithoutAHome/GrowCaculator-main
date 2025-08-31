@@ -140,23 +140,55 @@
     </section>
 </main>
 
-<!-- Recipe Details Modal -->
-<div id="recipe-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
-    <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-            <div class="p-6">
-                <div class="relative flex items-center justify-center mb-4">
-                    <h3 id="modal-recipe-name" class="text-xl font-bold text-orange-400"></h3>
-                    <button onclick="closeRecipeModal()" class="absolute right-0 text-gray-400 hover:text-white text-2xl">&times;</button>
-                </div>
-                
-                <div id="modal-recipe-content">
-                    <!-- Recipe details will be populated by JavaScript -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+ <!-- Recipe Details Modal -->
+ <div id="recipe-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+     <div class="flex items-center justify-center min-h-screen p-4">
+         <div class="bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+             <div class="p-6">
+                 <div class="relative flex items-center justify-center mb-4">
+                     <h3 id="modal-recipe-name" class="text-xl font-bold text-orange-400"></h3>
+                     <button onclick="closeRecipeModal()" class="absolute right-0 text-gray-400 hover:text-white text-2xl">&times;</button>
+                 </div>
+                 
+                 <div id="modal-recipe-content">
+                     <!-- Recipe details will be populated by JavaScript -->
+                 </div>
+             </div>
+         </div>
+     </div>
+ </div>
+ 
+ <!-- Custom Description Modal -->
+ <div id="description-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+     <div class="flex items-center justify-center min-h-screen p-4">
+         <div class="bg-gray-800 rounded-lg shadow-xl max-w-md w-full">
+             <div class="p-6">
+                 <div class="flex items-center justify-between mb-4">
+                     <h3 class="text-xl font-bold text-orange-400">📝 Custom Recipe Description</h3>
+                     <button onclick="closeDescriptionModal()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+                 </div>
+                 
+                 <p class="text-gray-300 mb-4">Add a personal touch to your shared recipe (optional):</p>
+                 
+                 <textarea id="custom-description" 
+                           placeholder="Describe your recipe creation, cooking tips, or why you love this combination..."
+                           class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-orange-400 focus:outline-none resize-none"
+                           rows="4"></textarea>
+                 
+                 <div class="flex gap-3 mt-6">
+                     <button onclick="shareRecipeWithDescription()" 
+                             class="flex-1 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
+                         📤 Share Recipe
+                     </button>
+                     <button onclick="closeDescriptionModal()" 
+                             class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-semibold transition-colors">
+                         Cancel
+                     </button>
+                 </div>
+             </div>
+         </div>
+     </div>
+ </div>
 
 <script>
 // Recipes page specific JavaScript
@@ -334,17 +366,23 @@ function displayGeneratedRecipe(recipe) {
             <div class="mb-4">
                 ${ingredientsHtml}
             </div>
-            <div class="grid grid-cols-3 gap-4 text-sm">
-                <div class="bg-gray-700 p-2 rounded">
-                    <span class="text-orange-400">⏱️ Time:</span> ${recipe.recipe_data.base_time}s
-                </div>
-                <div class="bg-gray-700 p-2 rounded">
-                    <span class="text-blue-400">⚖️ Weight:</span> ${recipe.recipe_data.base_weight}kg
-                </div>
-                <div class="bg-gray-700 p-2 rounded">
-                    <span class="text-purple-400">🏆 Priority:</span> ${recipe.recipe_data.priority}
-                </div>
-            </div>
+                         <div class="grid grid-cols-3 gap-4 text-sm mb-4">
+                 <div class="bg-gray-700 p-2 rounded">
+                     <span class="text-orange-400">⏱️ Time:</span> ${recipe.recipe_data.base_time}s
+                 </div>
+                 <div class="bg-gray-700 p-2 rounded">
+                     <span class="text-blue-400">⚖️ Weight:</span> ${recipe.recipe_data.base_weight}kg
+                 </div>
+                 <div class="bg-gray-700 p-2 rounded">
+                     <span class="text-purple-400">🏆 Priority:</span> ${recipe.recipe_data.priority}
+                 </div>
+             </div>
+             
+             <!-- Share Button -->
+             <button onclick="shareRecipe('${recipe.recipe_name}', ${JSON.stringify(recipe).replace(/'/g, "\\'")})" 
+                     class="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                 📤 Share Recipe
+             </button>
         </div>
     `;
 }
@@ -473,7 +511,7 @@ async function showRecipeDetails(recipeName) {
                          <h4 class="text-lg font-semibold text-white mb-2">Required Ingredients:</h4>
                          ${ingredientsHtml}
                      </div>
-                     <div class="grid grid-cols-3 gap-4 text-sm">
+                     <div class="grid grid-cols-3 gap-4 text-sm mb-4">
                          <div class="bg-gray-700 p-2 rounded">
                              <span class="text-orange-400">⏱️ Time:</span> ${recipe.base_time}s
                          </div>
@@ -484,6 +522,12 @@ async function showRecipeDetails(recipeName) {
                              <span class="text-purple-400">🏆 Priority:</span> ${recipe.priority}
                          </div>
                      </div>
+                     
+                     <!-- Share Button in Modal -->
+                     <button onclick="shareRecipeFromModal('${recipeName}', ${JSON.stringify(recipe).replace(/'/g, "\\'")})" 
+                             class="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                         📤 Share This Recipe
+                     </button>
                  </div>
              `;
             
@@ -528,16 +572,95 @@ function updateStatistics(recipes) {
     }
 }
 
-function formatLargeNumber(num) {
-    if (num < 1000) {
-        return num.toString();
-    } else if (num < 1000000) {
-        return (num / 1000).toFixed(1) + 'K';
-    } else if (num < 1000000000) {
-        return (num / 1000000).toFixed(1) + 'M';
-    } else {
-        return (num / 1000000000).toFixed(1) + 'B';
-    }
-}
+ function formatLargeNumber(num) {
+     if (num < 1000) {
+         return num.toString();
+     } else if (num < 1000000) {
+         return (num / 1000).toFixed(1) + 'K';
+     } else if (num < 1000000000) {
+         return (num / 1000000).toFixed(1) + 'M';
+     } else {
+         return (num / 1000000000).toFixed(1) + 'B';
+     }
+ }
+ 
+ // Recipe sharing functionality
+ let currentRecipeData = null;
+ 
+ function shareRecipe(recipeName, recipeData) {
+     currentRecipeData = {
+         recipe_name: recipeName,
+         recipe_data: recipeData.recipe_data,
+         ingredients: recipeData.ingredients,
+         shop_seeds_only: document.getElementById('shop-seeds-only').checked,
+         generated_at: new Date().toISOString()
+     };
+     
+     // Show custom description modal
+     document.getElementById('description-modal').classList.remove('hidden');
+     document.getElementById('custom-description').value = '';
+ }
+ 
+ function closeDescriptionModal() {
+     document.getElementById('description-modal').classList.add('hidden');
+     currentRecipeData = null;
+ }
+ 
+ async function shareRecipeWithDescription() {
+     if (!currentRecipeData) return;
+     
+     const customDescription = document.getElementById('custom-description').value.trim();
+     const description = customDescription || currentRecipeData.recipe_data.description;
+     
+     try {
+         const response = await fetch('/api/recipes/share', {
+             method: 'POST',
+             headers: {
+                 'Content-Type': 'application/json',
+             },
+             body: JSON.stringify({
+                 ...currentRecipeData,
+                 description: description
+             })
+         });
+         
+         const data = await response.json();
+         
+         if (data.success) {
+             // Copy link to clipboard
+             const shareUrl = `https://www.fruitcalculator.dohmboy64.com/share/recipe_${data.share_id}`;
+             await navigator.clipboard.writeText(shareUrl);
+             
+             // Show success message
+             alert('Recipe shared successfully! Link copied to clipboard.');
+             
+             // Close modal
+             closeDescriptionModal();
+         } else {
+             alert('Error sharing recipe: ' + data.error);
+         }
+     } catch (error) {
+         console.error('Error sharing recipe:', error);
+         alert('Error sharing recipe. Please try again.');
+     }
+ }
+ 
+ function shareRecipeFromModal(recipeName, recipeData) {
+     // Close the recipe modal first
+     closeRecipeModal();
+     
+     // Create recipe data structure for sharing
+     currentRecipeData = {
+         recipe_name: recipeName,
+         recipe_data: recipeData,
+         ingredients: recipeData.ingredients || {},
+         shop_seeds_only: false, // Default for modal sharing
+         generated_at: new Date().toISOString()
+     };
+     
+     // Show custom description modal
+     document.getElementById('description-modal').classList.remove('hidden');
+     document.getElementById('custom-description').value = '';
+ }
 </script>
 {% endblock %}

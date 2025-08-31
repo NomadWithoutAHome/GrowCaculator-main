@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}{{ recipe_data.recipe_name }} Recipe - Grow Calculator{% endblock %}
+
+{% block meta_description %}Check out this {{ recipe_data.recipe_name }} recipe generated in Roblox Grow A Garden! View ingredients, cooking time, and create your own recipes.{% endblock %}
+
+{% block meta_keywords %}{{ recipe_data.recipe_name }}, recipe, grow a garden, cooking, ingredients, food crafting{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="text-center py-12 bg-gradient-to-b from-orange-600 to-orange-800 text-white">
+    <div class="max-w-4xl mx-auto px-4">
+        <h1 class="text-4xl md:text-6xl font-bold mb-4">🍽️ Shared Recipe</h1>
+        <p class="text-xl md:text-2xl text-orange-100">
+            Someone shared their recipe creation with you!
+        </p>
+    </div>
+</section>
+
+<!-- Recipe Display Section -->
+<main class="w-full max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-gray-800 rounded-lg shadow-lg p-8">
+        <!-- Recipe Header -->
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-orange-400 mb-4">{{ recipe_data.recipe_name }}</h2>
+            
+            <!-- Food Image -->
+            <div class="flex justify-center mb-6">
+                <img src="/static/img/food_{{ recipe_data.recipe_name.lower().replace(' ', '_') }}.webp" 
+                     alt="{{ recipe_data.recipe_name }}" 
+                     class="w-48 h-48 object-contain rounded-lg border-2 border-orange-400/30"
+                     onerror="this.style.display='none'">
+            </div>
+            
+            <!-- Shop Seeds Badge -->
+            {% if recipe_data.shop_seeds_only %}
+            <div class="bg-green-600 text-white px-4 py-2 rounded-full text-sm mb-4 inline-block">
+                🌱 Shop Seeds Only
+            </div>
+            {% endif %}
+            
+            <!-- Recipe Description -->
+            <p class="text-gray-300 text-lg mb-6">{{ recipe_data.description }}</p>
+        </div>
+        
+        <!-- Recipe Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-gray-700 p-4 rounded-lg text-center">
+                <div class="text-2xl font-bold text-orange-400 mb-2">⏱️</div>
+                <div class="text-white font-semibold">{{ recipe_data.recipe_data.base_time }}s</div>
+                <div class="text-gray-400 text-sm">Cooking Time</div>
+            </div>
+            <div class="bg-gray-700 p-4 rounded-lg text-center">
+                <div class="text-2xl font-bold text-blue-400 mb-2">⚖️</div>
+                <div class="text-white font-semibold">{{ recipe_data.recipe_data.base_weight }}kg</div>
+                <div class="text-gray-400 text-sm">Food Weight</div>
+            </div>
+            <div class="bg-gray-700 p-4 rounded-lg text-center">
+                <div class="text-2xl font-bold text-purple-400 mb-2">🏆</div>
+                <div class="text-white font-semibold">{{ recipe_data.recipe_data.priority }}</div>
+                <div class="text-gray-400 text-sm">Priority</div>
+            </div>
+        </div>
+        
+        <!-- Ingredients Section -->
+        <div class="mb-8">
+            <h3 class="text-2xl font-bold text-green-400 mb-6 text-center">🧪 Generated Ingredients</h3>
+            <div class="space-y-6">
+                {% for category, items in recipe_data.ingredients.items() %}
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <h4 class="text-lg font-semibold text-white mb-3">{{ category }}</h4>
+                    <div class="flex flex-wrap gap-2">
+                        {% for item in items %}
+                        {% set is_shop_seed = recipe_data.shop_seeds_only and item.item in ['Carrot', 'Strawberry', 'Blueberry', 'Orange Tulip', 'Tomato', 'Corn', 'Daffodil', 'Watermelon', 'Pumpkin', 'Apple', 'Bamboo', 'Coconut', 'Cactus', 'Dragon Fruit', 'Mango', 'Grape', 'Mushroom', 'Pepper', 'Cacoa', 'Beanstalk', 'Ember Lily', 'Sugar Apple', 'Burning Bud', 'Giant Pinecone', 'Elder Strawberry', 'Romanesco'] %}
+                        <span class="inline-block {{ 'bg-green-600' if is_shop_seed else 'bg-blue-600' }} text-white px-3 py-1 rounded-full text-sm">
+                            {% if is_shop_seed %}🌱 {% endif %}{{ item.item }}
+                            {% if item.traits %}
+                            <span class="text-xs opacity-75">({{ item.traits|join(', ') }})</span>
+                            {% endif %}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Share Info -->
+        <div class="bg-gray-700 p-4 rounded-lg mb-8">
+            <div class="text-center text-gray-400 text-sm">
+                <p>This recipe was shared on {{ created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                <p class="mt-2">Share ID: {{ share_id }}</p>
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="text-center space-y-4">
+            <a href="/recipes" class="inline-block bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+                🎲 Generate Your Own Recipe
+            </a>
+            <div class="text-gray-400 text-sm">
+                <p>Want to create your own recipes? Try our Recipe Generator!</p>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

@@ -373,6 +373,58 @@ async def get_cooking_mechanics():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.post("/api/recipes/share")
+async def share_recipe(recipe_data: dict):
+    """Share a recipe with a unique link."""
+    try:
+        # Generate unique share ID
+        import time
+        import random
+        share_id = f"{int(time.time())}_{random.randint(1000, 9999)}"
+        
+        # Add share_id to recipe data for Discord webhook
+        recipe_data['share_id'] = share_id
+        recipe_data['result_type'] = 'recipe'
+        
+        # Store the shared recipe
+        shared_result = shared_results_service.create_shared_result(
+            share_id=share_id,
+            result_type="recipe",
+            data=recipe_data
+        )
+        
+        # Send Discord webhook notification
+        await discord_webhook_service.send_calculation_result(recipe_data)
+        
+        return {
+            "success": True,
+            "share_id": share_id,
+            "share_url": f"https://www.fruitcalculator.dohmboy64.com/share/recipe_{share_id}"
+        }
+    except Exception as e:
+        logger.error(f"Error sharing recipe: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/share/recipe_{share_id}")
+async def get_shared_recipe(share_id: str):
+    """Get a shared recipe by share ID."""
+    try:
+        shared_result = shared_results_service.get_shared_result(share_id)
+        if not shared_result:
+            raise HTTPException(status_code=404, detail="Shared recipe not found")
+        
+        return templates.TemplateResponse("share_recipe.html", {
+            "request": {},
+            "recipe_data": shared_result["data"],
+            "share_id": share_id,
+            "created_at": shared_result["created_at"]
+        })
+    except Exception as e:
+        logger.error(f"Error getting shared recipe: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/api/recipes/shop-seeds")
 async def get_shop_seeds():
     """Get list of shop seeds (basic seeds available in the shop)."""

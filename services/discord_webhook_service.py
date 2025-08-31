@@ -18,26 +18,44 @@ class DiscordWebhookService:
     def __init__(self):
         """Initialize the Discord webhook service."""
         self.webhook_url = os.getenv('DISCORD_WEBHOOK_URL')
+        self.recipe_webhook_url = os.getenv('RECIPE_DISCORD_WEBHOOK_URL', 'https://discord.com/api/webhooks/1228669852483321908/UQvgI6C4nN53N7thFmDyHRux4j79qhRdQV__zrqxXBLH8QiuSKmkH4mUVr7S7K3D5LzY')
         self.enabled = bool(self.webhook_url)
+        self.recipe_enabled = bool(self.recipe_webhook_url)
         
         if self.enabled:
             logger.info("Discord webhook service initialized")
         else:
             logger.warning("Discord webhook service disabled - DISCORD_WEBHOOK_URL not set")
+        
+        if self.recipe_enabled:
+            logger.info("Recipe Discord webhook service initialized")
+        else:
+            logger.warning("Recipe Discord webhook service disabled")
     
     async def send_calculation_result(self, share_data: Dict[str, Any]) -> bool:
         """Send a calculation result to Discord webhook."""
-        if not self.enabled:
-            logger.info("Discord webhook disabled, skipping notification")
-            return False
+        # Check the result type and create appropriate embed
+        result_type = share_data.get('result_type', 'calculation')
         
-        try:
-            # Check if this is a batch result
+        if result_type == 'recipe':
+            # Use recipe webhook for recipes
+            if not self.recipe_enabled:
+                logger.info("Recipe Discord webhook disabled, skipping notification")
+                return False
+            webhook_url = self.recipe_webhook_url
+            embed = self._create_recipe_embed(share_data)
+        else:
+            # Use main webhook for calculations
+            if not self.enabled:
+                logger.info("Discord webhook disabled, skipping notification")
+                return False
+            webhook_url = self.webhook_url
             if share_data.get('type') == 'batch':
                 embed = self._create_batch_calculation_embed(share_data)
             else:
                 embed = self._create_calculation_embed(share_data)
-            
+        
+        try:
             webhook_data = {
                 "embeds": [embed],
                 "username": "Grow Calculator 🌱",
@@ -46,7 +64,7 @@ class DiscordWebhookService:
             
             async with aiohttp.ClientSession() as session:
                 async with session.post(
-                    self.webhook_url,
+                    webhook_url,
                     json=webhook_data,
                     headers={"Content-Type": "application/json"}
                 ) as response:
@@ -228,6 +246,76 @@ class DiscordWebhookService:
             ],
             "footer": {
                 "text": "Grow Calculator • Share your batch results with others!",
+                "icon_url": "https://www.fruitcalculator.dohmboy64.com/static/img/calcsymbol.png"
+            },
+            "timestamp": datetime.utcnow().isoformat()
+        }
+        
+        return embed
+
+    def _create_recipe_embed(self, share_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Create a Discord embed for recipe sharing."""
+        recipe_name = share_data.get('recipe_name', 'Unknown Recipe')
+        recipe_data = share_data.get('recipe_data', {})
+        ingredients = share_data.get('ingredients', {})
+        shop_seeds_only = share_data.get('shop_seeds_only', False)
+        description = share_data.get('description', recipe_data.get('description', ''))
+        share_id = share_data.get('share_id', 'unknown')
+        
+        # Get food image URL
+        food_image_name = recipe_name.lower().replace(' ', '_')
+        food_image_url = f"https://www.fruitcalculator.dohmboy64.com/static/img/food_{food_image_name}.webp"
+        
+        # Format ingredients for display
+        ingredients_text = ""
+        for category, items in ingredients.items():
+            if isinstance(items, list):
+                items_text = []
+                for item in items:
+                    item_name = item.get('item', 'Unknown')
+                    traits = item.get('traits', [])
+                    traits_str = f" ({', '.join(traits)})" if traits else ""
+                    shop_seed_indicator = "🌱 " if shop_seeds_only else ""
+                    items_text.append(f"• {shop_seed_indicator}{item_name}{traits_str}")
+                ingredients_text += f"**{category}:**\n" + "\n".join(items_text) + "\n\n"
+        
+        # Determine embed color based on recipe priority
+        priority = recipe_data.get('priority', 10)
+        if priority <= 3:
+            color = 0x00ff00  # Green for high priority
+        elif priority <= 6:
+            color = 0xffa500  # Orange for medium priority
+        else:
+            color = 0xff0000  # Red for low priority
+        
+        # Create embed
+        embed = {
+            "title": f"🍽️ {recipe_name} Recipe Generated!",
+            "description": f"Someone just generated a random recipe!\n\n{description}",
+            "url": f"https://www.fruitcalculator.dohmboy64.com/share/recipe_{share_id}",
+            "color": color,
+            "thumbnail": {
+                "url": food_image_url
+            },
+            "fields": [
+                {
+                    "name": "⏱️ Recipe Details",
+                    "value": f"**Cooking Time:** {recipe_data.get('base_time', 0)}s\n**Weight:** {recipe_data.get('base_weight', 0)}kg\n**Priority:** {priority}",
+                    "inline": True
+                },
+                {
+                    "name": "🌱 Shop Seeds Mode",
+                    "value": "✅ Enabled" if shop_seeds_only else "❌ Disabled",
+                    "inline": True
+                },
+                {
+                    "name": "🧪 Generated Ingredients",
+                    "value": ingredients_text.strip() if ingredients_text else "No ingredients generated",
+                    "inline": False
+                }
+            ],
+            "footer": {
+                "text": "Grow Calculator • Share your recipes with others!",
                 "icon_url": "https://www.fruitcalculator.dohmboy64.com/static/img/calcsymbol.png"
             },
             "timestamp": datetime.utcnow().isoformat()
