@@ -63,13 +63,6 @@ async def about(request: Request):
     )
 
 
-@router.get("/share/{share_id}", response_class=HTMLResponse)
-async def share_result(request: Request, share_id: str):
-    """Share results page."""
-    return templates.TemplateResponse(
-        "share.html",
-        {"request": request, "share_id": share_id}
-    )
 
 
 @router.get("/traits")
@@ -423,6 +416,15 @@ async def get_shared_recipe(share_id: str):
     except Exception as e:
         logger.error(f"Error getting shared recipe: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/share/{share_id}", response_class=HTMLResponse)
+async def share_result(request: Request, share_id: str):
+    """Share results page."""
+    return templates.TemplateResponse(
+        "share.html",
+        {"request": request, "share_id": share_id}
+    )
 
 
 @router.get("/api/recipes/shop-seeds")
