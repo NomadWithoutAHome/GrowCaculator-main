@@ -8,110 +8,111 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="text-center py-12 bg-gradient-to-b from-orange-600 to-orange-800 text-white">
+<section class="text-center py-8 md:py-12 bg-gradient-to-b from-orange-600 to-orange-800 text-white">
     <div class="max-w-4xl mx-auto px-4">
-        <h1 class="text-4xl md:text-6xl font-bold mb-4">Food Recipe Generator</h1>
-        <p class="text-xl md:text-2xl text-orange-100">
+        <h1 class="text-3xl md:text-5xl font-bold mb-4">Food Recipe Generator</h1>
+        <p class="text-lg md:text-xl text-orange-100">
             Discover cooking mechanics and generate random recipes!
         </p>
     </div>
 </section>
 
 <!-- Statistics Summary Section -->
-<section class="bg-gray-900 py-8">
+<section class="bg-gray-900 py-6 md:py-8">
     <div class="max-w-6xl mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
             <div class="text-center">
-                <div class="text-4xl font-bold text-orange-400 mb-2" id="total-recipes">-</div>
-                <div class="text-gray-300">Total Recipes</div>
+                <div class="text-3xl md:text-4xl font-bold text-orange-400 mb-2" id="total-recipes">-</div>
+                <div class="text-gray-300 text-sm md:text-base">Total Recipes</div>
             </div>
             <div class="text-center">
-                <div class="text-4xl font-bold text-blue-400 mb-2" id="total-combinations">-</div>
-                <div class="text-gray-300">Total Combinations</div>
+                <div class="text-3xl md:text-4xl font-bold text-blue-400 mb-2" id="total-combinations">-</div>
+                <div class="text-gray-300 text-sm md:text-base">Total Combinations</div>
             </div>
             <div class="text-center">
-                <div class="text-4xl font-bold text-green-400 mb-2" id="avg-combinations">-</div>
-                <div class="text-gray-300">Avg per Recipe</div>
+                <div class="text-3xl md:text-4xl font-bold text-green-400 mb-2" id="avg-combinations">-</div>
+                <div class="text-gray-300 text-sm md:text-base">Avg per Recipe</div>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Main Content -->
-<main class="w-full max-w-6xl mx-auto px-4 py-8">
+<main class="w-full max-w-6xl mx-auto px-4 py-6 md:py-8">
     
     <!-- Recipe Generator Section -->
-    <section class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
-        <h2 class="text-2xl font-bold mb-6 text-orange-400">🎲 Random Recipe Generator</h2>
+    <section class="bg-gray-800 p-4 md:p-6 rounded-lg shadow-lg mb-6 md:mb-8">
+        <h2 class="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-orange-400">🎲 Random Recipe Generator</h2>
         
-        <div class="bg-gray-700 p-6 rounded-lg">
-            <div class="flex flex-col lg:flex-row gap-4 items-center mb-4">
-                <select id="recipe-selector" class="flex-1 p-3 rounded-lg bg-gray-600 text-white border border-gray-500 focus:border-orange-400 focus:outline-none">
+        <div class="bg-gray-700 p-4 md:p-6 rounded-lg">
+            <div class="flex flex-col lg:flex-row gap-3 md:gap-4 items-center mb-4">
+                <select id="recipe-selector" class="flex-1 p-2 md:p-3 rounded-lg bg-gray-600 text-white border border-gray-500 focus:border-orange-400 focus:outline-none" aria-label="Select a recipe">
                     <option value="">Select a recipe...</option>
                 </select>
-                <button id="generate-recipe" class="px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg transition-colors">
+                <button id="generate-recipe" class="w-full lg:w-auto px-4 md:px-6 py-2 md:py-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2">
+                    <span class="loading-spinner hidden"></span>
                     🎲 Generate Recipe
                 </button>
             </div>
             
             <!-- Shop Seeds Toggle -->
-            <div class="flex items-center justify-center gap-3 p-3 bg-gray-600 rounded-lg">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-2 p-3 bg-gray-600 rounded-lg mb-4">
                 <label class="flex items-center gap-2 text-white cursor-pointer">
-                    <input type="checkbox" id="shop-seeds-only" class="w-4 h-4 text-orange-600 bg-gray-700 border-gray-500 rounded focus:ring-orange-500 focus:ring-2">
+                    <input type="checkbox" id="shop-seeds-only" class="w-4 h-4 text-orange-600 bg-gray-700 border-gray-500 rounded focus:ring-orange-500 focus:ring-2" aria-describedby="shop-seeds-help">
                     <span class="text-sm font-medium">🌱 Shop Seeds Only</span>
                 </label>
-                <span class="text-gray-400 text-xs">(Use only basic seeds available in the shop)</span>
+                <span id="shop-seeds-help" class="text-gray-400 text-xs">(Use only basic seeds available in the shop)</span>
             </div>
             
-            <div id="recipe-result" class="mt-6 min-h-[200px] bg-gray-600 rounded-lg p-4">
+            <div id="recipe-result" class="min-h-[160px] md:min-h-[200px] bg-gray-600 rounded-lg p-4 flex items-center justify-center">
                 <p class="text-gray-400 text-center">Select a recipe and click generate to see random ingredient combinations!</p>
             </div>
         </div>
     </section>
     
     <!-- Cooking Mechanics Section -->
-    <section class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
-        <h2 class="text-2xl font-bold mb-6 text-green-400">📚 How Cooking Works</h2>
+    <section class="bg-gray-800 p-4 md:p-6 rounded-lg shadow-lg mb-6 md:mb-8">
+        <h2 class="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-green-400">📚 How Cooking Works</h2>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div class="bg-gray-700 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold text-green-400 mb-2">⏱️ Cooking Time</h3>
-                <p class="text-gray-300 text-sm">Each recipe has a base cooking time in seconds. More complex recipes take longer to prepare.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+            <div class="bg-gray-700 p-3 md:p-4 rounded-lg">
+                <h3 class="text-base md:text-lg font-semibold text-green-400 mb-2">⏱️ Cooking Time</h3>
+                <p class="text-gray-300 text-xs md:text-sm">Each recipe has a base cooking time in seconds. More complex recipes take longer to prepare.</p>
             </div>
             
-            <div class="bg-gray-700 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold text-blue-400 mb-2">⚖️ Food Weight</h3>
-                <p class="text-gray-300 text-sm">Cooked food has a specific weight that affects storage and transportation in the game.</p>
+            <div class="bg-gray-700 p-3 md:p-4 rounded-lg">
+                <h3 class="text-base md:text-lg font-semibold text-blue-400 mb-2">⚖️ Food Weight</h3>
+                <p class="text-gray-300 text-xs md:text-sm">Cooked food has a specific weight that affects storage and transportation in the game.</p>
             </div>
             
-            <div class="bg-gray-700 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold text-purple-400 mb-2">🏆 Priority System</h3>
-                <p class="text-gray-300 text-sm">Recipes have priority levels. Lower numbers mean higher priority and better value.</p>
+            <div class="bg-gray-700 p-3 md:p-4 rounded-lg">
+                <h3 class="text-base md:text-lg font-semibold text-purple-400 mb-2">🏆 Priority System</h3>
+                <p class="text-gray-300 text-xs md:text-sm">Recipes have priority levels. Lower numbers mean higher priority and better value.</p>
             </div>
             
-            <div class="bg-gray-700 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold text-yellow-400 mb-2">🧪 Ingredient Categories</h3>
-                <p class="text-gray-300 text-sm">Ingredients are grouped by categories like Bread, Meat, Leafy, Sweet, etc.</p>
+            <div class="bg-gray-700 p-3 md:p-4 rounded-lg">
+                <h3 class="text-base md:text-lg font-semibold text-yellow-400 mb-2">🧪 Ingredient Categories</h3>
+                <p class="text-gray-300 text-xs md:text-sm">Ingredients are grouped by categories like Bread, Meat, Leafy, Sweet, etc.</p>
             </div>
             
-            <div class="bg-gray-700 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold text-red-400 mb-2">🔄 Random Generation</h3>
-                <p class="text-gray-300 text-sm">Each category can use different plants, creating unique recipe variations every time.</p>
+            <div class="bg-gray-700 p-3 md:p-4 rounded-lg">
+                <h3 class="text-base md:text-lg font-semibold text-red-400 mb-2">🔄 Random Generation</h3>
+                <p class="text-gray-300 text-xs md:text-sm">Each category can use different plants, creating unique recipe variations every time.</p>
             </div>
             
-            <div class="bg-gray-700 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold text-indigo-400 mb-2">🌱 Plant Traits</h3>
-                <p class="text-gray-300 text-sm">Plants with specific traits can be used in multiple ingredient categories.</p>
+            <div class="bg-gray-700 p-3 md:p-4 rounded-lg">
+                <h3 class="text-base md:text-lg font-semibold text-indigo-400 mb-2">🌱 Plant Traits</h3>
+                <p class="text-gray-300 text-xs md:text-sm">Plants with specific traits can be used in multiple ingredient categories.</p>
             </div>
         </div>
     </section>
     
     <!-- Recipe Browser Section -->
-    <section class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
-        <h2 class="text-2xl font-bold mb-6 text-yellow-400">🍳 Recipe Browser</h2>
+    <section class="bg-gray-800 p-4 md:p-6 rounded-lg shadow-lg mb-6 md:mb-8">
+        <h2 class="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-yellow-400">🍳 Recipe Browser</h2>
         
         <div class="mb-4">
-            <div class="flex flex-wrap gap-2 mb-4">
+            <div class="flex flex-wrap gap-2 mb-3">
                 <button class="difficulty-filter px-3 py-2 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition-colors" data-difficulty="">All Recipes</button>
                 <button class="difficulty-filter px-3 py-2 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition-colors" data-difficulty="Easy">Easy (1-2 ingredients)</button>
                 <button class="difficulty-filter px-3 py-2 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition-colors" data-difficulty="Medium">Medium (3-4 ingredients)</button>
@@ -121,33 +122,43 @@
                 type="text" 
                 id="recipe-search" 
                 placeholder="Search recipes..." 
-                class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-yellow-400 focus:outline-none transition-colors"
+                class="w-full p-2 md:p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-yellow-400 focus:outline-none transition-colors"
+                aria-label="Search recipes"
             >
         </div>
         
-        <div id="recipes-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div id="recipes-loading" class="text-center py-8 hidden">
+            <div class="inline-block loading-spinner-large"></div>
+            <p class="text-gray-400 mt-2">Loading recipes...</p>
+        </div>
+        
+        <div id="recipes-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
             <!-- Recipes will be populated by JavaScript -->
+        </div>
+        
+        <div id="no-recipes-message" class="text-center py-8 hidden">
+            <p class="text-gray-400">No recipes found matching your search.</p>
         </div>
     </section>
     
     <!-- Ingredient Categories Section -->
-    <section class="bg-gray-800 p-6 rounded-lg shadow-lg hidden">
-        <h2 class="text-2xl font-bold mb-6 text-blue-400">🥬 Ingredient Categories</h2>
+    <section class="bg-gray-800 p-4 md:p-6 rounded-lg shadow-lg hidden">
+        <h2 class="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-blue-400">🥬 Ingredient Categories</h2>
         
-        <div id="categories-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div id="categories-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
             <!-- Categories will be populated by JavaScript -->
         </div>
     </section>
 </main>
 
  <!-- Recipe Details Modal -->
- <div id="recipe-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+ <div id="recipe-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50" aria-hidden="true">
      <div class="flex items-center justify-center min-h-screen p-4">
-         <div class="bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-             <div class="p-6">
+         <div class="bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="modal-recipe-name">
+             <div class="p-4 md:p-6">
                  <div class="relative flex items-center justify-center mb-4">
-                     <h3 id="modal-recipe-name" class="text-xl font-bold text-orange-400"></h3>
-                     <button onclick="closeRecipeModal()" class="absolute right-0 text-gray-400 hover:text-white text-2xl">&times;</button>
+                     <h3 id="modal-recipe-name" class="text-lg md:text-xl font-bold text-orange-400"></h3>
+                     <button onclick="closeRecipeModal()" class="absolute right-0 text-gray-400 hover:text-white text-2xl" aria-label="Close modal">&times;</button>
                  </div>
                  
                  <div id="modal-recipe-content">
@@ -159,23 +170,24 @@
  </div>
  
  <!-- Custom Description Modal -->
- <div id="description-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+ <div id="description-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50" aria-hidden="true">
      <div class="flex items-center justify-center min-h-screen p-4">
-         <div class="bg-gray-800 rounded-lg shadow-xl max-w-md w-full">
-             <div class="p-6">
+         <div class="bg-gray-800 rounded-lg shadow-xl max-w-md w-full" role="dialog" aria-modal="true" aria-labelledby="description-modal-title">
+             <div class="p-4 md:p-6">
                  <div class="flex items-center justify-between mb-4">
-                     <h3 class="text-xl font-bold text-orange-400">📝 Custom Recipe Description</h3>
-                     <button onclick="closeDescriptionModal()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+                     <h3 id="description-modal-title" class="text-lg md:text-xl font-bold text-orange-400">📝 Custom Recipe Description</h3>
+                     <button onclick="closeDescriptionModal()" class="text-gray-400 hover:text-white text-2xl" aria-label="Close modal">&times;</button>
                  </div>
                  
-                 <p class="text-gray-300 mb-4">Add a personal touch to your shared recipe (optional):</p>
+                 <p class="text-gray-300 mb-4 text-sm md:text-base">Add a personal touch to your shared recipe (optional):</p>
                  
                  <textarea id="custom-description" 
                            placeholder="Describe your recipe creation, cooking tips, or why you love this combination..."
                            class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-orange-400 focus:outline-none resize-none"
-                           rows="4"></textarea>
+                           rows="4"
+                           aria-label="Custom recipe description"></textarea>
                  
-                 <div class="flex gap-3 mt-6">
+                 <div class="flex flex-col sm:flex-row gap-3 mt-6">
                      <button onclick="shareRecipeWithDescription()" 
                              class="flex-1 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
                          📤 Share Recipe
@@ -189,6 +201,45 @@
          </div>
      </div>
  </div>
+
+<style>
+.loading-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #ea580c;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-spinner-large {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #ea580c;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Focus styles for accessibility */
+button:focus, select:focus, input:focus {
+    outline: 2px solid #ea580c;
+    outline-offset: 2px;
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+    .modal-content {
+        margin: 1rem;
+        width: calc(100% - 2rem);
+    }
+}
+</style>
 
 <script>
 // Recipes page specific JavaScript
@@ -232,10 +283,23 @@ function setupEventHandlers() {
             searchRecipes(this.value);
         }, 300);
     });
+    
+    // Close modals with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            if (!document.getElementById('recipe-modal').classList.contains('hidden')) {
+                closeRecipeModal();
+            }
+            if (!document.getElementById('description-modal').classList.contains('hidden')) {
+                closeDescriptionModal();
+            }
+        }
+    });
 }
 
 async function loadAllRecipesWithStats() {
     try {
+        showLoading('recipes-grid', 'recipes-loading');
         const response = await fetch('/api/recipes/all-with-stats');
         const data = await response.json();
         
@@ -243,9 +307,19 @@ async function loadAllRecipesWithStats() {
             populateRecipeSelector(data.recipes);
             displayRecipesGrid(data.recipes);
             updateStatistics(data.recipes);
+            hideLoading('recipes-loading');
         }
     } catch (error) {
         console.error('Error loading recipes:', error);
+        document.getElementById('recipes-grid').innerHTML = `
+            <div class="col-span-full text-center py-8">
+                <p class="text-red-400">Error loading recipes. Please try again.</p>
+                <button onclick="loadAllRecipesWithStats()" class="mt-4 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg">
+                    Retry
+                </button>
+            </div>
+        `;
+        hideLoading('recipes-loading');
     }
 }
 
@@ -263,18 +337,27 @@ function populateRecipeSelector(recipes) {
 
 function displayRecipesGrid(recipes) {
     const grid = document.getElementById('recipes-grid');
+    const noRecipesMessage = document.getElementById('no-recipes-message');
+    
+    if (Object.keys(recipes).length === 0) {
+        grid.innerHTML = '';
+        noRecipesMessage.classList.remove('hidden');
+        return;
+    }
+    
+    noRecipesMessage.classList.add('hidden');
     
     const recipesHtml = Object.entries(recipes).map(([name, recipe]) => {
         const difficulty = getDifficulty(recipe.count);
         const difficultyColor = getDifficultyColor(difficulty);
         
         return `
-            <div class="bg-gray-700 p-4 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors" onclick="showRecipeDetails('${name}')">
+            <div class="bg-gray-700 p-3 md:p-4 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors" onclick="showRecipeDetails('${name}')" role="button" tabindex="0" aria-label="View details for ${name}">
                 <div class="flex items-center justify-between mb-2">
-                    <h4 class="font-semibold text-white">${name}</h4>
-                    <span class="bg-${difficultyColor} text-white px-2 py-1 rounded text-sm">${difficulty}</span>
+                    <h4 class="font-semibold text-white text-base md:text-lg">${name}</h4>
+                    <span class="bg-${difficultyColor} text-white px-2 py-1 rounded text-xs md:text-sm">${difficulty}</span>
                 </div>
-                <p class="text-gray-400 text-sm mb-2">${recipe.description}</p>
+                <p class="text-gray-400 text-xs md:text-sm mb-2">${recipe.description}</p>
                 
                 <div class="flex justify-between text-xs text-gray-500">
                     <span>⏱️ ${recipe.base_time}s</span>
@@ -291,7 +374,7 @@ function displayRecipesGrid(recipes) {
 function getDifficulty(count) {
     if (count <= 2) return "Easy";
     if (count <= 4) return "Medium";
-    return "Medium"; // All recipes with 4+ ingredients are now Medium
+    return "Medium";
 }
 
 function getDifficultyColor(difficulty) {
@@ -305,22 +388,34 @@ function getDifficultyColor(difficulty) {
 async function generateRandomRecipe() {
     const recipeName = document.getElementById('recipe-selector').value;
     if (!recipeName) {
-        alert('Please select a recipe first!');
+        showNotification('Please select a recipe first!', 'error');
         return;
     }
     
+    const generateButton = document.getElementById('generate-recipe');
+    const spinner = generateButton.querySelector('.loading-spinner');
     const shopSeedsOnly = document.getElementById('shop-seeds-only').checked;
     
     try {
+        // Show loading state
+        generateButton.disabled = true;
+        spinner.classList.remove('hidden');
+        
         const response = await fetch(`/api/recipes/generate/${encodeURIComponent(recipeName)}?shop_seeds_only=${shopSeedsOnly}`);
         const data = await response.json();
         
         if (data.success) {
             displayGeneratedRecipe(data.recipe);
+        } else {
+            showNotification('Error generating recipe: ' + (data.error || 'Unknown error'), 'error');
         }
     } catch (error) {
         console.error('Error generating recipe:', error);
         document.getElementById('recipe-result').innerHTML = '<p class="text-red-400 text-center">Error generating recipe</p>';
+        showNotification('Error generating recipe. Please try again.', 'error');
+    } finally {
+        generateButton.disabled = false;
+        spinner.classList.add('hidden');
     }
 }
 
@@ -333,62 +428,64 @@ function displayGeneratedRecipe(recipe) {
             const isShopSeed = window.shopSeeds && window.shopSeeds.includes(item.item);
             const bgColor = isShopSeed ? 'bg-green-600' : 'bg-blue-600';
             const shopSeedIcon = isShopSeed ? '🌱 ' : '';
-            return `<span class="inline-block ${bgColor} text-white px-3 py-1 rounded-full text-sm mr-2 mb-2">${shopSeedIcon}${item.item}${traitsStr}</span>`;
+            return `<span class="inline-block ${bgColor} text-white px-2 py-1 rounded-full text-xs mr-1 mb-1">${shopSeedIcon}${item.item}${traitsStr}</span>`;
         }).join('');
         
         return `
             <div class="mb-3">
-                <h4 class="text-lg font-semibold text-white mb-2">${category}</h4>
+                <h4 class="text-base font-semibold text-white mb-2">${category}</h4>
                 <div>${itemsHtml}</div>
             </div>
         `;
     }).join('');
     
     const shopSeedsOnly = document.getElementById('shop-seeds-only').checked;
-    const shopSeedsBadge = shopSeedsOnly ? '<div class="bg-green-600 text-white px-3 py-1 rounded-full text-sm mb-4 inline-block">🌱 Shop Seeds Only</div>' : '';
+    const shopSeedsBadge = shopSeedsOnly ? '<div class="bg-green-600 text-white px-2 py-1 rounded-full text-xs mb-3 inline-block">🌱 Shop Seeds Only</div>' : '';
     
     // Get the food image filename
     const foodImageName = recipe.recipe_name.toLowerCase().replace(/\s+/g, '_');
     const foodImagePath = `/static/img/food_${foodImageName}.webp`;
+    const fallbackImage = '/static/img/food_placeholder.webp';
     
     resultDiv.innerHTML = `
         <div class="text-center">
-            <h3 class="text-2xl font-bold text-orange-400 mb-4">${recipe.recipe_name}</h3>
+            <h3 class="text-xl md:text-2xl font-bold text-orange-400 mb-3">${recipe.recipe_name}</h3>
             
             <!-- Food Image -->
-            <div class="flex justify-center mb-4">
+            <div class="flex justify-center mb-3">
                 <img src="${foodImagePath}" alt="${recipe.recipe_name}" 
-                     class="w-32 h-32 object-contain rounded-lg border-2 border-orange-400/30"
-                     onerror="this.style.display='none'">
+                     class="w-24 h-24 md:w-32 md:h-32 object-contain rounded-lg border-2 border-orange-400/30"
+                     onerror="this.onerror=null; this.src='${fallbackImage}'">
             </div>
             
             ${shopSeedsBadge}
-            <div class="mb-4">
+            <div class="mb-3">
                 ${ingredientsHtml}
             </div>
-                         <div class="grid grid-cols-3 gap-4 text-sm mb-4">
-                 <div class="bg-gray-700 p-2 rounded">
-                     <span class="text-orange-400">⏱️ Time:</span> ${recipe.recipe_data.base_time}s
-                 </div>
-                 <div class="bg-gray-700 p-2 rounded">
-                     <span class="text-blue-400">⚖️ Weight:</span> ${recipe.recipe_data.base_weight}kg
-                 </div>
-                 <div class="bg-gray-700 p-2 rounded">
-                     <span class="text-purple-400">🏆 Priority:</span> ${recipe.recipe_data.priority}
-                 </div>
-             </div>
-             
-             <!-- Share Button -->
-             <button onclick="shareRecipe('${recipe.recipe_name}', ${JSON.stringify(recipe).replace(/'/g, "\\'")})" 
-                     class="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
-                 📤 Share Recipe
-             </button>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs md:text-sm mb-3">
+                <div class="bg-gray-700 p-2 rounded">
+                    <span class="text-orange-400">⏱️ Time:</span> ${recipe.recipe_data.base_time}s
+                </div>
+                <div class="bg-gray-700 p-2 rounded">
+                    <span class="text-blue-400">⚖️ Weight:</span> ${recipe.recipe_data.base_weight}kg
+                </div>
+                <div class="bg-gray-700 p-2 rounded">
+                    <span class="text-purple-400">🏆 Priority:</span> ${recipe.recipe_data.priority}
+                </div>
+            </div>
+            
+            <!-- Share Button -->
+            <button onclick="shareRecipe('${recipe.recipe_name}', ${JSON.stringify(recipe).replace(/'/g, "\\'")})" 
+                    class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm md:text-base">
+                📤 Share Recipe
+            </button>
         </div>
     `;
 }
 
 async function loadRecipesByDifficulty(difficulty) {
     try {
+        showLoading('recipes-grid', 'recipes-loading');
         const url = difficulty ? `/api/recipes/difficulty/${difficulty}` : '/api/recipes/all';
         const response = await fetch(url);
         const data = await response.json();
@@ -396,28 +493,33 @@ async function loadRecipesByDifficulty(difficulty) {
         if (data.success) {
             const recipes = difficulty ? data.recipes : data.recipes;
             displayRecipesGrid(Object.fromEntries(recipes));
+            hideLoading('recipes-loading');
         }
     } catch (error) {
         console.error('Error loading recipes by difficulty:', error);
+        hideLoading('recipes-loading');
     }
 }
 
 async function searchRecipes(query) {
     if (!query.trim()) {
-        loadAllRecipes();
+        loadAllRecipesWithStats();
         return;
     }
     
     try {
+        showLoading('recipes-grid', 'recipes-loading');
         const response = await fetch(`/api/recipes/search/${encodeURIComponent(query)}`);
         const data = await response.json();
         
         if (data.success) {
             const recipes = Object.fromEntries(data.results);
             displayRecipesGrid(recipes);
+            hideLoading('recipes-loading');
         }
     } catch (error) {
         console.error('Error searching recipes:', error);
+        hideLoading('recipes-loading');
     }
 }
 
@@ -453,9 +555,9 @@ function displayCategoriesGrid(categories) {
     
     const categoriesHtml = Object.entries(categories).map(([category, items]) => {
         return `
-            <div class="bg-gray-700 p-4 rounded-lg">
-                <h4 class="font-semibold text-white mb-2">${category}</h4>
-                <p class="text-gray-400 text-sm mb-2">${items.length} available items</p>
+            <div class="bg-gray-700 p-3 md:p-4 rounded-lg">
+                <h4 class="font-semibold text-white text-base md:text-lg mb-2">${category}</h4>
+                <p class="text-gray-400 text-xs md:text-sm mb-2">${items.length} available items</p>
                 <div class="text-xs text-gray-500">
                     ${items.slice(0, 5).join(', ')}${items.length > 5 ? ` +${items.length - 5} more` : ''}
                 </div>
@@ -468,6 +570,7 @@ function displayCategoriesGrid(categories) {
 
 async function showRecipeDetails(recipeName) {
     try {
+        showModalLoading();
         const response = await fetch(`/api/recipes/${encodeURIComponent(recipeName)}`);
         const data = await response.json();
         
@@ -476,7 +579,7 @@ async function showRecipeDetails(recipeName) {
             document.getElementById('modal-recipe-name').textContent = recipeName;
             
             const ingredientsHtml = Object.entries(recipe.ingredients).map(([category, count]) => 
-                `<span class="inline-block bg-blue-600 text-white px-3 py-1 rounded-full text-sm mr-2 mb-2">${category}: ${count}</span>`
+                `<span class="inline-block bg-blue-600 text-white px-2 py-1 rounded-full text-xs mr-1 mb-1">${category}: ${count}</span>`
             ).join('');
             
             // Get combinations data for this recipe
@@ -486,58 +589,77 @@ async function showRecipeDetails(recipeName) {
             const combinations = recipeWithCombinations ? recipeWithCombinations.possible_combinations : 0;
             const combinationsFormatted = recipeWithCombinations ? recipeWithCombinations.combinations_formatted : combinations.toString();
             
-                         // Get the food image filename for modal
-             const modalFoodImageName = recipeName.toLowerCase().replace(/\s+/g, '_');
-             const modalFoodImagePath = `/static/img/food_${modalFoodImageName}.webp`;
-             
-             document.getElementById('modal-recipe-content').innerHTML = `
-                 <div class="text-center">
-                     <!-- Food Image in Modal -->
-                     <div class="flex justify-center mb-4">
-                         <img src="${modalFoodImagePath}" alt="${recipeName}" 
-                              class="w-40 h-40 object-contain rounded-lg border-2 border-orange-400/30"
-                              onerror="this.style.display='none'">
-                     </div>
-                     
-                     <p class="text-gray-300 mb-4">${recipe.description}</p>
-                     
-                     <!-- Possible Combinations Info -->
-                     <div class="bg-gradient-to-r from-purple-600 to-blue-600 p-3 rounded-lg mb-4 text-center">
-                         <div class="text-white font-bold text-lg">🎲 ${combinationsFormatted}</div>
-                         <div class="text-purple-200 text-xs">Possible Combinations</div>
-                     </div>
-                     
-                     <div class="mb-4">
-                         <h4 class="text-lg font-semibold text-white mb-2">Required Ingredients:</h4>
-                         ${ingredientsHtml}
-                     </div>
-                     <div class="grid grid-cols-3 gap-4 text-sm mb-4">
-                         <div class="bg-gray-700 p-2 rounded">
-                             <span class="text-orange-400">⏱️ Time:</span> ${recipe.base_time}s
-                         </div>
-                         <div class="bg-gray-700 p-2 rounded">
-                             <span class="text-blue-400">⚖️ Weight:</span> ${recipe.base_weight}kg
-                         </div>
-                         <div class="bg-gray-700 p-2 rounded">
-                             <span class="text-purple-400">🏆 Priority:</span> ${recipe.priority}
-                         </div>
-                     </div>
-                     
-                     <!-- Share Button in Modal -->
-                     <button onclick="shareRecipeFromModal(this.dataset.name, JSON.parse(this.dataset.recipe))"
-					 data-name="${recipeName}"
-					 data-recipe='${JSON.stringify(recipe).replace(/"/g, "&quot;")}'
-					 class="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
-					 📤 Share This Recipe
-					 </button>
-                 </div>
-             `;
+            // Get the food image filename for modal
+            const modalFoodImageName = recipeName.toLowerCase().replace(/\s+/g, '_');
+            const modalFoodImagePath = `/static/img/food_${modalFoodImageName}.webp`;
+            const fallbackImage = '/static/img/food_placeholder.webp';
+            
+            document.getElementById('modal-recipe-content').innerHTML = `
+                <div class="text-center">
+                    <!-- Food Image in Modal -->
+                    <div class="flex justify-center mb-3">
+                        <img src="${modalFoodImagePath}" alt="${recipeName}" 
+                             class="w-32 h-32 md:w-40 md:h-40 object-contain rounded-lg border-2 border-orange-400/30"
+                             onerror="this.onerror=null; this.src='${fallbackImage}'">
+                    </div>
+                    
+                    <p class="text-gray-300 mb-3 text-sm md:text-base">${recipe.description}</p>
+                    
+                    <!-- Possible Combinations Info -->
+                    <div class="bg-gradient-to-r from-purple-600 to-blue-600 p-3 rounded-lg mb-3 text-center">
+                        <div class="text-white font-bold text-lg md:text-xl">🎲 ${combinationsFormatted}</div>
+                        <div class="text-purple-200 text-xs md:text-sm">Possible Combinations</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h4 class="text-base md:text-lg font-semibold text-white mb-2">Required Ingredients:</h4>
+                        ${ingredientsHtml}
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs md:text-sm mb-3">
+                        <div class="bg-gray-700 p-2 rounded">
+                            <span class="text-orange-400">⏱️ Time:</span> ${recipe.base_time}s
+                        </div>
+                        <div class="bg-gray-700 p-2 rounded">
+                            <span class="text-blue-400">⚖️ Weight:</span> ${recipe.base_weight}kg
+                        </div>
+                        <div class="bg-gray-700 p-2 rounded">
+                            <span class="text-purple-400">🏆 Priority:</span> ${recipe.priority}
+                        </div>
+                    </div>
+                    
+                    <!-- Share Button in Modal -->
+                    <button onclick="shareRecipeFromModal('${recipeName}', ${JSON.stringify(recipe).replace(/"/g, "&quot;")})"
+                     class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm md:text-base">
+                     📤 Share This Recipe
+                     </button>
+                </div>
+            `;
             
             document.getElementById('recipe-modal').classList.remove('hidden');
+            // Focus on close button for accessibility
+            setTimeout(() => document.querySelector('#recipe-modal button').focus(), 100);
         }
     } catch (error) {
         console.error('Error showing recipe details:', error);
+        document.getElementById('modal-recipe-content').innerHTML = `
+            <div class="text-center py-8">
+                <p class="text-red-400">Error loading recipe details.</p>
+                <button onclick="showRecipeDetails('${recipeName}')" class="mt-4 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg">
+                    Try Again
+                </button>
+            </div>
+        `;
     }
+}
+
+function showModalLoading() {
+    document.getElementById('modal-recipe-content').innerHTML = `
+        <div class="text-center py-8">
+            <div class="inline-block loading-spinner-large"></div>
+            <p class="text-gray-400 mt-2">Loading recipe details...</p>
+        </div>
+    `;
+    document.getElementById('recipe-modal').classList.remove('hidden');
 }
 
 function closeRecipeModal() {
@@ -574,80 +696,82 @@ function updateStatistics(recipes) {
     }
 }
 
- function formatLargeNumber(num) {
-     if (num < 1000) {
-         return num.toString();
-     } else if (num < 1000000) {
-         return (num / 1000).toFixed(1) + 'K';
-     } else if (num < 1000000000) {
-         return (num / 1000000).toFixed(1) + 'M';
-     } else {
-         return (num / 1000000000).toFixed(1) + 'B';
-     }
- }
- 
- // Recipe sharing functionality
- let currentRecipeData = null;
- 
- function shareRecipe(recipeName, recipeData) {
-     currentRecipeData = {
-         recipe_name: recipeName,
-         recipe_data: recipeData.recipe_data,
-         ingredients: recipeData.ingredients,
-         shop_seeds_only: document.getElementById('shop-seeds-only').checked,
-         generated_at: new Date().toISOString()
-     };
-     
-     // Show custom description modal
-     document.getElementById('description-modal').classList.remove('hidden');
-     document.getElementById('custom-description').value = '';
- }
- 
- function closeDescriptionModal() {
-     document.getElementById('description-modal').classList.add('hidden');
-     currentRecipeData = null;
- }
- 
- async function shareRecipeWithDescription() {
-     if (!currentRecipeData) return;
-     
-     const customDescription = document.getElementById('custom-description').value.trim();
-     const description = customDescription || currentRecipeData.recipe_data.description;
-     
-     try {
-         const response = await fetch('/api/recipes/share', {
-             method: 'POST',
-             headers: {
-                 'Content-Type': 'application/json',
-             },
-             body: JSON.stringify({
-                 ...currentRecipeData,
-                 description: description
-             })
-         });
-         
-         const data = await response.json();
-         
-         if (data.success) {
-             // Copy link to clipboard
-             const shareUrl = `https://www.fruitcalculator.dohmboy64.com/share/recipe_${data.share_id}`;
-             await navigator.clipboard.writeText(shareUrl);
-             
-             // Show success message
-             alert('Recipe shared successfully! Link copied to clipboard.');
-             
-             // Close modal
-             closeDescriptionModal();
-         } else {
-             alert('Error sharing recipe: ' + data.error);
-         }
-     } catch (error) {
-         console.error('Error sharing recipe:', error);
-         alert('Error sharing recipe. Please try again.');
-     }
- }
- 
- function shareRecipeFromModal(recipeName, recipeData) {
+function formatLargeNumber(num) {
+    if (num < 1000) {
+        return num.toString();
+    } else if (num < 1000000) {
+        return (num / 1000).toFixed(1) + 'K';
+    } else if (num < 1000000000) {
+        return (num / 1000000000).toFixed(1) + 'B';
+    } else {
+        return (num / 1000000000).toFixed(1) + 'B';
+    }
+}
+
+// Recipe sharing functionality
+let currentRecipeData = null;
+
+function shareRecipe(recipeName, recipeData) {
+    currentRecipeData = {
+        recipe_name: recipeName,
+        recipe_data: recipeData.recipe_data,
+        ingredients: recipeData.ingredients,
+        shop_seeds_only: document.getElementById('shop-seeds-only').checked,
+        generated_at: new Date().toISOString()
+    };
+    
+    // Show custom description modal
+    document.getElementById('description-modal').classList.remove('hidden');
+    document.getElementById('custom-description').value = '';
+    // Focus on textarea for accessibility
+    setTimeout(() => document.getElementById('custom-description').focus(), 100);
+}
+
+function closeDescriptionModal() {
+    document.getElementById('description-modal').classList.add('hidden');
+    currentRecipeData = null;
+}
+
+async function shareRecipeWithDescription() {
+    if (!currentRecipeData) return;
+    
+    const customDescription = document.getElementById('custom-description').value.trim();
+    const description = customDescription || currentRecipeData.recipe_data.description;
+    
+    try {
+        const response = await fetch('/api/recipes/share', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ...currentRecipeData,
+                description: description
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Copy link to clipboard
+            const shareUrl = `https://www.fruitcalculator.dohmboy64.com/share/recipe_${data.share_id}`;
+            await navigator.clipboard.writeText(shareUrl);
+            
+            // Show success message
+            showNotification('Recipe shared successfully! Link copied to clipboard.', 'success');
+            
+            // Close modal
+            closeDescriptionModal();
+        } else {
+            showNotification('Error sharing recipe: ' + data.error, 'error');
+        }
+    } catch (error) {
+        console.error('Error sharing recipe:', error);
+        showNotification('Error sharing recipe. Please try again.', 'error');
+    }
+}
+
+function shareRecipeFromModal(recipeName, recipeData) {
     // Close the recipe modal first
     closeRecipeModal();
     
@@ -656,13 +780,54 @@ function updateStatistics(recipes) {
         recipe_name: recipeName,
         recipe_data: recipeData,
         ingredients: recipeData.ingredients || {},
-        shop_seeds_only: false, // Default for modal sharing
+        shop_seeds_only: false, // Default to false for modal sharing
         generated_at: new Date().toISOString()
     };
     
     // Show custom description modal
     document.getElementById('description-modal').classList.remove('hidden');
     document.getElementById('custom-description').value = '';
+    // Focus on textarea for accessibility
+    setTimeout(() => document.getElementById('custom-description').focus(), 100);
 }
+
+// Utility functions
+function showLoading(contentId, loadingId) {
+    document.getElementById(contentId).classList.add('hidden');
+    document.getElementById(loadingId).classList.remove('hidden');
+}
+
+function hideLoading(loadingId) {
+    document.getElementById(loadingId).classList.add('hidden');
+    document.getElementById('recipes-grid').classList.remove('hidden');
+}
+
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-50 transition-opacity duration-300 ${
+        type === 'error' ? 'bg-red-600' : 
+        type === 'success' ? 'bg-green-600' : 'bg-blue-600'
+    } text-white`;
+    notification.textContent = message;
+    notification.setAttribute('role', 'alert');
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// Make functions available globally for onclick handlers
+window.showRecipeDetails = showRecipeDetails;
+window.closeRecipeModal = closeRecipeModal;
+window.closeDescriptionModal = closeDescriptionModal;
+window.shareRecipe = shareRecipe;
+window.shareRecipeWithDescription = shareRecipeWithDescription;
+window.shareRecipeFromModal = shareRecipeFromModal;
 </script>
 {% endblock %}
