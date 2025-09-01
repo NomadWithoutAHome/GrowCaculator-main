@@ -17,15 +17,18 @@ class DiscordWebhookService:
     
     def __init__(self):
         """Initialize the Discord webhook service."""
+        # Main fruit calculation webhook
         self.webhook_url = os.getenv('DISCORD_WEBHOOK_URL')
-        self.recipe_webhook_url = os.getenv('RECIPE_DISCORD_WEBHOOK_URL', 'https://discord.com/api/webhooks/1228669852483321908/UQvgI6C4nN53N7thFmDyHRux4j79qhRdQV__zrqxXBLH8QiuSKmkH4mUVr7S7K3D5LzY')
         self.enabled = bool(self.webhook_url)
+        
+        # Recipe webhook (separate channel)
+        self.recipe_webhook_url = os.getenv('RECIPE_DISCORD_WEBHOOK_URL', 'https://discord.com/api/webhooks/1228669852483321908/UQvgI6C4nN53N7thFmDyHRux4j79qhRdQV__zrqxXBLH8QiuSKmkH4mUVr7S7K3D5LzY')
         self.recipe_enabled = bool(self.recipe_webhook_url)
         
         if self.enabled:
-            logger.info("Discord webhook service initialized")
+            logger.info("Discord webhook service initialized for fruit calculations")
         else:
-            logger.warning("Discord webhook service disabled - DISCORD_WEBHOOK_URL not set")
+            logger.warning("Fruit calculation Discord webhook disabled - DISCORD_WEBHOOK_URL not set")
         
         if self.recipe_enabled:
             logger.info("Recipe Discord webhook service initialized")
@@ -45,9 +48,9 @@ class DiscordWebhookService:
             webhook_url = self.recipe_webhook_url
             embed = self._create_recipe_embed(share_data)
         else:
-            # Use main webhook for calculations
+            # Use main webhook for fruit calculations
             if not self.enabled:
-                logger.info("Discord webhook disabled, skipping notification")
+                logger.info("Fruit calculation Discord webhook disabled, skipping notification")
                 return False
             webhook_url = self.webhook_url
             if share_data.get('type') == 'batch':
