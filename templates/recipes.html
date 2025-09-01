@@ -397,8 +397,15 @@ async function loadRecipesByDifficulty(difficulty) {
         const data = await response.json();
         
         if (data.success) {
-            const recipes = difficulty ? data.recipes : data.recipes;
-            displayRecipesGrid(Object.fromEntries(recipes));
+            let recipes;
+            if (difficulty) {
+                // For difficulty endpoints, data.recipes is an array of [name, recipe] tuples
+                recipes = Object.fromEntries(data.recipes);
+            } else {
+                // For /api/recipes/all, data.recipes is already an object
+                recipes = data.recipes;
+            }
+            displayRecipesGrid(recipes);
         }
     } catch (error) {
         console.error('Error loading recipes by difficulty:', error);
