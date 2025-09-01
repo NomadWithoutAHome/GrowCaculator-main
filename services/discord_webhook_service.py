@@ -5,7 +5,7 @@ import os
 import json
 import logging
 from typing import Optional, Dict, Any
-import aiohttp
+import httpx
 from datetime import datetime
 
 # Set up logging
@@ -62,18 +62,18 @@ class DiscordWebhookService:
                 "avatar_url": "https://www.fruitcalculator.dohmboy64.com/static/img/calcsymbol.png"
             }
             
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
                     webhook_url,
                     json=webhook_data,
                     headers={"Content-Type": "application/json"}
-                ) as response:
-                    if response.status == 204:
-                        logger.info(f"Discord webhook sent successfully for share: {share_data.get('share_id', 'unknown')}")
-                        return True
-                    else:
-                        logger.error(f"Discord webhook failed with status {response.status}: {await response.text()}")
-                        return False
+                )
+                if response.status_code == 204:
+                    logger.info(f"Discord webhook sent successfully for share: {share_data.get('share_id', 'unknown')}")
+                    return True
+                else:
+                    logger.error(f"Discord webhook failed with status {response.status_code}: {response.text}")
+                    return False
                         
         except Exception as e:
             logger.error(f"Error sending Discord webhook: {e}")
