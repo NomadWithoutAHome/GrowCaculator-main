@@ -1,19 +1,17 @@
 services:
   - type: web
     name: growcalculator
-    env: python
+    env: python  # Force Python runtime
+    runtime: python  # Explicit runtime specification
     plan: free
     buildCommand: "pip install -r requirements.txt"
     startCommand: "uvicorn main_render:app --host 0.0.0.0 --port $PORT --workers 1"
     healthCheckPath: "/health"
     envVars:
       - key: PYTHON_VERSION
-        value: "3.9.16"
+        value: "3.11.0"  # Match your runtime.txt
       - key: REDIS_URL
         sync: false  # You can set this manually in Render dashboard if using Redis
     
     # Auto-deploy settings
     autoDeploy: true
-    
-    # Static file serving
-    staticPublishPath: "./static"
