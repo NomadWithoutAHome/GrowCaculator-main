@@ -10,10 +10,10 @@
  <!-- Hero Section -->
  <section class="p-4 flex flex-col items-center mt-8">
      <h1 class="text-4xl font-bold text-center flex items-center justify-center mb-2">
-         <img src="/static/img/title.png" alt="Grow a Garden Calculator" class="h-16" loading="lazy">
+         <img src="/static/img/title.png" alt="Grow a Garden Calculator" class="h-16">
      </h1>
      <div class="text-center">
-         <img src="/static/img/subtitletext.png" alt="Calculate fruit values for Roblox Grow a Garden!" class="h-4" loading="lazy">
+         <img src="/static/img/subtitletext.png" alt="Calculate fruit values for Roblox Grow a Garden!" class="h-4">
      </div>
      
      <!-- SEO Content Section -->
@@ -42,11 +42,11 @@
 <section class="w-full max-w-6xl mx-auto px-4 mt-6">
     <div class="flex space-x-1 bg-gray-700 p-1 rounded-lg">
         <button id="single-calculator-tab" class="flex-1 py-3 px-6 rounded-md font-medium transition-all duration-200 bg-green-600 text-white shadow-lg">
-            <img src="/static/img/singefruit.png" alt="Single Calculator" class="w-5 h-5 inline-block mr-2" loading="lazy">
+            <img src="/static/img/singefruit.png" alt="Single Calculator" class="w-5 h-5 inline-block mr-2">
             Single Calculator
         </button>
         <button id="batch-calculator-tab" class="flex-1 py-3 px-6 rounded-md font-medium transition-all duration-200 bg-gray-600 text-gray-300 hover:bg-gray-500 hover:text-white">
-            <img src="/static/img/multifruit.png" alt="Batch Calculator" class="w-5 h-5 inline-block mr-2" loading="lazy">
+            <img src="/static/img/multifruit.png" alt="Batch Calculator" class="w-5 h-5 inline-block mr-2">
             Batch Calculator
         </button>
     </div>
@@ -70,14 +70,13 @@
  💰 Value: {{ plant.base_price }} | ⚖️ Weight: {{ plant.base_weight }}kg" 
                          aria-pressed="false">
                                            <div class="w-12 h-12 mx-auto mb-2 flex items-center justify-center">
-                     <img src="/static/img/placeholder.png" alt="Placeholder" class="w-full h-full object-contain crop-placeholder" loading="lazy">
-                     <img src="/static/img/crop-{{ plant.name.lower().replace(' ', '-') }}.webp" 
-                         alt="{{ plant.name }}" 
-                         class="w-full h-full object-contain crop-image"
-                         style="display: none;"
-                         loading="lazy"
-                         onerror="this.style.display='none'; this.previousElementSibling.style.display='block';"
-                         onload="this.style.display='block'; this.previousElementSibling.style.display='none';">
+                          <img src="/static/img/placeholder.png" alt="Placeholder" class="w-full h-full object-contain crop-placeholder">
+                          <img src="/static/img/crop-{{ plant.name.lower().replace(' ', '-') }}.webp" 
+                               alt="{{ plant.name }}" 
+                               class="w-full h-full object-contain crop-image"
+                               style="display: none;"
+                               onerror="this.style.display='none'; this.previousElementSibling.style.display='block';"
+                               onload="this.style.display='block'; this.previousElementSibling.style.display='none';">
                       </div>
                      <p class="text-sm font-semibold text-white truncate">{{ plant.name }}</p>
                  </button>
@@ -91,7 +90,7 @@
         <!-- Growth Mutations -->
         <div class="bg-gray-800 p-4 rounded-lg shadow-md">
             <h3 class="text-base sm:text-lg font-semibold mb-3 text-gray-200 flex items-center">
-                <img src="/static/img/Variant.png" alt="Variant Icon" class="w-5 h-5 mr-2" loading="lazy">
+                <img src="/static/img/Variant.png" alt="Variant Icon" class="w-5 h-5 mr-2">
                 Variant Mutations
             </h3>
             <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-3">
