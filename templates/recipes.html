@@ -351,12 +351,7 @@ async function loadRecipesByDifficulty(difficulty) {
         const response = await fetch(url);
         const data = await response.json();
         if (data.success) {
-            // Convert array to object keyed by recipe name
-            const recipesObj = {};
-            (data.recipes || []).forEach(r => {
-                recipesObj[r.name] = r;
-            });
-            displayRecipesGrid(recipesObj);
+            displayRecipesGrid(data.recipes);
         }
     } catch (error) {
         console.error('Error loading recipes by difficulty:', error);
@@ -372,12 +367,7 @@ async function searchRecipes(query) {
         const response = await fetch(`/api/recipes/search/${encodeURIComponent(query)}`);
         const data = await response.json();
         if (data.success) {
-            // Convert array to object keyed by recipe name
-            const recipesObj = {};
-            (data.results || []).forEach(r => {
-                recipesObj[r.name] = r;
-            });
-            displayRecipesGrid(recipesObj);
+            displayRecipesGrid(data.results);
         }
     } catch (error) {
         console.error('Error searching recipes:', error);
