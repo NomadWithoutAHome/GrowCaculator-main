@@ -19,7 +19,7 @@ from services.vercel_shared_results_service import vercel_shared_results_service
 import logging
 
 # Set up logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)  # Reduced from INFO to WARNING
 logger = logging.getLogger(__name__)
 
 # Create FastAPI app

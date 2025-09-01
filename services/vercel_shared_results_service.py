@@ -9,7 +9,7 @@ from typing import Optional, List, Dict
 import logging
 
 # Set up logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)  # Reduced from INFO to WARNING
 logger = logging.getLogger(__name__)
 
 try:

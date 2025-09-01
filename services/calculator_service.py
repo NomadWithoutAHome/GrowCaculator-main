@@ -11,7 +11,7 @@ from urllib.parse import unquote
 from models.calculator import PlantData, VariantData, MutationData, CalculationResponse
 
 # Set up logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)  # Reduced from INFO to WARNING
 logger = logging.getLogger(__name__)
 
 
@@ -237,25 +237,19 @@ class CalculatorService:
         """
         # Decode URL-encoded plant names
         decoded_plant_name = self._decode_plant_name(plant_name)
-        logger.info(f"calculate_plant_value called for plant: '{plant_name}' -> decoded to '{decoded_plant_name}', variant: {variant}")
         
         # Check if plant exists
         if decoded_plant_name not in self.plants:
-            logger.error(f"Plant '{plant_name}' -> decoded to '{decoded_plant_name}' not found in plants dictionary!")
-            logger.error(f"Available plants: {list(self.plants.keys())[:10]}...")
+            logger.error(f"Plant '{decoded_plant_name}' not found")
             raise KeyError(f"Plant '{decoded_plant_name}' not found")
         
         # Check if variant exists
         if variant not in self.variants:
-            logger.error(f"Variant '{variant}' not found in variants dictionary!")
-            logger.error(f"Available variants: {list(self.variants.keys())}")
+            logger.error(f"Variant '{variant}' not found")
             raise KeyError(f"Variant '{variant}' not found")
         
         plant_data = self.plants[decoded_plant_name]
         variant_data = self.variants[variant]
-        
-        logger.info(f"Plant data for '{decoded_plant_name}': base_weight={plant_data.base_weight}, base_price={plant_data.base_price}")
-        logger.info(f"Variant data for {variant}: multiplier={variant_data.multiplier}")
         
         # Calculate base value
         base_price = plant_data.base_price
@@ -277,7 +271,7 @@ class CalculatorService:
         # Calculate bulk totals
         total_value = round(final_value) * plant_amount
         
-        logger.info(f"Calculation complete for '{decoded_plant_name}': final_value={final_value}, total_value={total_value}")
+        # Calculation complete (removed verbose logging)
         
         return CalculationResponse(
             plant_name=decoded_plant_name,  # Use decoded name in response
@@ -319,22 +313,16 @@ class CalculatorService:
     def get_plants(self) -> List[PlantData]:
         """Get sorted list of all plant data objects."""
         plants_list = sorted(self.plants.values(), key=lambda x: x.name)
-        logger.info(f"get_plants() called - returning {len(plants_list)} plants")
-        logger.debug(f"Plant names: {[p.name for p in plants_list[:5]]}...")  # First 5 plants
         return plants_list
     
     def get_variants(self) -> List[VariantData]:
         """Get list of all variants."""
         variants_list = list(self.variants.values())
-        logger.info(f"get_variants() called - returning {len(variants_list)} variants")
-        logger.debug(f"Variant names: {[v.name for v in variants_list]}")
         return variants_list
     
     def get_mutations(self) -> List[MutationData]:
         """Get sorted list of all mutations."""
         mutations_list = sorted(self.mutations.values(), key=lambda x: x.name)
-        logger.info(f"get_mutations() called - returning {len(mutations_list)} mutations")
-        logger.debug(f"Mutation names: {[m.name for m in mutations_list[:5]]}...")  # First 5 mutations
         return mutations_list
     
     def get_plant_data(self, plant_name: str) -> PlantData:
