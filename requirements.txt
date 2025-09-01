@@ -1,10 +1,12 @@
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
+# Core FastAPI dependencies - using versions that don't require Rust compilation
+fastapi==0.103.2
+uvicorn==0.24.0
 jinja2==3.1.2
 python-multipart==0.0.6
-pydantic==1.10.13
+pydantic==1.10.12
 python-dotenv==1.0.0
 redis==5.0.1
 aiohttp==3.8.6
-# Additional for production deployment
 gunicorn==21.2.0
+# Additional utilities
+typing-extensions==4.8.0
