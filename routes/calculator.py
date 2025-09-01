@@ -407,11 +407,19 @@ async def get_shared_recipe(share_id: str):
         if not shared_result:
             raise HTTPException(status_code=404, detail="Shared recipe not found")
         
+        # Parse created_at if it's a string
+        created_at = shared_result.get('created_at', datetime.utcnow().isoformat())
+        if isinstance(created_at, str):
+            try:
+                created_at = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+            except:
+                created_at = datetime.utcnow()
+        
         return templates.TemplateResponse("share_recipe.html", {
-            "request": {},
-            "recipe_data": shared_result["data"],
+            "request": {},  # Empty dict is sufficient for this template
+            "recipe_data": shared_result,  # Pass the shared_result directly
             "share_id": share_id,
-            "created_at": shared_result["created_at"]
+            "created_at": created_at
         })
     except Exception as e:
         logger.error(f"Error getting shared recipe: {e}")
