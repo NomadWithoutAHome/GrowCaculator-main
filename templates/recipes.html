@@ -191,25 +191,31 @@
  </div>
 
 <script>
-// Recipes page JavaScript
+// Recipes page specific JavaScript
 document.addEventListener('DOMContentLoaded', function() {
     initializeRecipeGenerator();
 });
 
 function initializeRecipeGenerator() {
+    // Load initial data
     loadAllRecipesWithStats();
     loadRecipeCategories();
     loadShopSeeds();
+    
+    // Set up event handlers
     setupEventHandlers();
 }
 
 function setupEventHandlers() {
+    const recipeSelector = document.getElementById('recipe-selector');
     const generateButton = document.getElementById('generate-recipe');
     const difficultyFilters = document.querySelectorAll('.difficulty-filter');
     const recipeSearch = document.getElementById('recipe-search');
-
+    
+    // Recipe generation
     generateButton.addEventListener('click', generateRandomRecipe);
-
+    
+    // Difficulty filtering
     difficultyFilters.forEach(button => {
         button.addEventListener('click', function() {
             difficultyFilters.forEach(btn => btn.classList.remove('bg-orange-600'));
@@ -217,7 +223,8 @@ function setupEventHandlers() {
             loadRecipesByDifficulty(this.dataset.difficulty);
         });
     });
-
+    
+    // Recipe search
     let searchTimeout;
     recipeSearch.addEventListener('input', function() {
         clearTimeout(searchTimeout);
@@ -231,6 +238,7 @@ async function loadAllRecipesWithStats() {
     try {
         const response = await fetch('/api/recipes/all-with-stats');
         const data = await response.json();
+        
         if (data.success) {
             populateRecipeSelector(data.recipes);
             displayRecipesGrid(data.recipes);
@@ -244,6 +252,7 @@ async function loadAllRecipesWithStats() {
 function populateRecipeSelector(recipes) {
     const selector = document.getElementById('recipe-selector');
     selector.innerHTML = '<option value="">Select a recipe...</option>';
+    
     Object.keys(recipes).forEach(recipeName => {
         const option = document.createElement('option');
         option.value = recipeName;
@@ -254,9 +263,11 @@ function populateRecipeSelector(recipes) {
 
 function displayRecipesGrid(recipes) {
     const grid = document.getElementById('recipes-grid');
+    
     const recipesHtml = Object.entries(recipes).map(([name, recipe]) => {
         const difficulty = getDifficulty(recipe.count);
         const difficultyColor = getDifficultyColor(difficulty);
+        
         return `
             <div class="bg-gray-700 p-4 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors" onclick="showRecipeDetails('${name}')">
                 <div class="flex items-center justify-between mb-2">
@@ -264,6 +275,7 @@ function displayRecipesGrid(recipes) {
                     <span class="bg-${difficultyColor} text-white px-2 py-1 rounded text-sm">${difficulty}</span>
                 </div>
                 <p class="text-gray-400 text-sm mb-2">${recipe.description}</p>
+                
                 <div class="flex justify-between text-xs text-gray-500">
                     <span>⏱️ ${recipe.base_time}s</span>
                     <span>⚖️ ${recipe.base_weight}kg</span>
@@ -272,13 +284,14 @@ function displayRecipesGrid(recipes) {
             </div>
         `;
     }).join('');
+    
     grid.innerHTML = recipesHtml;
 }
 
 function getDifficulty(count) {
     if (count <= 2) return "Easy";
     if (count <= 4) return "Medium";
-    return "Medium";
+    return "Medium"; // All recipes with 4+ ingredients are now Medium
 }
 
 function getDifficultyColor(difficulty) {
@@ -295,11 +308,16 @@ async function generateRandomRecipe() {
         alert('Please select a recipe first!');
         return;
     }
+    
     const shopSeedsOnly = document.getElementById('shop-seeds-only').checked;
+    
     try {
         const response = await fetch(`/api/recipes/generate/${encodeURIComponent(recipeName)}?shop_seeds_only=${shopSeedsOnly}`);
         const data = await response.json();
-        if (data.success) displayGeneratedRecipe(data.recipe);
+        
+        if (data.success) {
+            displayGeneratedRecipe(data.recipe);
+        }
     } catch (error) {
         console.error('Error generating recipe:', error);
         document.getElementById('recipe-result').innerHTML = '<p class="text-red-400 text-center">Error generating recipe</p>';
@@ -308,6 +326,7 @@ async function generateRandomRecipe() {
 
 function displayGeneratedRecipe(recipe) {
     const resultDiv = document.getElementById('recipe-result');
+    
     const ingredientsHtml = Object.entries(recipe.ingredients).map(([category, items]) => {
         const itemsHtml = items.map(item => {
             const traitsStr = item.traits.length > 0 ? ` (${item.traits.join(', ')})` : '';
@@ -316,29 +335,52 @@ function displayGeneratedRecipe(recipe) {
             const shopSeedIcon = isShopSeed ? '🌱 ' : '';
             return `<span class="inline-block ${bgColor} text-white px-3 py-1 rounded-full text-sm mr-2 mb-2">${shopSeedIcon}${item.item}${traitsStr}</span>`;
         }).join('');
-        return `<div class="mb-3"><h4 class="text-lg font-semibold text-white mb-2">${category}</h4><div>${itemsHtml}</div></div>`;
+        
+        return `
+            <div class="mb-3">
+                <h4 class="text-lg font-semibold text-white mb-2">${category}</h4>
+                <div>${itemsHtml}</div>
+            </div>
+        `;
     }).join('');
+    
     const shopSeedsOnly = document.getElementById('shop-seeds-only').checked;
     const shopSeedsBadge = shopSeedsOnly ? '<div class="bg-green-600 text-white px-3 py-1 rounded-full text-sm mb-4 inline-block">🌱 Shop Seeds Only</div>' : '';
+    
+    // Get the food image filename
     const foodImageName = recipe.recipe_name.toLowerCase().replace(/\s+/g, '_');
     const foodImagePath = `/static/img/food_${foodImageName}.webp`;
-
-    const recipeJson = JSON.stringify(recipe).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '');
-
+    
     resultDiv.innerHTML = `
         <div class="text-center">
             <h3 class="text-2xl font-bold text-orange-400 mb-4">${recipe.recipe_name}</h3>
+            
+            <!-- Food Image -->
             <div class="flex justify-center mb-4">
-                <img src="${foodImagePath}" alt="${recipe.recipe_name}" class="w-32 h-32 object-contain rounded-lg border-2 border-orange-400/30" onerror="this.style.display='none'">
+                <img src="${foodImagePath}" alt="${recipe.recipe_name}" 
+                     class="w-32 h-32 object-contain rounded-lg border-2 border-orange-400/30"
+                     onerror="this.style.display='none'">
             </div>
+            
             ${shopSeedsBadge}
-            <div class="mb-4">${ingredientsHtml}</div>
-            <div class="grid grid-cols-3 gap-4 text-sm mb-4">
-                <div class="bg-gray-700 p-2 rounded"><span class="text-orange-400">⏱️ Time:</span> ${recipe.recipe_data.base_time}s</div>
-                <div class="bg-gray-700 p-2 rounded"><span class="text-blue-400">⚖️ Weight:</span> ${recipe.recipe_data.base_weight}kg</div>
-                <div class="bg-gray-700 p-2 rounded"><span class="text-purple-400">🏆 Priority:</span> ${recipe.recipe_data.priority}</div>
+            <div class="mb-4">
+                ${ingredientsHtml}
             </div>
-            <button onclick="shareRecipe('${recipe.recipe_name}', ${recipeJson})" class="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+            <div class="grid grid-cols-3 gap-4 text-sm mb-4">
+                <div class="bg-gray-700 p-2 rounded">
+                    <span class="text-orange-400">⏱️ Time:</span> ${recipe.recipe_data.base_time}s
+                </div>
+                <div class="bg-gray-700 p-2 rounded">
+                    <span class="text-blue-400">⚖️ Weight:</span> ${recipe.recipe_data.base_weight}kg
+                </div>
+                <div class="bg-gray-700 p-2 rounded">
+                    <span class="text-purple-400">🏆 Priority:</span> ${recipe.recipe_data.priority}
+                </div>
+            </div>
+            
+            <!-- Share Button -->
+            <button onclick="shareRecipe('${recipe.recipe_name}', ${JSON.stringify(recipe).replace(/'/g, "\\'")})" 
+                    class="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
                 📤 Share Recipe
             </button>
         </div>
@@ -350,8 +392,10 @@ async function loadRecipesByDifficulty(difficulty) {
         const url = difficulty ? `/api/recipes/difficulty/${difficulty}` : '/api/recipes/all';
         const response = await fetch(url);
         const data = await response.json();
+        
         if (data.success) {
-            displayRecipesGrid(data.recipes);
+            const recipes = difficulty ? data.recipes : data.recipes;
+            displayRecipesGrid(Object.fromEntries(recipes));
         }
     } catch (error) {
         console.error('Error loading recipes by difficulty:', error);
@@ -363,11 +407,14 @@ async function searchRecipes(query) {
         loadAllRecipesWithStats();
         return;
     }
+    
     try {
         const response = await fetch(`/api/recipes/search/${encodeURIComponent(query)}`);
         const data = await response.json();
+        
         if (data.success) {
-            displayRecipesGrid(data.results);
+            const recipes = Object.fromEntries(data.results);
+            displayRecipesGrid(recipes);
         }
     } catch (error) {
         console.error('Error searching recipes:', error);
@@ -378,7 +425,10 @@ async function loadRecipeCategories() {
     try {
         const response = await fetch('/api/recipes/categories');
         const data = await response.json();
-        if (data.success) displayCategoriesGrid(data.categories);
+        
+        if (data.success) {
+            displayCategoriesGrid(data.categories);
+        }
     } catch (error) {
         console.error('Error loading categories:', error);
     }
@@ -388,7 +438,10 @@ async function loadShopSeeds() {
     try {
         const response = await fetch('/api/recipes/shop-seeds');
         const data = await response.json();
-        window.shopSeeds = data.success ? data.shop_seeds : [];
+        
+        if (data.success) {
+            window.shopSeeds = data.shop_seeds;
+        }
     } catch (error) {
         console.error('Error loading shop seeds:', error);
         window.shopSeeds = [];
@@ -397,15 +450,19 @@ async function loadShopSeeds() {
 
 function displayCategoriesGrid(categories) {
     const grid = document.getElementById('categories-grid');
+    
     const categoriesHtml = Object.entries(categories).map(([category, items]) => {
         return `
             <div class="bg-gray-700 p-4 rounded-lg">
                 <h4 class="font-semibold text-white mb-2">${category}</h4>
                 <p class="text-gray-400 text-sm mb-2">${items.length} available items</p>
-                <div class="text-xs text-gray-500">${items.slice(0, 5).join(', ')}${items.length > 5 ? ` +${items.length - 5} more` : ''}</div>
+                <div class="text-xs text-gray-500">
+                    ${items.slice(0, 5).join(', ')}${items.length > 5 ? ` +${items.length - 5} more` : ''}
+                </div>
             </div>
         `;
     }).join('');
+    
     grid.innerHTML = categoriesHtml;
 }
 
@@ -413,45 +470,61 @@ async function showRecipeDetails(recipeName) {
     try {
         const response = await fetch(`/api/recipes/${encodeURIComponent(recipeName)}`);
         const data = await response.json();
-        if (!data.success) return;
-        const recipe = data.recipe;
-
-        document.getElementById('modal-recipe-name').textContent = recipeName;
-        const ingredientsHtml = Object.entries(recipe.ingredients).map(([category, count]) =>
-            `<span class="inline-block bg-blue-600 text-white px-3 py-1 rounded-full text-sm mr-2 mb-2">${category}: ${count}</span>`
-        ).join('');
-
-        const combinationsResponse = await fetch(`/api/recipes/all-with-stats`);
-        const combinationsData = await combinationsResponse.json();
-        const recipeWithCombinations = combinationsData.recipes[recipeName];
-        const combinationsFormatted = recipeWithCombinations ? recipeWithCombinations.combinations_formatted : '0';
-
-        const modalFoodImageName = recipeName.toLowerCase().replace(/\s+/g, '_');
-        const modalFoodImagePath = `/static/img/food_${modalFoodImageName}.webp`;
-
-        document.getElementById('modal-recipe-content').innerHTML = `
-            <div class="text-center">
-                <div class="flex justify-center mb-4">
-                    <img src="${modalFoodImagePath}" alt="${recipeName}" class="w-40 h-40 object-contain rounded-lg border-2 border-orange-400/30" onerror="this.style.display='none'">
+        
+        if (data.success) {
+            const recipe = data.recipe;
+            document.getElementById('modal-recipe-name').textContent = recipeName;
+            
+            const ingredientsHtml = Object.entries(recipe.ingredients).map(([category, count]) => 
+                `<span class="inline-block bg-blue-600 text-white px-3 py-1 rounded-full text-sm mr-2 mb-2">${category}: ${count}</span>`
+            ).join('');
+            
+            const combinationsResponse = await fetch(`/api/recipes/all-with-stats`);
+            const combinationsData = await combinationsResponse.json();
+            const recipeWithCombinations = combinationsData.recipes[recipeName];
+            const combinations = recipeWithCombinations ? recipeWithCombinations.possible_combinations : 0;
+            const combinationsFormatted = recipeWithCombinations ? recipeWithCombinations.combinations_formatted : combinations.toString();
+            
+            const modalFoodImageName = recipeName.toLowerCase().replace(/\s+/g, '_');
+            const modalFoodImagePath = `/static/img/food_${modalFoodImageName}.webp`;
+            
+            document.getElementById('modal-recipe-content').innerHTML = `
+                <div class="text-center">
+                    <!-- Food Image in Modal -->
+                    <div class="flex justify-center mb-4">
+                        <img src="${modalFoodImagePath}" alt="${recipeName}" 
+                             class="w-40 h-40 object-contain rounded-lg border-2 border-orange-400/30"
+                             onerror="this.style.display='none'">
+                    </div>
+                    
+                    <p class="text-gray-300 mb-4">${recipe.description}</p>
+                    
+                    <!-- Possible Combinations Info -->
+                    <div class="bg-gradient-to-r from-purple-600 to-blue-600 p-3 rounded-lg mb-4 text-center">
+                        <div class="text-white font-bold text-lg">🎲 ${combinationsFormatted}</div>
+                        <div class="text-purple-200 text-xs">Possible Combinations</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4 class="text-lg font-semibold text-white mb-2">Required Ingredients:</h4>
+                        ${ingredientsHtml}
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 text-sm mb-4">
+                        <div class="bg-gray-700 p-2 rounded">
+                            <span class="text-orange-400">⏱️ Time:</span> ${recipe.base_time}s
+                        </div>
+                        <div class="bg-gray-700 p-2 rounded">
+                            <span class="text-blue-400">⚖️ Weight:</span> ${recipe.base_weight}kg
+                        </div>
+                        <div class="bg-gray-700 p-2 rounded">
+                            <span class="text-purple-400">🏆 Priority:</span> ${recipe.priority}
+                        </div>
+                    </div>
                 </div>
-                <p class="text-gray-300 mb-4">${recipe.description}</p>
-                <div class="bg-gradient-to-r from-purple-600 to-blue-600 p-3 rounded-lg mb-4 text-center">
-                    <div class="text-white font-bold text-lg">🎲 ${combinationsFormatted}</div>
-                    <div class="text-purple-200 text-xs">Possible Combinations</div>
-                </div>
-                <div class="mb-4">
-                    <h4 class="text-lg font-semibold text-white mb-2">Required Ingredients:</h4>
-                    ${ingredientsHtml}
-                </div>
-                <div class="grid grid-cols-3 gap-4 text-sm mb-4">
-                    <div class="bg-gray-700 p-2 rounded"><span class="text-orange-400">⏱️ Time:</span> ${recipe.base_time}s</div>
-                    <div class="bg-gray-700 p-2 rounded"><span class="text-blue-400">⚖️ Weight:</span> ${recipe.base_weight}kg</div>
-                    <div class="bg-gray-700 p-2 rounded"><span class="text-purple-400">🏆 Priority:</span> ${recipe.priority}</div>
-                </div>
-            </div>
-        `;
-
-        document.getElementById('recipe-modal').classList.remove('hidden');
+            `;
+            
+            document.getElementById('recipe-modal').classList.remove('hidden');
+        }
     } catch (error) {
         console.error('Error showing recipe details:', error);
     }
@@ -461,7 +534,7 @@ function closeRecipeModal() {
     document.getElementById('recipe-modal').classList.add('hidden');
 }
 
-// Sharing logic
+// Recipe sharing functionality
 let currentRecipeData = null;
 
 function shareRecipe(recipeName, recipeData) {
@@ -472,6 +545,7 @@ function shareRecipe(recipeName, recipeData) {
         shop_seeds_only: document.getElementById('shop-seeds-only').checked,
         generated_at: new Date().toISOString()
     };
+    
     document.getElementById('description-modal').classList.remove('hidden');
     document.getElementById('custom-description').value = '';
 }
@@ -483,32 +557,44 @@ function closeDescriptionModal() {
 
 async function shareRecipeWithDescription() {
     if (!currentRecipeData) return;
+    
     const customDescription = document.getElementById('custom-description').value.trim();
     const description = customDescription || currentRecipeData.recipe_data.description;
+    
     try {
         const response = await fetch('/api/recipes/share', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...currentRecipeData, description })
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ...currentRecipeData,
+                description: description
+            })
         });
+        
         const data = await response.json();
+        
         if (data.success) {
             const shareUrl = `https://www.fruitcalculator.dohmboy64.com/share/recipe_${data.share_id}`;
             await navigator.clipboard.writeText(shareUrl);
             alert('Recipe shared successfully! Link copied to clipboard.');
             closeDescriptionModal();
-        } else alert('Error sharing recipe: ' + data.error);
+        } else {
+            alert('Error sharing recipe: ' + data.error);
+        }
     } catch (error) {
         console.error('Error sharing recipe:', error);
         alert('Error sharing recipe. Please try again.');
     }
 }
 
-// Statistics
+// Statistics helper
 function updateStatistics(recipes) {
     const totalRecipes = Object.keys(recipes).length;
     const totalCombinations = Object.values(recipes).reduce((sum, r) => sum + (r.possible_combinations || 0), 0);
     const avgCombinations = totalRecipes > 0 ? totalCombinations / totalRecipes : 0;
+
     document.getElementById('total-recipes').textContent = totalRecipes;
     document.getElementById('total-combinations').textContent = formatLargeNumber(totalCombinations);
     document.getElementById('avg-combinations').textContent = formatLargeNumber(avgCombinations);
@@ -520,7 +606,6 @@ function formatLargeNumber(num) {
     if (num < 1_000_000_000) return (num / 1_000_000).toFixed(1) + 'M';
     return (num / 1_000_000_000).toFixed(1) + 'B';
 }
-
 
 </script>
 {% endblock %}
