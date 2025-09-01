@@ -921,6 +921,7 @@ function updatePlantImage(plantName) {
     // Set the image source
     plantImage.src = imagePath;
     plantImage.alt = plantName;
+    plantImage.loading = 'lazy';
     
     // Handle image load errors by showing placeholder
     plantImage.onerror = function() {
@@ -955,6 +956,7 @@ function preloadPlantImages() {
             // Set the image source
             cropImage.src = imagePath;
             cropImage.alt = plantName;
+            cropImage.loading = 'lazy';
             
             // Handle image load errors by showing fallback placeholder image
             cropImage.onerror = function() {

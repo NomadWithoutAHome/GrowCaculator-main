@@ -26,10 +26,11 @@
             
             <!-- Food Image -->
             <div class="flex justify-center mb-6">
-                <img src="/static/img/food_{{ recipe_data.recipe_name.lower().replace(' ', '_') }}.webp" 
-                     alt="{{ recipe_data.recipe_name }}" 
-                     class="w-48 h-48 object-contain rounded-lg border-2 border-orange-400/30"
-                     onerror="this.style.display='none'">
+             <img src="/static/img/food_{{ recipe_data.recipe_name.lower().replace(' ', '_') }}.webp" 
+                 alt="{{ recipe_data.recipe_name }}" 
+                 class="w-48 h-48 object-contain rounded-lg border-2 border-orange-400/30"
+                 loading="lazy"
+                 onerror="this.style.display='none'">
             </div>
             
             <!-- Shop Seeds Badge -->

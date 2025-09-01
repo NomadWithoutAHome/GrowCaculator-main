@@ -1,3 +1,8 @@
+                <img src="/static/img/food_{{ recipe_data.recipe_name.lower().replace(' ', '_') }}.webp" 
+                     alt="{{ recipe_data.recipe_name }}" 
+                     class="w-32 h-32 object-contain rounded-lg border-2 border-orange-400/30"
+                     loading="lazy"
+                     onerror="this.style.display='none'">
 {% extends "base.html" %}
 
 {% block title %}Food Recipe Generator - Grow Calculator{% endblock %}
