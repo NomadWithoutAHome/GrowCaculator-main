@@ -540,6 +540,16 @@ function closeRecipeModal() {
 // Recipe sharing functionality
 let currentRecipeData = null;
 
+// Function to share the currently generated recipe
+function shareCurrentRecipe() {
+    if (!window.currentGeneratedRecipe) {
+        alert('No recipe to share! Please generate a recipe first.');
+        return;
+    }
+    
+    shareRecipe(window.currentGeneratedRecipe.recipe_name, window.currentGeneratedRecipe);
+}
+
 function shareRecipe(recipeName, recipeData) {
     currentRecipeData = {
         recipe_name: recipeName,
