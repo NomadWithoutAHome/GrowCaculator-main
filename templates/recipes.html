@@ -524,13 +524,12 @@ async function showRecipeDetails(recipeName) {
                      </div>
                      
                      <!-- Share Button in Modal -->
-                     <button 
-    onclick="shareRecipeFromModal(this.dataset.name, JSON.parse(this.dataset.recipe))"
-    data-name="${recipeName}"
-    data-recipe='${JSON.stringify(recipe).replace(/"/g, "&quot;")}'
-    class="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
-    📤 Share This Recipe
-</button>
+                     <button onclick="shareRecipeFromModal(this.dataset.name, JSON.parse(this.dataset.recipe))"
+					 data-name="${recipeName}"
+					 data-recipe='${JSON.stringify(recipe).replace(/"/g, "&quot;")}'
+					 class="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+					 📤 Share This Recipe
+					 </button>
                  </div>
              `;
             
