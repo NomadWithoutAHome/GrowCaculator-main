@@ -524,10 +524,13 @@ async function showRecipeDetails(recipeName) {
                      </div>
                      
                      <!-- Share Button in Modal -->
-                     <button onclick="shareRecipeFromModal('${recipeName}', ${JSON.stringify(recipe).replace(/'/g, "\\'")})" 
-                             class="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
-                         📤 Share This Recipe
-                     </button>
+                     <button 
+    onclick="shareRecipeFromModal(this.dataset.name, JSON.parse(this.dataset.recipe))"
+    data-name="${recipeName}"
+    data-recipe='${JSON.stringify(recipe).replace(/"/g, "&quot;")}'
+    class="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+    📤 Share This Recipe
+</button>
                  </div>
              `;
             
@@ -646,21 +649,21 @@ function updateStatistics(recipes) {
  }
  
  function shareRecipeFromModal(recipeName, recipeData) {
-     // Close the recipe modal first
-     closeRecipeModal();
-     
-     // Create recipe data structure for sharing
-     currentRecipeData = {
-         recipe_name: recipeName,
-         recipe_data: recipeData,
-         ingredients: recipeData.ingredients || {},
-         shop_seeds_only: false, // Default for modal sharing
-         generated_at: new Date().toISOString()
-     };
-     
-     // Show custom description modal
-     document.getElementById('description-modal').classList.remove('hidden');
-     document.getElementById('custom-description').value = '';
- }
+    // Close the recipe modal first
+    closeRecipeModal();
+    
+    // Create recipe data structure for sharing
+    currentRecipeData = {
+        recipe_name: recipeName,
+        recipe_data: recipeData,
+        ingredients: recipeData.ingredients || {},
+        shop_seeds_only: false, // Default for modal sharing
+        generated_at: new Date().toISOString()
+    };
+    
+    // Show custom description modal
+    document.getElementById('description-modal').classList.remove('hidden');
+    document.getElementById('custom-description').value = '';
+}
 </script>
 {% endblock %}
