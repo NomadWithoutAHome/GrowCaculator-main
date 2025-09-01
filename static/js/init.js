@@ -44,6 +44,7 @@ import { initializeMutationSelection, initializeMutationSearch, updateMutationDi
 import { calculatePlantValue, displayResults } from './modules/calculator.js';
 import { initializeBatchCalculator } from './modules/batchCalculator.js';
 import { debounce, formatNumber, formatLargeNumber } from './modules/utils.js';
+import { initializeActionButtons, updateVariantSelection, preloadPlantImages } from './modules/ui.js';
 
 window.updateMutationDisplay = updateMutationDisplay;
 window.displayResults = displayResults;
@@ -57,5 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializePlantGrid();
     initializeMutationSelection();
     initializeBatchCalculator();
+    initializeActionButtons();
+    preloadPlantImages();
     // Add any other initializations needed
 });

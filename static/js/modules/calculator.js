@@ -36,5 +36,11 @@ export async function calculatePlantValue(currentPlant, currentVariant, selected
 }
 
 export function displayResults(result) {
-    // ...existing code from main.js for displaying results...
+}
+
+// Exported for UI auto calculation
+export function updateCalculationIfReady(currentPlant, currentVariant, selectedMutations, API_BASE) {
+    if (currentPlant) {
+        calculatePlantValue(currentPlant, currentVariant, selectedMutations, API_BASE);
+    }
 }

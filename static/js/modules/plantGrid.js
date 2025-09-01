@@ -1,5 +1,27 @@
 // Plant grid and selection logic
 export function initializePlantGrid() {
+// Exported for UI image updates
+function updatePlantImage(plantName) {
+    const plantEmojiContainer = document.getElementById('plant-emoji');
+    if (!plantEmojiContainer) return;
+    const plantImage = document.getElementById('plant-image');
+    const plantPlaceholder = document.getElementById('plant-placeholder');
+    if (!plantImage || !plantPlaceholder) return;
+    const filename = plantName.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '');
+    const imagePath = `/static/img/crop-${filename}.webp`;
+    plantImage.src = imagePath;
+    plantImage.alt = plantName;
+    plantImage.onerror = function() {
+        plantImage.style.display = 'none';
+        plantPlaceholder.style.display = 'block';
+    };
+    plantImage.onload = function() {
+        plantImage.style.display = 'block';
+        plantPlaceholder.style.display = 'none';
+    };
+}
+
+export { updatePlantImage };
     const plantGrid = document.getElementById('plant-grid');
     const searchInput = document.getElementById('plant-search');
     
@@ -94,3 +116,26 @@ export function initializePlantGrid() {
         window.preloadPlantImages();
     }
 }
+
+// Exported for UI image updates
+function updatePlantImage(plantName) {
+    const plantEmojiContainer = document.getElementById('plant-emoji');
+    if (!plantEmojiContainer) return;
+    const plantImage = document.getElementById('plant-image');
+    const plantPlaceholder = document.getElementById('plant-placeholder');
+    if (!plantImage || !plantPlaceholder) return;
+    const filename = plantName.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '');
+    const imagePath = `/static/img/crop-${filename}.webp`;
+    plantImage.src = imagePath;
+    plantImage.alt = plantName;
+    plantImage.onerror = function() {
+        plantImage.style.display = 'none';
+        plantPlaceholder.style.display = 'block';
+    };
+    plantImage.onload = function() {
+        plantImage.style.display = 'block';
+        plantPlaceholder.style.display = 'none';
+    };
+}
+
+export { updatePlantImage };
