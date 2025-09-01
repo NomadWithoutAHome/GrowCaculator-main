@@ -180,6 +180,32 @@ class VercelSharedResultsService:
         except Exception as e:
             logger.error(f"Error getting all shared results: {e}")
             return []
+    
+    def get_database_stats(self) -> dict:
+        """Get database statistics."""
+        try:
+            if self.use_redis:
+                redis_client = self._get_redis_client()
+                if redis_client:
+                    # Count keys matching our pattern
+                    keys = redis_client.keys("shared_result:*")
+                    total_results = len(keys)
+                else:
+                    total_results = 0
+            else:
+                total_results = len(self.shared_results)
+            
+            return {
+                "total_shared_results": total_results,
+                "storage_type": "Redis" if self.use_redis else "In-Memory"
+            }
+        except Exception as e:
+            logger.error(f"Error getting database stats: {e}")
+            return {
+                "total_shared_results": 0,
+                "storage_type": "Error",
+                "error": str(e)
+            }
 
 # Create a single instance
 vercel_shared_results_service = VercelSharedResultsService()

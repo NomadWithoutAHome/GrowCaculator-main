@@ -387,11 +387,11 @@ async def share_recipe(recipe_data: dict):
         recipe_data['result_type'] = 'recipe'
         
         # Store the shared recipe
-        shared_result = shared_results_service.create_shared_result(
-            share_id=share_id,
-            result_type="recipe",
-            data=recipe_data
-        )
+        shared_result = vercel_shared_results_service.create_shared_result({
+            'share_id': share_id,
+            'result_type': 'recipe',
+            **recipe_data
+        })
         
         # Send Discord webhook notification
         await discord_webhook_service.send_calculation_result(recipe_data)
@@ -410,7 +410,7 @@ async def share_recipe(recipe_data: dict):
 async def get_shared_recipe(share_id: str):
     """Get a shared recipe by share ID."""
     try:
-        shared_result = shared_results_service.get_shared_result(share_id)
+        shared_result = vercel_shared_results_service.get_shared_result(share_id)
         if not shared_result:
             raise HTTPException(status_code=404, detail="Shared recipe not found")
         
