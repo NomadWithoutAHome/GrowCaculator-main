@@ -327,6 +327,9 @@ async function generateRandomRecipe() {
 function displayGeneratedRecipe(recipe) {
     const resultDiv = document.getElementById('recipe-result');
     
+    // Store the recipe data globally so we can access it in the share function
+    window.currentGeneratedRecipe = recipe;
+    
     const ingredientsHtml = Object.entries(recipe.ingredients).map(([category, items]) => {
         const itemsHtml = items.map(item => {
             const traitsStr = item.traits.length > 0 ? ` (${item.traits.join(', ')})` : '';
@@ -379,7 +382,7 @@ function displayGeneratedRecipe(recipe) {
             </div>
             
             <!-- Share Button -->
-            <button onclick="shareRecipe('${recipe.recipe_name}', ${JSON.stringify(recipe).replace(/'/g, "\\'")})" 
+            <button onclick="shareCurrentRecipe()" 
                     class="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
                 📤 Share Recipe
             </button>
