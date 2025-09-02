@@ -59,11 +59,7 @@ class DiscordWebhookService:
                 embed = self._create_calculation_embed(share_data)
         
         try:
-            webhook_data = {
-                "embeds": [embed],
-                "username": "Grow Calculator 🌱",
-                "avatar_url": "https://www.fruitcalculator.dohmboy64.com/static/img/calcsymbol.png"
-            }
+           webhook_data = {"embeds": [embed]}
             
             async with httpx.AsyncClient() as client:
                 response = await client.post(
