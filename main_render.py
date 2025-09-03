@@ -82,39 +82,60 @@ async def health_check():
     """Health check endpoint for Render."""
     return {"status": "healthy", "service": "GrowCalculator"}
 
-# For Render deployment
-
-# --- Discord webhook on startup ---
+# --------------------------------------------------------------------
+# Discord webhook integration for status embeds
+# --------------------------------------------------------------------
 import httpx
 import datetime
 
 DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1412898921717432451/U9PcRTHpwx1WhYk8c3vhsIWnWuFkCwdoZWa04GyFHIiJf0pciOlESHhSqbdEFvfbuBOx"
+DISCORD_MESSAGE_ID = "1412900301480005663"
 
-async def send_wakeup_webhook():
-    now = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
-    embed = {
-        "title": "Hey Listen!",
-        "description": "<@1033059396676227193> Someone woke up the website!",
-        "color": 5763719,
-        "fields": [
-            {"name": "Time", "value": now}
-        ],
-        "footer": {"text": "GrowCalculator Render Status"}
-    }
-    data = {"content": "<@1033059396676227193>", "embeds": [embed]}
-    async with httpx.AsyncClient() as client:
-        await client.post(DISCORD_WEBHOOK_URL, json=data)
+async def update_status_embed(description: str, color: int):
+    """Update the pinned Discord embed instead of creating new messages."""
+    try:
+        now_iso = datetime.datetime.utcnow().isoformat()
 
+        embed = {
+            "title": "Hey Listen!",           # Always the same
+            "description": description,       # Wakeup or shutdown message
+            "color": color,                   # Green or red
+            "footer": {"text": "GrowCalculator Render Status"},
+            "timestamp": now_iso              # Native Discord timestamp
+        }
+
+        data = {"embeds": [embed]}
+        webhook_edit_url = f"{DISCORD_WEBHOOK_URL}/messages/{DISCORD_MESSAGE_ID}"
+
+        async with httpx.AsyncClient() as client:
+            resp = await client.patch(webhook_edit_url, json=data, timeout=10)
+            if resp.is_error:
+                logger.error(f"Failed to update Discord status embed: {resp.text}")
+
+    except Exception as e:
+        logger.error(f"Error while updating Discord embed: {e}")
+
+# Startup & shutdown events
 @app.on_event("startup")
 async def notify_wakeup():
-    await send_wakeup_webhook()
+    GREEN = 0x57F287  # Discord green
+    await startup_logic()
+    await update_status_embed("Someone woke up the website!", GREEN)
 
+@app.on_event("shutdown")
+async def notify_shutdown():
+    RED = 0xED4245  # Discord red
+    await update_status_embed("The website went to sleep!", RED)
+
+# --------------------------------------------------------------------
+# For local dev / manual run
+# --------------------------------------------------------------------
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(
         "main_render:app",
-        host="0.0.0.0", 
+        host="0.0.0.0",
         port=port,
         log_level="warning"
     )
