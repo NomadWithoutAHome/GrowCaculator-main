@@ -83,6 +83,32 @@ async def health_check():
     return {"status": "healthy", "service": "GrowCalculator"}
 
 # For Render deployment
+
+# --- Discord webhook on startup ---
+import httpx
+import datetime
+
+DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1412898921717432451/U9PcRTHpwx1WhYk8c3vhsIWnWuFkCwdoZWa04GyFHIiJf0pciOlESHhSqbdEFvfbuBOx"
+
+async def send_wakeup_webhook():
+    now = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+    embed = {
+        "title": "Hey Listen!",
+        "description": "<@1033059396676227193> Someone woke up the website!",
+        "color": 5763719,
+        "fields": [
+            {"name": "Time", "value": now}
+        ],
+        "footer": {"text": "GrowCalculator Render Status"}
+    }
+    data = {"content": "<@1033059396676227193>", "embeds": [embed]}
+    async with httpx.AsyncClient() as client:
+        await client.post(DISCORD_WEBHOOK_URL, json=data)
+
+@app.on_event("startup")
+async def notify_wakeup():
+    await send_wakeup_webhook()
+
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
