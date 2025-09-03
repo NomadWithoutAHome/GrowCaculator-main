@@ -10,7 +10,7 @@ import httpx
 import datetime
 
 # Set up logging for production
-logging.basicConfig(level=logging.WARNING)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 # Create FastAPI app
@@ -69,7 +69,7 @@ DISCORD_MESSAGE_ID = "1412900301480005663"
 async def update_status_embed(description: str, color: int):
     """Update the pinned Discord embed instead of creating new messages."""
     try:
-        now_iso = datetime.datetime.utcnow().isoformat()
+        now_iso = datetime.datetime.utcnow()
 
         embed = {
             "title": "Hey Listen!",           # Always the same
@@ -83,12 +83,12 @@ async def update_status_embed(description: str, color: int):
         webhook_edit_url = f"{DISCORD_WEBHOOK_URL}/messages/{DISCORD_MESSAGE_ID}"
 
         async with httpx.AsyncClient() as client:
-            resp = await client.patch(webhook_edit_url, json=data, timeout=10)
-            if resp.is_error:
-                logger.error(f"Failed to update Discord status embed: {resp.text}")
+            response = await client.patch(webhook_edit_url, json=data)
+            if response.status_code != 200:
+                logger.error(f"Failed to update Discord status: {response.text}")
 
     except Exception as e:
-        logger.error(f"Error while updating Discord embed: {e}")
+        logger.error(f"Error updating Discord status: {e}")
 
 # Startup logic
 async def startup_logic():
@@ -114,7 +114,6 @@ async def health_check():
 # Discord webhook integration for status embeds
 # --------------------------------------------------------------------
 import httpx
-import datetime
 
 # Startup & shutdown events
 @app.on_event("startup")
@@ -122,6 +121,7 @@ async def notify_wakeup():
     global last_action
     GREEN = 0x57F287  # Discord green
     await startup_logic()
+    logger.info("Notifying wakeup at: %s", datetime.datetime.utcnow())
     await update_status_embed("Someone woke up the website!", GREEN)
     last_action = "startup"
 
@@ -129,6 +129,7 @@ async def notify_wakeup():
 async def notify_shutdown():
     global last_action
     RED = 0xED4245  # Discord red
+    logger.info("Notifying shutdown at: %s", datetime.datetime.utcnow())
     await update_status_embed("The website went to sleep!", RED)
     last_action = "shutdown"
 
@@ -142,5 +143,5 @@ if __name__ == "__main__":
         "main_render:app",
         host="0.0.0.0",
         port=port,
-        log_level="warning"
+        log_level="debug"
     )
