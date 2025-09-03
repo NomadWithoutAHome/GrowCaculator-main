@@ -63,13 +63,13 @@ async def serve_sitemap():
 # Shared state to track the last action
 last_action = None
 
-DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1412898921717432451/U9PcRTHpwx1WhYk8c3vhsIWnWuFkCwdoZWa04GyFHIiJf0pciOlESHhSqbdEFvfbuBOx"
-DISCORD_MESSAGE_ID = "1412900301480005663"
+DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL", "")
+DISCORD_MESSAGE_ID = os.getenv("DISCORD_MESSAGE_ID", "")
 
 async def update_status_embed(description: str, color: int):
     """Update the pinned Discord embed instead of creating new messages."""
     try:
-        now_iso = datetime.datetime.utcnow()
+        now_iso = datetime.datetime.utcnow().isoformat()  # Convert to ISO format
 
         embed = {
             "title": "Hey Listen!",           # Always the same
