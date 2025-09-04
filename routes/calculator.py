@@ -14,7 +14,7 @@ from services.calculator_service import calculator_service
 from services.vercel_shared_results_service import vercel_shared_results_service
 from services.discord_webhook_service import discord_webhook_service
 from services.traits_service import traits_service
-from models.calculator import SharedResult, SharedResultResponse
+from models.calculator import SharedResult, SharedResultResponse, BatchSharedResult, BatchSharedResultResponse
 from fastapi import HTTPException
 from datetime import datetime, timedelta
 
@@ -84,13 +84,13 @@ async def create_shared_result(share_data: dict):
         # Generate share ID if not provided
         if 'share_id' not in share_data:
             share_data['share_id'] = f"share_{int(datetime.utcnow().timestamp())}_{hash(str(share_data)) % 10000}"
-        
+
         # Set expiration to 24 hours from now
         share_data['expires_at'] = (datetime.utcnow() + timedelta(hours=24)).isoformat()
-        
+
         # Create the shared result
         success = vercel_shared_results_service.create_shared_result(share_data)
-        
+
         if success:
             # Send Discord webhook notification (non-blocking)
             try:
@@ -98,37 +98,142 @@ async def create_shared_result(share_data: dict):
             except Exception as e:
                 logger.error(f"Failed to send Discord webhook: {e}")
                 # Don't fail the share creation if webhook fails
-            
+
             return SharedResultResponse(
                 success=True,
                 data=SharedResult(**share_data)
             )
         else:
             raise HTTPException(status_code=500, detail="Failed to create shared result")
-            
+
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/api/share/{share_id}", response_model=SharedResultResponse)
+@router.post("/api/share-batch")
+async def create_batch_shared_result(batch_data: dict):
+    """Create a new batch shared result."""
+    try:
+        # Generate batch share ID
+        share_id = f"batch_{int(datetime.utcnow().timestamp())}_{hash(str(batch_data)) % 10000}"
+
+        # Prepare batch data for storage
+        batch_share_data = {
+            'share_id': share_id,
+            'type': 'batch',
+            'plants': batch_data.get('plants', []),
+            'total_value': 0,  # Will be calculated
+            'total_plants': 0,  # Will be calculated
+            'created_at': datetime.utcnow().isoformat(),
+            'expires_at': (datetime.utcnow() + timedelta(hours=24)).isoformat()
+        }
+
+        # Calculate totals from plants
+        total_value = 0
+        total_plants = 0
+
+        for plant in batch_data.get('plants', []):
+            # Calculate value for this plant
+            try:
+                # Import calculator service to calculate plant values
+                from services.calculator_service import calculator_service
+
+                # Get plant data
+                plant_data = calculator_service.get_plant_data(plant['plant'])
+                if plant_data:
+                    # Simple calculation (you might want to use the full calculation logic)
+                    base_value = plant_data.base_price
+
+                    # Get variant multiplier
+                    variants = calculator_service.get_variants()
+                    variant_multiplier = 1
+                    for variant in variants:
+                        if variant.name == plant['variant']:
+                            variant_multiplier = variant.multiplier
+                            break
+
+                    mutation_multiplier = calculator_service.calculate_mutation_multiplier(plant.get('mutations', []))
+
+                    # Calculate weight scaling (simplified)
+                    weight_ratio = min(2.0, max(0.5, plant['weight'] / plant_data.base_weight))
+
+                    plant_value = base_value * variant_multiplier * mutation_multiplier * weight_ratio
+                    total_value += plant_value * plant.get('quantity', 1)
+                    total_plants += plant.get('quantity', 1)
+
+                    # Add calculated values to plant data
+                    plant['result'] = plant_value
+                    plant['total'] = plant_value * plant.get('quantity', 1)
+
+            except Exception as e:
+                logger.error(f"Error calculating value for plant {plant['plant']}: {e}")
+                # Use fallback values
+                fallback_value = 100  # Default fallback
+                total_value += fallback_value * plant.get('quantity', 1)
+                total_plants += plant.get('quantity', 1)
+                plant['result'] = fallback_value
+                plant['total'] = fallback_value * plant.get('quantity', 1)
+
+        # Update totals
+        batch_share_data['total_value'] = total_value
+        batch_share_data['total_plants'] = total_plants
+
+        # Use the local shared_results_service for batch data
+        from services.shared_results_service import shared_results_service
+        success = shared_results_service.create_shared_result(batch_share_data)
+
+        if success:
+            # Send Discord webhook notification (non-blocking)
+            try:
+                batch_data['share_id'] = share_id
+                batch_data['result_type'] = 'batch'
+                await discord_webhook_service.send_calculation_result(batch_data)
+            except Exception as e:
+                logger.error(f"Failed to send Discord webhook: {e}")
+                # Don't fail the share creation if webhook fails
+
+            return {
+                "success": True,
+                "share_id": share_id,
+                "share_url": f"/share/{share_id}"
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Failed to create batch shared result")
+
+    except Exception as e:
+        logger.error(f"Error creating batch shared result: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/api/share/{share_id}")
 async def get_shared_result(share_id: str):
     """Retrieve a shared result by ID."""
     try:
-        result = vercel_shared_results_service.get_shared_result(share_id)
-        
-        if result:
-            return SharedResultResponse(
-                success=True,
-                data=SharedResult(**result)
-            )
+        # Check if this is a batch share ID
+        if share_id.startswith('batch_'):
+            # For batch results, use the local shared_results_service
+            from services.shared_results_service import shared_results_service
+            result = shared_results_service.get_shared_result(share_id)
         else:
-            return SharedResultResponse(
-                success=False,
-                error="Shared result not found or has expired"
-            )
-            
+            # For regular shares, use the vercel service
+            result = vercel_shared_results_service.get_shared_result(share_id)
+
+        if result:
+            return {
+                "success": True,
+                "data": result
+            }
+        else:
+            return {
+                "success": False,
+                "error": "Shared result not found or has expired"
+            }
+
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        return {
+            "success": False,
+            "error": str(e)
+        }
 
 
 @router.delete("/api/share/{share_id}")
@@ -429,10 +534,38 @@ async def get_shared_recipe(share_id: str):
 @router.get("/share/{share_id}", response_class=HTMLResponse)
 async def share_result(request: Request, share_id: str):
     """Share results page."""
-    return templates.TemplateResponse(
-        "share.html",
-        {"request": request, "share_id": share_id}
-    )
+    # Check if this is a batch share ID
+    if share_id.startswith('batch_'):
+        # For batch results, use the local shared_results_service and batch template
+        from services.shared_results_service import shared_results_service
+        result = shared_results_service.get_shared_result(share_id)
+
+        if result:
+            return templates.TemplateResponse(
+                "share_batch.html",
+                {"request": request, "share_id": share_id}
+            )
+        else:
+            # Result not found, show error page
+            return templates.TemplateResponse(
+                "share_batch.html",
+                {"request": request, "share_id": share_id, "error": "Shared batch result not found or has expired"}
+            )
+    else:
+        # For regular shares, use the vercel service and regular share template
+        result = vercel_shared_results_service.get_shared_result(share_id)
+
+        if result:
+            return templates.TemplateResponse(
+                "share.html",
+                {"request": request, "share_id": share_id}
+            )
+        else:
+            # Result not found, show error page
+            return templates.TemplateResponse(
+                "share.html",
+                {"request": request, "share_id": share_id, "error": "Shared result not found or has expired"}
+            )
 
 
 @router.get("/api/recipes/shop-seeds")

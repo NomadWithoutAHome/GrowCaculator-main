@@ -1847,6 +1847,9 @@ function initializeBatchCalculator() {
     // Set default values for batch calculator
     setBatchDefaultValues();
 
+    // Initialize weight range for default plant
+    updateBatchWeightRange();
+
     // Add auto-calculation for batch inputs
     const batchWeightInput = document.getElementById('batch-plant-weight');
     const batchAmountInput = document.getElementById('batch-plant-amount');
@@ -2016,7 +2019,7 @@ function initializeBatchActionButtons() {
     // Share batch results button
     const shareBatchBtn = document.getElementById('share-batch-result');
     if (shareBatchBtn) {
-        shareBatchBtn.addEventListener('click', shareSingleBatchResults);
+        shareBatchBtn.addEventListener('click', shareBatchResults);
     }
 
     // Clear batch button
@@ -2034,7 +2037,7 @@ function initializeBatchActionButtons() {
     // Batch clear all button
     const batchClearBtn = document.getElementById('batch-clear-all');
     if (batchClearBtn) {
-        batchClearBtn.addEventListener('click', clearSingleBatch);
+        batchClearBtn.addEventListener('click', clearBatchAll);
     }
 }
 
@@ -2528,22 +2531,93 @@ async function loadBatchData() {
  * Clear all batch plants
  */
 function clearBatchAll() {
-    batchPlants = [];
-    batchRowCounter = 0;
-    
-    const container = document.getElementById('batch-plant-rows');
-    if (container) {
-        container.innerHTML = '';
+    console.log('Clear all button clicked for batch calculator');
+
+    // Clear mutations
+    selectedMutations = [];
+    const mutationCheckboxes = document.querySelectorAll('#batch-calculator-content input[type="checkbox"][data-mutation]');
+    mutationCheckboxes.forEach(checkbox => {
+        checkbox.checked = false;
+        const label = checkbox.closest('label');
+        if (label) {
+            label.classList.remove('bg-green-700/50', 'border-green-500', 'text-white');
+            label.classList.add('bg-gray-700/30', 'text-gray-300');
+        }
+    });
+
+    // Reset variant to Normal
+    currentVariant = 'Normal';
+    const normalRadio = document.querySelector('#batch-calculator-content input[name="batch-variant"][value="Normal"]');
+    if (normalRadio) {
+        normalRadio.checked = true;
+        // Update variant visual state
+        const variantRadios = document.querySelectorAll('#batch-calculator-content input[name="batch-variant"]');
+        variantRadios.forEach(radio => {
+            const label = radio.closest('label');
+            if (label) {
+                if (radio.checked) {
+                    label.classList.remove('bg-gray-700/30', 'text-gray-300');
+                    label.classList.add('bg-green-700/50', 'border-green-500', 'text-white');
+                } else {
+                    label.classList.remove('bg-green-700/50', 'border-green-500', 'text-white');
+                    label.classList.add('bg-gray-700/30', 'text-gray-300');
+                }
+            }
+        });
     }
-    
-    updateBatchCalculations();
+
+    // Reset plant selection back to Carrot
+    currentPlant = 'Carrot';
+    const plantGrid = document.getElementById('batch-plant-grid');
+    if (plantGrid) {
+        // Remove selection from all plants
+        const allPlantButtons = plantGrid.querySelectorAll('[data-plant]');
+        allPlantButtons.forEach(button => {
+            button.classList.remove('bg-green-800', 'border-green-600', 'ring-2', 'ring-green-400');
+            button.classList.add('bg-gray-700', 'border-gray-600');
+            button.setAttribute('aria-pressed', 'false');
+        });
+
+        // Select Carrot
+        const carrotButton = plantGrid.querySelector('[data-plant="Carrot"]');
+        if (carrotButton) {
+            carrotButton.classList.remove('bg-gray-700', 'border-gray-600');
+            carrotButton.classList.add('bg-green-800', 'border-green-600', 'ring-2', 'ring-green-400');
+            carrotButton.setAttribute('aria-pressed', 'true');
+        }
+    }
+
+    // Reset weight to Carrot's base weight
+    const weightInput = document.getElementById('batch-plant-weight');
+    if (weightInput) {
+        weightInput.value = '0.24';
+    }
+
+    // Reset plant amount to 1
+    const amountInput = document.getElementById('batch-plant-amount');
+    if (amountInput) {
+        amountInput.value = '1';
+    }
+
+    console.log('Cleared all selections for batch calculator, reset to Carrot');
+
+    // Update plant image back to Carrot
+    updateBatchPlantImage('Carrot');
+
+    // Update weight range and trigger calculation
+    updateBatchWeightRange().then(() => {
+        updateBatchCalculationIfReady();
+    });
+
+    // NOTE: DO NOT clear the batch plants - only clear the current selection
+    // The batch plants should remain intact so users don't lose their work
 }
 
 /**
  * Share batch results
  */
 async function shareBatchResults() {
-    if (batchPlants.length === 0) {
+    if (singleBatchPlants.length === 0) {
         alert('No plants to share!');
         return;
     }
@@ -2555,7 +2629,7 @@ async function shareBatchResults() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                plants: batchPlants
+                plants: singleBatchPlants
             })
         });
 
@@ -2610,11 +2684,26 @@ function initializeSingleBatchCalculator() {
 function addCurrentPlantToBatch() {
     console.log('Adding current plant to batch...');
 
-    // Get current values
+    // Get current values - check which tab we're on
     const plantName = currentPlant;
     const variant = currentVariant;
-    const weight = parseFloat(document.getElementById('plant-weight')?.value) || 0;
-    const amount = parseInt(document.getElementById('plant-amount')?.value) || 1;
+
+    // Check if we're on the batch calculator tab
+    const batchTab = document.getElementById('batch-calculator-tab');
+    const isBatchTab = batchTab && batchTab.classList.contains('bg-green-600');
+
+    let weight, amount;
+
+    if (isBatchTab) {
+        // Get values from batch calculator inputs
+        weight = parseFloat(document.getElementById('batch-plant-weight')?.value) || 0;
+        amount = parseInt(document.getElementById('batch-plant-amount')?.value) || 1;
+    } else {
+        // Get values from single calculator inputs
+        weight = parseFloat(document.getElementById('plant-weight')?.value) || 0;
+        amount = parseInt(document.getElementById('plant-amount')?.value) || 1;
+    }
+
     const mutations = [...selectedMutations];
 
     // Validate inputs
@@ -2634,7 +2723,7 @@ function addCurrentPlantToBatch() {
         plant: plantName,
         variant: variant,
         weight: weight,
-        amount: amount,
+        quantity: amount, // Use 'quantity' to match what displayBatchResults expects
         mutations: mutations,
         timestamp: Date.now()
     };
@@ -2686,7 +2775,7 @@ function updateSingleBatchDisplay() {
                         <span class="text-gray-400">•</span>
                         <span class="text-blue-400">${plant.weight}kg</span>
                         <span class="text-gray-400">•</span>
-                        <span class="text-purple-400">${plant.amount} plants</span>
+                        <span class="text-purple-400">${plant.quantity} plants</span>
                     </div>
                     ${plant.mutations.length > 0 ?
                         `<div class="text-xs text-gray-400 mt-1">
@@ -2757,21 +2846,21 @@ async function updateSingleBatchSummary() {
                     variant: plant.variant,
                     weight: plant.weight,
                     mutations: plant.mutations,
-                    plant_amount: plant.amount
+                    plant_amount: plant.quantity
                 })
             });
 
             if (response.ok) {
                 const result = await response.json();
                 totalValue += result.total_value;
-                totalPlants += plant.amount;
+                totalPlants += plant.quantity;
             }
         } catch (error) {
             console.error('Error calculating plant value for batch:', error);
             // Fallback to estimated value
             const estimatedValue = Math.round(Math.random() * 1000) + 100;
-            totalValue += estimatedValue * plant.amount;
-            totalPlants += plant.amount;
+            totalValue += estimatedValue * plant.quantity;
+            totalPlants += plant.quantity;
         }
     }
 

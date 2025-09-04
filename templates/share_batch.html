@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block title %}Shared Batch Results - Grow Calculator{% endblock %}
+
+{% block description %}View shared batch calculation results from Grow Calculator{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-900 text-white">
+    <!-- Header -->
+    <div class="text-center py-12 bg-gradient-to-r from-green-900/30 to-purple-900/30">
+        <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">
+            Shared Batch Results
+        </h1>
+        <p class="text-xl text-gray-300">
+            Multiple plant calculation results shared from Grow Calculator
+        </p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Batch Summary -->
+        <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl p-8 mb-8 border border-gray-600 relative overflow-hidden">
+            <!-- Background decoration -->
+            <div class="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full -translate-y-16 translate-x-16"></div>
+            <div class="absolute bottom-0 left-0 w-24 h-24 bg-purple-500/10 rounded-full translate-y-12 -translate-x-12"></div>
+
+            <div class="relative z-10">
+                <h2 class="text-4xl font-bold text-green-400 mb-8 text-center">
+                    Batch Summary
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Total Batch Value -->
+                    <div class="bg-gradient-to-br from-green-900/40 to-green-800/40 p-6 rounded-xl border border-green-500/30 hover:border-green-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/20 group">
+                        <div class="text-center">
+                            <div class="w-16 h-16 mx-auto mb-4 bg-green-500/20 rounded-full flex items-center justify-center group-hover:bg-green-500/30 transition-colors duration-300">
+                                <div class="w-8 h-8 bg-green-400 rounded-full"></div>
+                            </div>
+                            <p class="text-sm text-green-300 font-medium mb-2 uppercase tracking-wide">Total Batch Value</p>
+                            <p class="text-3xl font-bold text-green-400 group-hover:text-green-300 transition-colors duration-300" id="batch-total-value">Loading...</p>
+                        </div>
+                    </div>
+
+                    <!-- Total Plants -->
+                    <div class="bg-gradient-to-br from-blue-900/40 to-blue-800/40 p-6 rounded-xl border border-blue-500/30 hover:border-blue-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20 group">
+                        <div class="text-center">
+                            <div class="w-16 h-16 mx-auto mb-4 bg-blue-500/20 rounded-full flex items-center justify-center group-hover:bg-blue-500/30 transition-colors duration-300">
+                                <div class="w-8 h-8 bg-blue-400 rounded-full"></div>
+                            </div>
+                            <p class="text-sm text-blue-300 font-medium mb-2 uppercase tracking-wide">Total Plants</p>
+                            <p class="text-3xl font-bold text-blue-400 group-hover:text-blue-300 transition-colors duration-300" id="batch-total-plants">Loading...</p>
+                        </div>
+                    </div>
+
+                    <!-- Average per Plant -->
+                    <div class="bg-gradient-to-br from-purple-900/40 to-purple-800/40 p-6 rounded-xl border border-purple-500/30 hover:border-purple-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 group">
+                        <div class="text-center">
+                            <div class="w-16 h-16 mx-auto mb-4 bg-purple-500/20 rounded-full flex items-center justify-center group-hover:bg-purple-500/30 transition-colors duration-300">
+                                <div class="w-8 h-8 bg-purple-400 rounded-full"></div>
+                            </div>
+                            <p class="text-sm text-purple-300 font-medium mb-2 uppercase tracking-wide">Average per Plant</p>
+                            <p class="text-2xl font-bold text-purple-400 group-hover:text-purple-300 transition-colors duration-300" id="batch-avg-per-plant">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Individual Plant Results -->
+        <div class="bg-gray-800 rounded-lg shadow-lg p-8 mb-8 border border-gray-600">
+            <h2 class="text-2xl font-bold text-green-400 mb-6 text-center">🌱 Individual Plants</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="batch-plants-list">
+                <!-- Plants will be populated here -->
+            </div>
+        </div>
+
+        <!-- Share Info -->
+        <div class="bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-600 text-center">
+            <h3 class="text-xl font-semibold text-gray-200 mb-4">Share Information</h3>
+            <div class="space-y-2 text-gray-400">
+                <p>This batch was shared on <span class="text-green-400" id="share-timestamp">-</span></p>
+                <p>Link expires on <span class="text-red-400" id="share-expires">-</span></p>
+                <p class="text-sm">Share this link with others to show them your batch calculation results!</p>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="text-center mt-8 space-x-4">
+            <a href="/" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                Calculate Your Own
+            </a>
+            <button onclick="copyShareLink()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                Copy Link
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Get share ID from URL
+const shareId = window.location.pathname.split('/').pop();
+
+// Load and display shared batch data
+async function loadSharedBatchData() {
+    try {
+        // Get share data from API
+        const response = await fetch(`/api/share/${shareId}`);
+        if (!response.ok) {
+            showError('Share data not found or has expired');
+            return;
+        }
+
+        const result = await response.json();
+        if (!result.success) {
+            showError(result.error || 'Share data not found or has expired');
+            return;
+        }
+
+        const data = result.data;
+
+        // Display batch summary
+        document.getElementById('batch-total-value').textContent = formatLargeNumber(data.total_value) + ' sheckles';
+        document.getElementById('batch-total-plants').textContent = data.total_plants;
+        document.getElementById('batch-avg-per-plant').textContent = formatLargeNumber(data.total_value / data.total_plants) + ' sheckles';
+
+        // Display share info
+        document.getElementById('share-timestamp').textContent = new Date(data.created_at).toLocaleString();
+        document.getElementById('share-expires').textContent = new Date(data.expires_at).toLocaleString();
+
+        // Display individual plants
+        displayBatchPlants(data.plants);
+
+    } catch (error) {
+        console.error('Error loading shared batch data:', error);
+        showError('Failed to load shared batch data');
+    }
+}
+
+// Display individual plants in the batch
+function displayBatchPlants(plants) {
+    const plantsList = document.getElementById('batch-plants-list');
+
+    plantsList.innerHTML = plants.map(plant => {
+        // Create plant image filename
+        const filename = plant.plant.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '');
+
+        return `
+        <div class="bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-600">
+            <!-- Plant Image and Basic Info -->
+            <div class="text-center mb-6">
+                <div class="w-20 h-20 mx-auto mb-4 flex items-center justify-center bg-gray-700 rounded-full border-2 border-green-500">
+                    <img src="/static/img/crop-${filename}.webp"
+                         alt="${plant.plant}"
+                         class="w-full h-full object-contain rounded-full"
+                         onerror="this.src='/static/img/placeholder.png'">
+                </div>
+                <h3 class="text-xl font-bold text-white mb-1">${plant.plant}</h3>
+                <p class="text-gray-400 text-sm">${plant.variant} Variant</p>
+            </div>
+
+            <!-- Plant Details Grid -->
+            <div class="grid grid-cols-1 gap-4 mb-6">
+                <div class="text-center p-4 bg-gray-700/50 rounded-lg border border-gray-600">
+                    <h4 class="text-lg font-semibold text-gray-200 mb-3">Plant Details</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Weight:</span>
+                            <span class="text-blue-300 font-semibold">${plant.weight} kg</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Quantity:</span>
+                            <span class="text-purple-300 font-semibold">${plant.quantity}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center p-4 bg-gray-700/50 rounded-lg border border-gray-600">
+                    <h4 class="text-lg font-semibold text-gray-200 mb-3">Value Results</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Per Plant:</span>
+                            <span class="text-green-300 font-semibold">${formatLargeNumber(plant.result)} sheckles</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Total Value:</span>
+                            <span class="text-green-400 font-bold">${formatLargeNumber(plant.total)} sheckles</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mutations Section -->
+            <div class="mb-4">
+                <h4 class="text-lg font-semibold text-green-400 mb-3 text-center">Applied Mutations</h4>
+                <div class="flex flex-wrap gap-2 justify-center">
+                    ${plant.mutations && plant.mutations.length > 0
+                        ? plant.mutations.map(mutation =>
+                            `<span class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-medium">${mutation}</span>`
+                          ).join('')
+                        : '<span class="text-gray-500 text-sm">No mutations</span>'
+                    }
+                </div>
+            </div>
+        </div>
+    `}).join('');
+}
+
+/**
+ * Format large numbers with abbreviations
+ */
+function formatLargeNumber(num) {
+    if (num >= 1e21) return (num / 1e21).toFixed(2) + ' Sextillion';
+    if (num >= 1e18) return (num / 1e18).toFixed(2) + ' Quintillion';
+    if (num >= 1e15) return (num / 1e15).toFixed(2) + ' Quadrillion';
+    if (num >= 1e12) return (num / 1e12).toFixed(2) + ' Trillion';
+    if (num >= 1e9) return (num / 1e9).toFixed(2) + ' Billion';
+    if (num >= 1e6) return (num / 1e6).toFixed(2) + ' Million';
+    if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
+    return num.toLocaleString();
+}
+
+// Copy share link to clipboard
+function copyShareLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+        alert('Share link copied to clipboard!');
+    }).catch(() => {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = window.location.href;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('Share link copied to clipboard!');
+    });
+}
+
+// Show error message
+function showError(message) {
+    const mainContent = document.querySelector('.max-w-6xl');
+    mainContent.innerHTML = `
+        <div class="text-center py-16">
+            <h2 class="text-3xl font-bold text-red-400 mb-4">Error</h2>
+            <p class="text-gray-300 text-lg mb-8">${message}</p>
+            <a href="/" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                Go to Calculator
+            </a>
+        </div>
+    `;
+}
+
+// Load data when page loads
+document.addEventListener('DOMContentLoaded', loadSharedBatchData);
+</script>
+{% endblock %}

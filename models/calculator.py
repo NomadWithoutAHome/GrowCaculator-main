@@ -83,8 +83,37 @@ class SharedResult(BaseModel):
     expires_at: datetime = Field(..., description="Expiration timestamp (24 hours from creation)")
 
 
+class BatchPlant(BaseModel):
+    """Model for individual plant in batch results."""
+    plant: str = Field(..., description="Plant name")
+    variant: str = Field(..., description="Plant variant")
+    weight: float = Field(..., description="Plant weight in kg")
+    quantity: int = Field(..., description="Number of this plant")
+    mutations: List[str] = Field(default=[], description="List of mutations")
+    result: float = Field(..., description="Value per plant")
+    total: float = Field(..., description="Total value for this plant type")
+
+
+class BatchSharedResult(BaseModel):
+    """Model for shared batch calculation results."""
+    share_id: str = Field(..., description="Unique share identifier")
+    type: str = Field(default="batch", description="Result type")
+    plants: List[BatchPlant] = Field(..., description="List of plants in batch")
+    total_value: float = Field(..., description="Total value of all plants")
+    total_plants: int = Field(..., description="Total number of plants")
+    created_at: datetime = Field(default_factory=datetime.utcnow, description="Creation timestamp")
+    expires_at: datetime = Field(..., description="Expiration timestamp (24 hours from creation)")
+
+
 class SharedResultResponse(BaseModel):
     """Response model for shared result retrieval."""
     success: bool
     data: Optional[SharedResult] = None
+    error: Optional[str] = None
+
+
+class BatchSharedResultResponse(BaseModel):
+    """Response model for batch shared result retrieval."""
+    success: bool
+    data: Optional[BatchSharedResult] = None
     error: Optional[str] = None

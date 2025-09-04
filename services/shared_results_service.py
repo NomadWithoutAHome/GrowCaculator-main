@@ -66,38 +66,73 @@ class SharedResultsService:
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
-                
-                # Convert mutations list to JSON string
-                mutations_json = json.dumps(share_data.get('mutations', []))
-                
-                cursor.execute("""
-                    INSERT INTO shared_results (
-                        share_id, plant, variant, mutations, weight, amount,
-                        result_value, final_sheckles, total_value, total_multiplier,
-                        mutation_breakdown, weight_min, weight_max, created_at, expires_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    share_data['share_id'],
-                    share_data['plant'],
-                    share_data['variant'],
-                    mutations_json,
-                    float(share_data['weight']),
-                    int(share_data['amount']),
-                    share_data['result_value'],
-                    share_data['final_sheckles'],
-                    share_data['total_value'],
-                    share_data['total_multiplier'],
-                    share_data['mutation_breakdown'],
-                    share_data['weight_min'],
-                    share_data['weight_max'],
-                    share_data['created_at'],
-                    share_data['expires_at']
-                ))
-                
+
+                # Check if this is a batch result
+                if share_data.get('type') == 'batch':
+                    # For batch results, store batch data in mutations field as JSON
+                    batch_data = {
+                        'type': 'batch',
+                        'plants': share_data.get('plants', []),
+                        'total_value': share_data.get('total_value', 0),
+                        'total_plants': share_data.get('total_plants', 0)
+                    }
+                    mutations_json = json.dumps(batch_data)
+
+                    cursor.execute("""
+                        INSERT INTO shared_results (
+                            share_id, plant, variant, mutations, weight, amount,
+                            result_value, final_sheckles, total_value, total_multiplier,
+                            mutation_breakdown, weight_min, weight_max, created_at, expires_at
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        share_data['share_id'],
+                        'BATCH',  # Special marker for batch results
+                        'BATCH',  # Special marker for batch results
+                        mutations_json,
+                        0.0,  # Not applicable for batch
+                        0,    # Not applicable for batch
+                        '',   # Not applicable for batch
+                        '',   # Not applicable for batch
+                        str(share_data.get('total_value', 0)),
+                        '1.00',  # Not applicable for batch
+                        '',   # Not applicable for batch
+                        '',   # Not applicable for batch
+                        '',   # Not applicable for batch
+                        share_data['created_at'],
+                        share_data['expires_at']
+                    ))
+                else:
+                    # Handle single plant results as before
+                    mutations_json = json.dumps(share_data.get('mutations', []))
+
+                    cursor.execute("""
+                        INSERT INTO shared_results (
+                            share_id, plant, variant, mutations, weight, amount,
+                            result_value, final_sheckles, total_value, total_multiplier,
+                            mutation_breakdown, weight_min, weight_max, created_at, expires_at
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        share_data['share_id'],
+                        share_data['plant'],
+                        share_data['variant'],
+                        mutations_json,
+                        float(share_data['weight']),
+                        int(share_data['amount']),
+                        share_data['result_value'],
+                        share_data['final_sheckles'],
+                        share_data['total_value'],
+                        share_data['total_multiplier'],
+                        share_data['mutation_breakdown'],
+                        share_data['weight_min'],
+                        share_data['weight_max'],
+                        share_data['created_at'],
+                        share_data['expires_at']
+                    ))
+
                 conn.commit()
                 logger.info(f"Created shared result: {share_data['share_id']}")
                 return True
-                
+
         except Exception as e:
             logger.error(f"Error creating shared result: {e}")
             return False
@@ -107,31 +142,39 @@ class SharedResultsService:
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
-                
+
                 cursor.execute("""
                     SELECT * FROM shared_results WHERE share_id = ?
                 """, (share_id,))
-                
+
                 row = cursor.fetchone()
                 if not row:
                     return None
-                
+
                 # Convert row to dictionary
                 columns = [description[0] for description in cursor.description]
                 result = dict(zip(columns, row))
-                
-                # Parse mutations JSON back to list
-                result['mutations'] = json.loads(result['mutations'])
-                
-                # Check if expired
-                expires_at = datetime.fromisoformat(result['expires_at'])
-                if datetime.utcnow() > expires_at:
-                    logger.info(f"Shared result expired: {share_id}")
-                    self.delete_shared_result(share_id)
-                    return None
-                
-                return result
-                
+
+                # Parse mutations JSON
+                mutations_data = json.loads(result['mutations'])
+
+                # Check if this is a batch result
+                if result['plant'] == 'BATCH' and isinstance(mutations_data, dict) and mutations_data.get('type') == 'batch':
+                    # Return batch data in the expected format
+                    return {
+                        'share_id': result['share_id'],
+                        'type': 'batch',
+                        'plants': mutations_data.get('plants', []),
+                        'total_value': mutations_data.get('total_value', 0),
+                        'total_plants': mutations_data.get('total_plants', 0),
+                        'created_at': result['created_at'],
+                        'expires_at': result['expires_at']
+                    }
+                else:
+                    # Handle single plant results as before
+                    result['mutations'] = mutations_data
+                    return result
+
         except Exception as e:
             logger.error(f"Error retrieving shared result: {e}")
             return None
