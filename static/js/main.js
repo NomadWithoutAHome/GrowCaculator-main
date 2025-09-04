@@ -1193,12 +1193,29 @@ function updateCalculationIfReady() {
     console.log('Current plant:', currentPlant);
     console.log('Current variant:', currentVariant);
     console.log('Selected mutations:', selectedMutations);
-    
+
     if (currentPlant) {
         console.log('Triggering calculation...');
         calculatePlantValue();
     } else {
         console.log('No plant selected, skipping calculation');
+    }
+}
+
+/**
+ * Update batch calculation if inputs are ready
+ */
+function updateBatchCalculationIfReady() {
+    console.log('updateBatchCalculationIfReady called');
+    console.log('Current batch plant:', currentPlant);
+    console.log('Current batch variant:', currentVariant);
+    console.log('Selected batch mutations:', selectedMutations);
+
+    if (currentPlant) {
+        console.log('Triggering batch calculation...');
+        calculateBatchPlantValue();
+    } else {
+        console.log('No batch plant selected, skipping calculation');
     }
 }
 
@@ -1812,28 +1829,669 @@ function updateBatchCalculations() {
  * Initialize batch calculator
  */
 function initializeBatchCalculator() {
-    // Load plant and variant data for batch calculator
-    loadBatchData();
+    console.log('Initializing batch calculator...');
 
-    // Add initial batch row
-    addBatchPlantRow();
+    // Initialize batch calculator state
+    batchPlants = [];
+    batchRowCounter = 0;
 
-    // Add plant row button
-    const addPlantBtn = document.getElementById('add-plant-row');
-    if (addPlantBtn) {
-        addPlantBtn.addEventListener('click', addBatchPlantRow);
+    // Initialize batch plant grid
+    initializeBatchPlantGrid();
+
+    // Initialize batch mutation selection
+    initializeBatchMutationSelection();
+
+    // Initialize batch action buttons
+    initializeBatchActionButtons();
+
+    // Set default values for batch calculator
+    setBatchDefaultValues();
+
+    // Add auto-calculation for batch inputs
+    const batchWeightInput = document.getElementById('batch-plant-weight');
+    const batchAmountInput = document.getElementById('batch-plant-amount');
+
+    if (batchWeightInput) {
+        batchWeightInput.addEventListener('input', debounce(updateBatchCalculationIfReady, 500));
     }
 
-    // Clear all button
-    const clearAllBtn = document.getElementById('clear-batch-all');
-    if (clearAllBtn) {
-        clearAllBtn.addEventListener('click', clearBatchAll);
+    if (batchAmountInput) {
+        batchAmountInput.addEventListener('input', debounce(updateBatchCalculationIfReady, 500));
+    }
+
+    // Trigger initial calculation for default Carrot selection
+    setTimeout(() => {
+        updateBatchCalculationIfReady();
+    }, 100);
+
+    console.log('Batch calculator initialized');
+}
+
+/**
+ * Initialize batch plant grid functionality
+ */
+function initializeBatchPlantGrid() {
+    const plantGrid = document.getElementById('batch-plant-grid');
+    const searchInput = document.getElementById('batch-plant-search');
+
+    if (!plantGrid) {
+        console.warn('Batch plant grid not found');
+        return;
+    }
+
+    console.log('Initializing batch plant grid...');
+
+    // Add click handlers to plant buttons
+    plantGrid.addEventListener('click', function(e) {
+        const plantButton = e.target.closest('[data-plant]');
+        if (!plantButton) return;
+
+        console.log('Batch plant clicked:', plantButton.dataset.plant);
+
+        // Remove previous selection - look for any selected plant
+        const previousSelected = plantGrid.querySelector('[aria-pressed="true"]');
+        if (previousSelected) {
+            previousSelected.classList.remove('bg-green-800', 'border-green-600', 'ring-2', 'ring-green-400');
+            previousSelected.classList.add('bg-gray-700', 'border-gray-600');
+            previousSelected.setAttribute('aria-pressed', 'false');
+        }
+
+        // Add selection to clicked plant
+        plantButton.classList.remove('bg-gray-700', 'border-gray-600');
+        plantButton.classList.add('bg-green-800', 'border-green-600', 'ring-2', 'ring-green-400');
+        plantButton.setAttribute('aria-pressed', 'true');
+
+        // Update current plant for batch
+        currentPlant = plantButton.dataset.plant;
+        console.log('Selected batch plant:', currentPlant);
+
+        // Update plant image
+        updateBatchPlantImage(currentPlant);
+
+        // Update weight range for batch
+        updateBatchWeightRange().then(() => {
+            console.log('Batch weight range update complete, now triggering calculation...');
+            // Now that weight range is updated, trigger calculation
+            updateBatchCalculationIfReady();
+        }).catch(error => {
+            console.error('Error updating batch weight range:', error);
+            // Still try to calculate even if weight range fails
+            updateBatchCalculationIfReady();
+        });
+    });
+
+    // Search functionality
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            console.log('Searching batch plants for:', searchTerm);
+
+            const plantButtons = plantGrid.querySelectorAll('[data-plant]');
+
+            plantButtons.forEach(button => {
+                const plantName = button.dataset.plant.toLowerCase();
+                if (plantName.includes(searchTerm)) {
+                    button.style.display = '';
+                } else {
+                    button.style.display = 'none';
+                }
+            });
+        });
+    } else {
+        console.warn('Batch search input not found');
+    }
+
+    // Select default plant (Carrot)
+    const defaultPlant = plantGrid.querySelector('[data-plant="Carrot"]');
+    if (defaultPlant) {
+        console.log('Setting default batch plant: Carrot');
+        defaultPlant.classList.remove('bg-gray-700', 'border-gray-600');
+        defaultPlant.classList.add('bg-green-800', 'border-green-600', 'ring-2', 'ring-green-400');
+        defaultPlant.setAttribute('aria-pressed', 'true');
+        currentPlant = 'Carrot';
+
+        // Update plant image for default plant
+        updateBatchPlantImage('Carrot');
+    } else {
+        console.warn('Default batch plant (Carrot) not found');
+    }
+}
+
+/**
+ * Initialize batch mutation selection functionality
+ */
+function initializeBatchMutationSelection() {
+    const mutationCheckboxes = document.querySelectorAll('#batch-calculator-content input[type="checkbox"][data-mutation]');
+    const variantRadios = document.querySelectorAll('#batch-calculator-content input[name="batch-variant"]');
+
+    console.log('Initializing batch mutation selection...');
+    console.log('Found batch mutation checkboxes:', mutationCheckboxes.length);
+    console.log('Found batch variant radios:', variantRadios.length);
+
+    // Handle mutation checkboxes
+    mutationCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const label = this.closest('label');
+            if (this.checked) {
+                label.classList.remove('bg-gray-700/30', 'text-gray-300');
+                label.classList.add('bg-green-700/50', 'border-green-500', 'text-white');
+                selectedMutations.push(this.dataset.mutation);
+                console.log('Added batch mutation:', this.dataset.mutation);
+            } else {
+                label.classList.remove('bg-green-700/50', 'border-green-500', 'text-white');
+                label.classList.add('bg-gray-700/30', 'text-gray-300');
+                const index = selectedMutations.indexOf(this.dataset.mutation);
+                if (index > -1) {
+                    selectedMutations.splice(index, 1);
+                    console.log('Removed batch mutation:', this.dataset.mutation);
+                }
+            }
+            console.log('Current batch mutations:', selectedMutations);
+            updateBatchCalculationIfReady();
+        });
+    });
+
+    // Handle variant radios
+    variantRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            console.log('Batch variant changed to:', this.value);
+            currentVariant = this.value;
+            updateBatchCalculationIfReady();
+        });
+    });
+}
+
+/**
+ * Initialize batch action buttons
+ */
+function initializeBatchActionButtons() {
+    console.log('Initializing batch action buttons...');
+
+    // Add plant to batch button
+    const addPlantBtn = document.getElementById('add-plant-to-batch');
+    if (addPlantBtn) {
+        addPlantBtn.addEventListener('click', addCurrentPlantToBatch);
     }
 
     // Share batch results button
     const shareBatchBtn = document.getElementById('share-batch-result');
     if (shareBatchBtn) {
-        shareBatchBtn.addEventListener('click', shareBatchResults);
+        shareBatchBtn.addEventListener('click', shareSingleBatchResults);
+    }
+
+    // Clear batch button
+    const clearBatchBtn = document.getElementById('clear-batch');
+    if (clearBatchBtn) {
+        clearBatchBtn.addEventListener('click', clearSingleBatch);
+    }
+
+    // Batch share result button
+    const batchShareBtn = document.getElementById('batch-share-result');
+    if (batchShareBtn) {
+        batchShareBtn.addEventListener('click', shareSingleBatchResults);
+    }
+
+    // Batch clear all button
+    const batchClearBtn = document.getElementById('batch-clear-all');
+    if (batchClearBtn) {
+        batchClearBtn.addEventListener('click', clearSingleBatch);
+    }
+}
+
+/**
+ * Set default values for batch calculator
+ */
+function setBatchDefaultValues() {
+    // Set default input values
+    const plantAmountInput = document.getElementById('batch-plant-amount');
+    const plantWeightInput = document.getElementById('batch-plant-weight');
+
+    if (plantAmountInput) plantAmountInput.value = '1';
+    if (plantWeightInput) plantWeightInput.value = '0.24';
+
+    // Set default variant to Normal
+    const normalRadio = document.querySelector('input[name="batch-variant"][value="Normal"]');
+    if (normalRadio) {
+        normalRadio.checked = true;
+        currentVariant = 'Normal';
+    }
+
+    // Clear mutations
+    selectedMutations = [];
+    const mutationCheckboxes = document.querySelectorAll('#batch-calculator-content input[type="checkbox"][data-mutation]');
+    mutationCheckboxes.forEach(checkbox => {
+        checkbox.checked = false;
+        const label = checkbox.closest('label');
+        if (label) {
+            label.classList.remove('bg-green-700/50', 'border-green-500', 'text-white');
+            label.classList.add('bg-gray-700/30', 'text-gray-300');
+        }
+    });
+}
+
+/**
+ * Update batch plant image when a plant is selected
+ */
+function updateBatchPlantImage(plantName) {
+    const plantEmojiContainer = document.getElementById('batch-plant-emoji');
+    if (!plantEmojiContainer) return;
+
+    const plantImage = document.getElementById('batch-plant-image');
+    const plantPlaceholder = document.getElementById('batch-plant-placeholder');
+
+    if (!plantImage || !plantPlaceholder) return;
+
+    // Convert plant name to filename format (lowercase, replace spaces with hyphens, remove apostrophes)
+    const filename = plantName.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '');
+    const imagePath = `/static/img/crop-${filename}.webp`;
+
+    // Set the image source
+    plantImage.src = imagePath;
+    plantImage.alt = plantName;
+
+    // Handle image load errors by showing placeholder
+    plantImage.onerror = function() {
+        console.warn(`Image not found for ${plantName}, using fallback placeholder`);
+        plantImage.style.display = 'none';
+        plantPlaceholder.style.display = 'block';
+    };
+
+    // Handle successful image load
+    plantImage.onload = function() {
+        console.log(`Successfully loaded image for ${plantName}`);
+        plantImage.style.display = 'block';
+        plantPlaceholder.style.display = 'none';
+    };
+}
+
+/**
+ * Update batch weight range display when plant changes
+ */
+async function updateBatchWeightRange() {
+    const weightRangeDiv = document.getElementById('batch-weight-range');
+    const weightMinSpan = document.getElementById('batch-weight-min');
+    const weightMaxSpan = document.getElementById('batch-weight-max');
+
+    if (!weightRangeDiv || !weightMinSpan || !weightMaxSpan) {
+        return;
+    }
+
+    const plantName = currentPlant;
+
+    if (!plantName) {
+        weightRangeDiv.classList.add('hidden');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/weight-range/${encodeURIComponent(plantName)}`);
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch weight range');
+        }
+
+        const weightRange = await response.json();
+
+        // Update the display
+        weightMinSpan.textContent = weightRange.min;
+        weightMaxSpan.textContent = weightRange.max;
+        weightRangeDiv.classList.remove('hidden');
+
+        // Also update the weight input to the base weight
+        const weightInput = document.getElementById('batch-plant-weight');
+        if (weightInput) {
+            weightInput.value = weightRange.base;
+        }
+
+        console.log('Batch weight range updated for', plantName, 'base weight:', weightRange.base);
+
+    } catch (error) {
+        console.error('Batch weight range error:', error);
+        weightRangeDiv.classList.add('hidden');
+    }
+}
+
+/**
+ * Calculate batch plant value
+ */
+async function calculateBatchPlantValue() {
+    const weightInput = document.getElementById('batch-plant-weight');
+    const amountInput = document.getElementById('batch-plant-amount');
+
+    if (!weightInput || !amountInput) return;
+
+    const plantName = currentPlant;
+    const weight = parseFloat(weightInput.value);
+    const amount = parseInt(amountInput.value);
+
+    console.log('Calculating batch plant:', plantName, weight, amount, selectedMutations);
+
+    if (!plantName || !weight || weight <= 0 || !amount || amount <= 0) {
+        console.log('Invalid batch inputs, hiding results');
+        hideBatchResults();
+        return;
+    }
+
+    // Store current values before calculation
+    const currentValues = getCurrentBatchDisplayValues();
+
+    // Disable inputs during calculation (subtle indicator)
+    const inputs = [weightInput, amountInput];
+    inputs.forEach(input => input.disabled = true);
+
+    try {
+        const response = await fetch(`${API_BASE}/calculate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                plant_name: plantName,
+                variant: currentVariant,
+                weight: weight,
+                mutations: selectedMutations,
+                plant_amount: amount
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Batch calculation failed');
+        }
+
+        const result = await response.json();
+
+        // Immediately animate from current values to new values
+        displayBatchResults(result, currentValues);
+
+    } catch (error) {
+        console.error('Batch calculation error:', error);
+        hideBatchResults();
+        showBatchCalculationError();
+    } finally {
+        // Re-enable inputs
+        inputs.forEach(input => input.disabled = false);
+    }
+}
+
+/**
+ * Show batch calculation loading state
+ */
+function showBatchCalculationLoading() {
+    const resultValueElement = document.getElementById('batch-result-value');
+    const resultShecklesElement = document.getElementById('batch-result-sheckles');
+
+    if (resultValueElement) {
+        // Show loading spinner in the result value area
+        resultValueElement.innerHTML = `
+            <div class="flex items-center justify-center">
+                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-green-400 mr-2"></div>
+                <span class="text-gray-300">Calculating...</span>
+            </div>
+        `;
+    }
+
+    if (resultShecklesElement) {
+        resultShecklesElement.textContent = '(...)';
+    }
+
+    // Disable input fields during calculation
+    const weightInput = document.getElementById('batch-plant-weight');
+    const amountInput = document.getElementById('batch-plant-amount');
+
+    if (weightInput) weightInput.disabled = true;
+    if (amountInput) amountInput.disabled = true;
+}
+
+/**
+ * Hide batch calculation loading state
+ */
+function hideBatchCalculationLoading() {
+    // Re-enable input fields
+    const weightInput = document.getElementById('batch-plant-weight');
+    const amountInput = document.getElementById('batch-plant-amount');
+
+    if (weightInput) weightInput.disabled = false;
+    if (amountInput) amountInput.disabled = false;
+}
+
+/**
+ * Show batch calculation error state
+ */
+function showBatchCalculationError() {
+    const resultValueElement = document.getElementById('batch-result-value');
+    const resultShecklesElement = document.getElementById('batch-result-sheckles');
+
+    if (resultValueElement) {
+        resultValueElement.innerHTML = `
+            <div class="flex items-center justify-center text-red-400">
+                <span>⚠️ Calculation failed</span>
+            </div>
+        `;
+    }
+
+    if (resultShecklesElement) {
+        resultShecklesElement.textContent = '(Error)';
+    }
+
+    // Hide error after 3 seconds
+    setTimeout(() => {
+        hideBatchResults();
+    }, 3000);
+}
+
+/**
+ * Get current batch display values before showing loading state
+ */
+function getCurrentBatchDisplayValues() {
+    const currentResultValue = document.getElementById('batch-result-value');
+    const currentTotalValue = document.getElementById('batch-total-value-display');
+    const currentResultSheckles = document.getElementById('batch-result-sheckles');
+    const currentFinalSheckles = document.getElementById('batch-final-sheckles');
+    const currentTotalSheckles = document.getElementById('batch-total-sheckles');
+
+    // Extract current numeric values for smooth animation
+    let currentDollarValue = 0;
+    let currentTotalDollarValue = 0;
+    let currentShecklesValue = 0;
+    let currentFinalShecklesValue = 0;
+    let currentTotalShecklesValue = 0;
+
+    if (currentResultValue) {
+        const currentText = currentResultValue.textContent;
+        const match = currentText.match(/\$([0-9,]+)/);
+        if (match) {
+            currentDollarValue = parseInt(match[1].replace(/,/g, ''));
+        }
+    }
+
+    if (currentTotalValue) {
+        const currentText = currentTotalValue.textContent;
+        const match = currentText.match(/\$([0-9,]+)/);
+        if (match) {
+            currentTotalDollarValue = parseInt(match[1].replace(/,/g, ''));
+        }
+    }
+
+    if (currentResultSheckles) {
+        const currentText = currentResultSheckles.textContent;
+        const match = currentText.match(/\(([0-9,.]+)\)/);
+        if (match) {
+            currentShecklesValue = parseFloat(match[1].replace(/,/g, ''));
+        }
+    }
+
+    if (currentFinalSheckles) {
+        const currentText = currentFinalSheckles.textContent;
+        const match = currentText.match(/([0-9,.]+)/);
+        if (match) {
+            currentFinalShecklesValue = parseFloat(match[1].replace(/,/g, ''));
+        }
+    }
+
+    if (currentTotalSheckles) {
+        const currentText = currentTotalSheckles.textContent;
+        const match = currentText.match(/\(([0-9,.]+)/);
+        if (match) {
+            currentTotalShecklesValue = parseFloat(match[1].replace(/,/g, ''));
+        }
+    }
+
+    return {
+        currentDollarValue,
+        currentTotalDollarValue,
+        currentShecklesValue,
+        currentFinalShecklesValue,
+        currentTotalShecklesValue
+    };
+}
+
+/**
+ * Display batch calculation results
+ */
+function displayBatchResults(result, currentValues = null) {
+    // The results are always visible in our new layout, just update them
+
+    // Get current values for animation (use passed values or extract from DOM)
+    const currentResultValue = document.getElementById('batch-result-value');
+    const currentTotalValue = document.getElementById('batch-total-value-display');
+    const currentResultSheckles = document.getElementById('batch-result-sheckles');
+    const currentFinalSheckles = document.getElementById('batch-final-sheckles');
+    const currentTotalSheckles = document.getElementById('batch-total-sheckles');
+
+    // Use passed current values or extract from DOM
+    let currentDollarValue = 0;
+    let currentTotalDollarValue = 0;
+    let currentShecklesValue = 0;
+    let currentFinalShecklesValue = 0;
+    let currentTotalShecklesValue = 0;
+
+    if (currentValues) {
+        // Use the values passed from before loading state
+        currentDollarValue = currentValues.currentDollarValue;
+        currentTotalDollarValue = currentValues.currentTotalDollarValue;
+        currentShecklesValue = currentValues.currentShecklesValue;
+        currentFinalShecklesValue = currentValues.currentFinalShecklesValue;
+        currentTotalShecklesValue = currentValues.currentTotalShecklesValue;
+    } else {
+        // Fallback: extract from DOM (for cases where values weren't passed)
+        if (currentResultValue) {
+            const currentText = currentResultValue.textContent;
+            const match = currentText.match(/\$([0-9,]+)/);
+            if (match) {
+                currentDollarValue = parseInt(match[1].replace(/,/g, ''));
+            }
+        }
+
+        if (currentTotalValue) {
+            const currentText = currentTotalValue.textContent;
+            const match = currentText.match(/\$([0-9,]+)/);
+            if (match) {
+                currentTotalDollarValue = parseInt(match[1].replace(/,/g, ''));
+            }
+        }
+
+        if (currentResultSheckles) {
+            const currentText = currentResultSheckles.textContent;
+            const match = currentText.match(/\(([0-9,.]+)\)/);
+            if (match) {
+                currentShecklesValue = parseFloat(match[1].replace(/,/g, ''));
+            }
+        }
+
+        if (currentFinalSheckles) {
+            const currentText = currentFinalSheckles.textContent;
+            const match = currentText.match(/([0-9,.]+)/);
+            if (match) {
+                currentFinalShecklesValue = parseFloat(match[1].replace(/,/g, ''));
+            }
+        }
+
+        if (currentTotalSheckles) {
+            const currentText = currentTotalSheckles.textContent;
+            const match = currentText.match(/\(([0-9,.]+)/);
+            if (match) {
+                currentTotalShecklesValue = parseFloat(match[1].replace(/,/g, ''));
+            }
+        }
+    }
+
+    // Update result displays with safety checks (non-animated elements)
+    const elementsToUpdate = [
+        { id: 'batch-result-title', text: `${result.plant_name} | ${result.weight}kg | would sell around:` },
+        { id: 'batch-total-multiplier', text: `x${result.mutation_multiplier.toFixed(2)}` },
+        { id: 'batch-plant-name', text: result.plant_name },
+        { id: 'batch-weight-display', text: result.weight },
+        { id: 'batch-multiplier-display', text: `x${result.mutation_multiplier.toFixed(2)}` },
+        { id: 'batch-plant-count', text: result.plant_amount }
+    ];
+
+    elementsToUpdate.forEach(({ id, text }) => {
+        updateElement(id, text);
+    });
+
+    // Animate the main dollar value
+    if (currentResultValue) {
+        animateNumber(currentResultValue, currentDollarValue, result.final_value, 500, true);
+    }
+
+    // Animate the total dollar value
+    if (currentTotalValue) {
+        animateNumber(currentTotalValue, currentTotalDollarValue, result.total_value, 500, false);
+    }
+
+    // Animate result-sheckles
+    if (currentResultSheckles) {
+        animateSheckles(currentResultSheckles, currentShecklesValue, result.final_value);
+    }
+
+    // Animate final-sheckles in the summary text
+    if (currentFinalSheckles) {
+        // Update instantly without animation for the summary text, using abbreviated format
+        const formattedValue = formatLargeNumber(result.final_value);
+        currentFinalSheckles.textContent = formattedValue;
+    }
+
+    // Animate total-sheckles
+    if (currentTotalSheckles) {
+        animateSheckles(currentTotalSheckles, currentTotalShecklesValue, result.total_value, 500, true);
+    }
+
+    // Show/hide total value section based on plant amount
+    const totalValueSection = document.getElementById('batch-total-value-section');
+    if (totalValueSection) {
+        if (result.plant_amount > 1) {
+            totalValueSection.classList.remove('hidden');
+        } else {
+            totalValueSection.classList.add('hidden');
+        }
+    }
+
+    // Update mutation breakdown
+    const breakdownSpan = document.getElementById('batch-mutation-breakdown');
+    if (breakdownSpan) {
+        if (result.mutations.length > 0) {
+            breakdownSpan.textContent = `Mutations: ${result.mutations.join(', ')}`;
+        } else {
+            breakdownSpan.textContent = 'Default';
+        }
+    }
+}
+
+/**
+ * Hide batch calculation results
+ */
+function hideBatchResults() {
+    // In our new layout, we don't hide results, just reset to defaults
+    updateElement('batch-result-title', 'Select a plant to calculate');
+    const resultValueElement = document.getElementById('batch-result-value');
+    if (resultValueElement) {
+        resultValueElement.innerHTML = `<img src="/static/img/currency.png" alt="Currency" class="w-8 h-8 inline-block mr-0">= $0`;
+    }
+
+    // Update result-sheckles separately since it's nested
+    const resultSheckles = document.getElementById('batch-result-sheckles');
+    if (resultSheckles) {
+        resultSheckles.textContent = '(0.00)';
     }
 }
 
@@ -2198,7 +2856,4 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize tab system and batch calculator
     initializeTabSystem();
     initializeBatchCalculator();
-
-    // Initialize single calculator batch functionality
-    initializeSingleBatchCalculator();
 });

@@ -184,15 +184,158 @@
                  </p>
             </div>
             
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap gap-4 mt-6 justify-center">
+                <button class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 px-6 py-3 rounded-lg shadow-lg transition-all duration-200 text-white font-semibold transform hover:scale-105" id="share-result" aria-label="Share Calculation Result">
+                    Share Results
+                </button>
+                <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded shadow transition text-white" id="clear-all" aria-label="Clear All Inputs">Clear All</button>
+            </div>
+        </div>
+    </section>
+
+
+    </div> <!-- End Single Calculator Content -->
+
+    <!-- Batch Calculator Content -->
+    <div id="batch-calculator-content" class="hidden">
+        <!-- Plant Selection Grid -->
+        <section class="bg-gray-800 p-4 rounded-lg shadow-lg mb-6">
+        <h2 class="text-xl font-semibold mb-3 text-gray-200">Select Your Plant</h2>
+        <input type="text" id="batch-plant-search" placeholder="Search crops..."
+               class="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-green-500" value="">
+        <div class="overflow-y-auto max-h-[300px] custom-scrollbar border border-gray-700 rounded-lg mt-4 notranslate" translate="no">
+            <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-8 gap-2 p-2" id="batch-plant-grid">
+                                 {% for plant in plants %}
+                 <button class="p-2 border rounded text-center transition duration-200 focus:outline-none bg-gray-700 hover:bg-green-900 border-gray-600"
+                         data-plant="{{ plant.name }}"
+                         title="{{ plant.name }}
+ 💰 Value: {{ plant.base_price }} | ⚖️ Weight: {{ plant.base_weight }}kg"
+                         aria-pressed="false">
+                                           <div class="w-12 h-12 mx-auto mb-2 flex items-center justify-center">
+                          <img src="/static/img/placeholder.png" alt="Placeholder" class="w-full h-full object-contain crop-placeholder">
+                          <img src="/static/img/crop-{{ plant.name.lower().replace(' ', '-') }}.webp"
+                               alt="{{ plant.name }}"
+                               class="w-full h-full object-contain crop-image"
+                               style="display: none;"
+                               onerror="this.style.display='none'; this.previousElementSibling.style.display='block';"
+                               onload="this.style.display='block'; this.previousElementSibling.style.display='none';">
+                      </div>
+                     <p class="text-sm font-semibold text-white truncate">{{ plant.name }}</p>
+                 </button>
+                 {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Mutations Section -->
+    <section class="bg-gray-800 p-4 rounded-lg shadow-lg space-y-4 mb-6">
+        <!-- Growth Mutations -->
+        <div class="bg-gray-800 p-4 rounded-lg shadow-md">
+            <h3 class="text-base sm:text-lg font-semibold mb-3 text-gray-200 flex items-center">
+                <img src="/static/img/Variant.png" alt="Variant Icon" class="w-5 h-5 mr-2">
+                Variant Mutations
+            </h3>
+            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-3">
+                {% for variant in variants %}
+                <label class="flex items-center gap-2 p-2 border rounded-md text-sm transition cursor-pointer {% if variant.name == 'Normal' %}bg-green-700/50 border-green-500 text-white{% else %}bg-gray-700/30 text-gray-300 hover:bg-green-800/40 hover:text-white{% endif %}">
+                    <input type="radio" class="accent-green-500 w-4 h-4" name="batch-variant" value="{{ variant.name }}"
+                           {% if variant.name == "Normal" %}checked{% endif %}>
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center w-full text-sm">
+                        <span class="font-medium">{{ variant.name }}</span>
+                        <span class="text-xs sm:text-sm opacity-80 whitespace-nowrap">(x{{ variant.multiplier }})</span>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Environmental Mutations (including weather mutations) -->
+        <div class="bg-gray-800 p-4 rounded-lg shadow-md">
+            <h3 class="text-base sm:text-lg font-semibold mb-3 text-gray-200 flex items-center">
+                <img src="/static/img/normal.png" alt="Mutations Icon" class="w-5 h-5 mr-2">
+                Mutations
+            </h3>
+            <input type="text" id="batch-mutation-search" placeholder="Search mutations..."
+                   class="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-green-500 mb-4">
+            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-3 mutations-scrollable" style="max-height: calc(6 * 2.5rem + 1rem); overflow-y: auto; scrollbar-width: thin; scrollbar-color: #10b981 #2d3748;">
+                {% for mutation in mutations %}
+                <label class="flex items-center gap-2 p-2 border rounded-md text-sm transition cursor-pointer bg-gray-700/30 text-gray-300 hover:bg-green-800/40 hover:text-white">
+                    <input type="checkbox" class="accent-green-500 w-4 h-4" data-mutation="{{ mutation.name }}">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center w-full text-sm">
+                        <span class="font-medium">{{ mutation.name }}</span>
+                        <span class="text-xs sm:text-sm opacity-80 whitespace-nowrap">(+{{ mutation.value_multi - 1 }})</span>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Calculator Section -->
+    <section class="bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold mb-4 text-green-400">Fruit Value Calculator</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 notranslate" translate="no">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm mb-1 text-gray-300 translate" translate="yes">Amount of Plants</label>
+                                                 <input type="number" min="1" id="batch-plant-amount" aria-label="Amount of Plants"
+                                class="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-green-500" value="">
+                    </div>
+                    <div>
+                        <label class="block text-sm mb-1 text-gray-300 translate" translate="yes">Total Weight (kg)</label>
+                                                 <input type="text" id="batch-plant-weight" aria-label="Crop weight in kilograms"
+                                class="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-green-500" value="">
+                        <div id="batch-weight-range" class="text-xs text-gray-400 mt-1">
+                            Expected: <span id="batch-weight-min"></span> – <span id="batch-weight-max"></span> kg
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="flex flex-col justify-center items-center text-center">
+                                         <div class="w-20 h-20 mb-3 flex items-center justify-center" id="batch-plant-emoji">
+                         <img src="/static/img/placeholder.png" alt="Placeholder" class="w-full h-full object-contain" id="batch-plant-placeholder">
+                         <img src="" alt="" class="w-full h-full object-contain" id="batch-plant-image" style="display: none;">
+                     </div>
+                    <div class="mb-2 text-lg font-semibold text-yellow-400" id="batch-result-title"></div>
+                                         <div class="text-green-400 font-bold text-3xl" id="batch-result-value">
+                         <div class="text-sm text-gray-300 mt-1" id="batch-result-sheckles"></div>
+                     </div>
+
+                    <!-- Total Value Display -->
+                    <div id="batch-total-value-section" class="mt-4 p-3 bg-purple-50/10 rounded-lg hidden">
+                                                 <p class="text-sm text-purple-300 mb-1">Total Value (<span id="batch-plant-count"></span> plants):</p>
+                         <div class="text-3xl font-bold text-purple-400" id="batch-total-value-display"></div>
+                         <div class="text-xs text-purple-300" id="batch-total-sheckles"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculation Summary -->
+            <div class="mt-6 bg-gray-900 p-4 rounded-md notranslate" translate="no">
+                <h4 class="text-md font-semibold text-yellow-300 mb-2 translate" translate="yes">Total Multiplier: <span class="text-blue-400" id="batch-total-multiplier"></span></h4>
+                <p class="text-sm text-gray-300 leading-snug">
+                    <span class="text-yellow-200" id="batch-mutation-breakdown"></span>
+                </p>
+                                 <p class="text-sm mt-2 text-gray-400" id="batch-result-summary">
+                     <img src="/static/img/currency.png" alt="Currency" class="w-4 h-4 inline-block mr-1"> <span class="text-green-300 font-semibold" id="batch-plant-name"></span> weighing
+                     <span class="text-blue-300" id="batch-weight-display"></span> kg, after
+                     <span class="text-purple-400" id="batch-multiplier-display"></span> mutation, worth
+                     <span class="text-green-400" id="batch-final-sheckles"></span> Sheckles.
+                 </p>
+            </div>
+
             <!-- Add Plant Button -->
             <div class="flex flex-wrap gap-4 mt-6 justify-center">
                 <button class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 px-6 py-3 rounded-lg shadow-lg transition-all duration-200 text-white font-semibold transform hover:scale-105" id="add-plant-to-batch" aria-label="Add Plant to Batch">
                     ➕ Add Plant to Batch
                 </button>
-                <button class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 px-6 py-3 rounded-lg shadow-lg transition-all duration-200 text-white font-semibold transform hover:scale-105" id="share-result" aria-label="Share Calculation Result">
+                <button class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 px-6 py-3 rounded-lg shadow-lg transition-all duration-200 text-white font-semibold transform hover:scale-105" id="batch-share-result" aria-label="Share Calculation Result">
                     Share Results
                 </button>
-                <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded shadow transition text-white" id="clear-all" aria-label="Clear All Inputs">Clear All</button>
+                <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded shadow transition text-white" id="batch-clear-all" aria-label="Clear All Inputs">Clear All</button>
             </div>
         </div>
     </section>
@@ -232,64 +375,6 @@
             <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded shadow transition text-white" id="clear-batch" aria-label="Clear Batch">Clear Batch</button>
         </div>
     </section>
-    </div> <!-- End Single Calculator Content -->
-
-    <!-- Batch Calculator Content -->
-    <div id="batch-calculator-content" class="hidden">
-        <!-- Batch Plant Input Section -->
-        <section class="bg-gray-800 p-4 rounded-lg shadow-lg">
-            <h2 class="text-xl font-semibold mb-3 text-gray-200">🌱 Add Plants to Batch</h2>
-            
-            <!-- Batch Plant Rows Container -->
-            <div id="batch-plant-rows" class="space-y-4">
-                <!-- Initial plant row will be added here -->
-            </div>
-            
-            <!-- Add Plant Button -->
-            <div class="mt-4">
-                <button id="add-plant-row" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-white font-medium transition-colors duration-200">
-                    ➕ Add Another Plant
-                </button>
-            </div>
-        </section>
-
-        <!-- Batch Results Section -->
-        <section class="bg-gray-800 p-6 rounded-lg shadow-lg">
-            <h2 class="text-2xl font-bold mb-4 text-green-400">📊 Batch Results</h2>
-            
-            <!-- Individual Plant Results -->
-            <div id="batch-individual-results" class="space-y-4 mb-6">
-                <!-- Individual plant results will be displayed here -->
-            </div>
-            
-            <!-- Batch Summary -->
-            <div id="batch-summary" class="bg-gray-900 p-4 rounded-md border-l-4 border-green-500">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                    <div>
-                        <p class="text-sm text-gray-400">Total Batch Value</p>
-                        <p class="text-3xl font-bold text-green-400" id="batch-total-value">0 sheckles</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-400">Total Plants</p>
-                        <p class="text-2xl font-bold text-blue-400" id="batch-total-plants">0</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-400">Average per Plant</p>
-                        <p class="text-2xl font-bold text-purple-400" id="batch-avg-per-plant">0 sheckles</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Batch Action Buttons -->
-            <div class="flex flex-wrap gap-4 mt-6 justify-center">
-                <button class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 px-6 py-3 rounded-lg shadow-lg transition-all duration-200 text-white font-semibold transform hover:scale-105" id="share-batch-result">
-                    Share Batch Results
-                </button>
-                <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded shadow transition text-white" id="clear-batch-all">
-                    Clear All
-                </button>
-            </div>
-        </section>
     </div> <!-- End Batch Calculator Content -->
 </main>
 
