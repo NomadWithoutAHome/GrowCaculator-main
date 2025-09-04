@@ -53,7 +53,7 @@ class DiscordWebhookService:
                 logger.info("Fruit calculation Discord webhook disabled, skipping notification")
                 return False
             webhook_url = self.webhook_url
-            if share_data.get('type') == 'batch':
+            if result_type == 'batch':
                 embed = self._create_batch_calculation_embed(share_data)
             else:
                 embed = self._create_calculation_embed(share_data)
