@@ -63,7 +63,7 @@ class DiscordWebhookService:
 
             async with httpx.AsyncClient() as client:
                 response = await client.post(
-                    webhook_url,
+                    webhook_url,  # type: ignore
                     json=webhook_data,
                     headers={"Content-Type": "application/json"}
                 )
@@ -187,50 +187,93 @@ class DiscordWebhookService:
         plants = share_data.get('plants', [])
         total_value = share_data.get('total_value', 0)
         total_plants = share_data.get('total_plants', 0)
-        
+
         # Format total value using the same logic as the website
         try:
             formatted_total = self._format_large_number(total_value)
         except:
             formatted_total = f"{total_value:,}"
-        
-        # Create plant summary (show first 3 plants, then +X more if applicable)
-        plant_summaries = []
-        for i, plant in enumerate(plants[:3]):
-            plant_name = plant.get('plant', 'Unknown Plant')
-            variant = plant.get('variant', 'Normal')
-            quantity = plant.get('quantity', 1)
-            weight = round(float(plant.get('weight', 0)), 4)
-            mutations = plant.get('mutations', [])
-            
-            # Format mutations (show first 4, then +X more)
-            if mutations:
-                if len(mutations) <= 4:
-                    mutations_text = ", ".join(mutations)
-                else:
-                    mutations_text = ", ".join(mutations[:4]) + f" (+{len(mutations) - 4} more)"
-            else:
-                mutations_text = "None"
-            
-            plant_summaries.append(f"**{plant_name} ({variant})** - {weight}kg × {quantity} - {mutations_text}")
-        
-        if len(plants) > 3:
-            plant_summaries.append(f"+{len(plants) - 3} more plants")
-        
-        plants_text = "\n".join(plant_summaries)
-        
+
         # Calculate average per plant
         avg_per_plant = total_value / total_plants if total_plants > 0 else 0
         try:
             formatted_avg = self._format_large_number(avg_per_plant)
         except:
             formatted_avg = f"{avg_per_plant:,}"
-        
+
+        # Get the most valuable plant for the thumbnail
+        most_valuable_plant = None
+        if plants:
+            most_valuable_plant = max(plants, key=lambda p: p.get('total', 0))
+            plant_name = most_valuable_plant.get('plant', 'Unknown Plant')
+            plant_image_url = f"https://www.fruitcalculator.dohmboy64.com/static/img/crop-{plant_name.lower().replace(' ', '-')}.webp"
+        else:
+            plant_image_url = "https://www.fruitcalculator.dohmboy64.com/static/img/calcsymbol.png"
+
+        # Create detailed plant breakdown (show top 2-3 plants with full details)
+        plant_details = []
+        sorted_plants = sorted(plants, key=lambda p: p.get('total', 0), reverse=True)
+
+        for i, plant in enumerate(sorted_plants[:2]):  # Show top 2 plants
+            plant_name = plant.get('plant', 'Unknown Plant')
+            variant = plant.get('variant', 'Normal')
+            quantity = plant.get('quantity', 1)
+            weight = round(float(plant.get('weight', 0)), 4)
+            mutations = plant.get('mutations', [])
+            plant_value = plant.get('total', 0)
+
+            # Format plant value
+            try:
+                formatted_plant_value = self._format_large_number(plant_value)
+            except:
+                formatted_plant_value = f"{plant_value:,}"
+
+            # Format mutations
+            if mutations:
+                if len(mutations) <= 3:
+                    mutations_text = ", ".join(mutations)
+                else:
+                    mutations_text = ", ".join(mutations[:3]) + f" (+{len(mutations) - 3} more)"
+            else:
+                mutations_text = "None"
+
+            plant_details.append(
+                f"**{plant_name}** ({variant})\n"
+                f"• Weight: {weight}kg × {quantity}\n"
+                f"• Value: `{formatted_plant_value}` sheckles\n"
+                f"• Mutations: {mutations_text}"
+            )
+
+        if len(plants) > 2:
+            remaining_value = sum(p.get('total', 0) for p in sorted_plants[2:])
+            try:
+                formatted_remaining = self._format_large_number(remaining_value)
+            except:
+                formatted_remaining = f"{remaining_value:,}"
+            plant_details.append(f"*+{len(plants) - 2} more plants worth `{formatted_remaining}` sheckles*")
+
+        plants_text = "\n\n".join(plant_details)
+
+        # Create title based on batch composition
+        if len(plants) == 1:
+            plant_name = plants[0].get('plant', 'Unknown Plant')
+            title = f"🌱 {plant_name} Batch Shared!"
+        elif len(set(p.get('plant') for p in plants)) == 1:
+            # All same plant
+            plant_name = plants[0].get('plant', 'Unknown Plant')
+            title = f"🌱 {plant_name} ×{total_plants} Batch Shared!"
+        else:
+            # Mixed plants
+            title = f"📊 Mixed Batch ({len(plants)} types) Shared!"
+
         embed = {
-            "title": "📊 Batch Calculation Shared!",
+            "title": title,
             "description": "Someone just shared their batch calculation results!",
             "url": f"https://www.fruitcalculator.dohmboy64.com/share/{share_data.get('share_id', '')}",
             "color": 3447003,  # Same blue color
+            "thumbnail": {
+                "url": plant_image_url
+            },
             "fields": [
                 {
                     "name": "📦 Batch Summary",
@@ -238,18 +281,18 @@ class DiscordWebhookService:
                     "inline": False
                 },
                 {
-                    "name": "🌱 Plants Included",
+                    "name": "🌱 Top Plants",
                     "value": plants_text,
                     "inline": False
                 }
             ],
             "footer": {
-                "text": "Grow Calculator • Share your batch results with others!",
+                "text": "Grow Calculator • Share your results with others!",
                 "icon_url": "https://www.fruitcalculator.dohmboy64.com/static/img/calcsymbol.png"
             },
             "timestamp": datetime.utcnow().isoformat()
         }
-        
+
         return embed
 
     def _create_recipe_embed(self, share_data: Dict[str, Any]) -> Dict[str, Any]:
