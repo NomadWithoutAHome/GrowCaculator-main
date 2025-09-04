@@ -577,10 +577,10 @@ function closeDescriptionModal() {
 
 async function shareRecipeWithDescription() {
     if (!currentRecipeData) return;
-    
+
     const customDescription = document.getElementById('custom-description').value.trim();
     const description = customDescription || currentRecipeData.recipe_data.description;
-    
+
     try {
         const response = await fetch('/api/recipes/share', {
             method: 'POST',
@@ -592,13 +592,13 @@ async function shareRecipeWithDescription() {
                 description: description
             })
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
-            const shareUrl = `https://www.fruitcalculator.dohmboy64.com/share/recipe_${data.share_id}`;
-            await navigator.clipboard.writeText(shareUrl);
-            alert('Recipe shared successfully! Link copied to clipboard.');
+            const shareId = `recipe_${data.share_id}`;
+            // Open share page in new tab
+            window.open(`/share/${shareId}`, '_blank');
             closeDescriptionModal();
         } else {
             alert('Error sharing recipe: ' + data.error);

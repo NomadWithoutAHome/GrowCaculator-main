@@ -2635,11 +2635,10 @@ async function shareBatchResults() {
 
         if (response.ok) {
             const data = await response.json();
-            const shareUrl = `${window.location.origin}/share/${data.share_id}`;
+            const shareId = data.share_id;
 
-            // Copy to clipboard
-            await navigator.clipboard.writeText(shareUrl);
-            alert('Batch results link copied to clipboard!');
+            // Open share page in new tab
+            window.open(`/share/${shareId}`, '_blank');
         } else {
             alert('Failed to share batch results');
         }
@@ -2906,11 +2905,10 @@ async function shareSingleBatchResults() {
 
         if (response.ok) {
             const data = await response.json();
-            const shareUrl = `${window.location.origin}/share/${data.share_id}`;
+            const shareId = data.share_id;
 
-            // Copy to clipboard
-            await navigator.clipboard.writeText(shareUrl);
-            alert('Batch results link copied to clipboard!');
+            // Open share page in new tab
+            window.open(`/share/${shareId}`, '_blank');
         } else {
             alert('Failed to share batch results');
         }
