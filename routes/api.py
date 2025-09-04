@@ -97,6 +97,7 @@ async def share_batch_results(request: dict):
     """Share batch calculation results."""
     try:
         from services.shared_results_service import shared_results_service
+        from services.discord_webhook_service import discord_webhook_service
         import time
         import random
 
@@ -118,6 +119,15 @@ async def share_batch_results(request: dict):
         success = shared_results_service.create_shared_result(batch_data)
 
         if success:
+            # Send Discord webhook notification (non-blocking)
+            try:
+                webhook_data = batch_data.copy()
+                webhook_data['result_type'] = 'batch'
+                await discord_webhook_service.send_calculation_result(webhook_data)
+            except Exception as e:
+                # Don't fail the share creation if webhook fails
+                print(f"Failed to send Discord webhook: {e}")
+
             return {
                 "share_id": share_id,
                 "message": "Batch results shared successfully"
