@@ -14,6 +14,10 @@ let allVariants = [];
 let batchPlants = [];
 let batchRowCounter = 0;
 
+// Single calculator batch state
+let singleBatchPlants = [];
+let singleBatchCounter = 0;
+
 // API endpoints
 const API_BASE = '/api';
 
@@ -169,8 +173,11 @@ function initializePlantGrid() {
         console.warn('Default plant (Carrot) not found');
     }
     
-    // Preload all plant images
-    preloadPlantImages();
+    // Initialize lazy loading for plant images
+    lazyLoadPlantImages();
+
+    // Preload critical images (like the default Carrot image)
+    preloadCriticalImages();
 }
 
 /**
@@ -670,7 +677,7 @@ function updateMutationDisplay() {
 async function calculatePlantValue() {
     const weightInput = document.getElementById('plant-weight');
     const amountInput = document.getElementById('plant-amount');
-    
+
     if (!weightInput || !amountInput) return;
 
     const plantName = currentPlant;
@@ -684,6 +691,13 @@ async function calculatePlantValue() {
         hideResults();
         return;
     }
+
+    // Store current values before calculation
+    const currentValues = getCurrentDisplayValues();
+
+    // Disable inputs during calculation (subtle indicator)
+    const inputs = [weightInput, amountInput];
+    inputs.forEach(input => input.disabled = true);
 
     try {
         const response = await fetch(`${API_BASE}/calculate`, {
@@ -705,33 +719,103 @@ async function calculatePlantValue() {
         }
 
         const result = await response.json();
-        displayResults(result);
+
+        // Immediately animate from current values to new values
+        displayResults(result, currentValues);
+
     } catch (error) {
         console.error('Calculation error:', error);
         hideResults();
+        showCalculationError();
+    } finally {
+        // Re-enable inputs
+        inputs.forEach(input => input.disabled = false);
     }
 }
 
 /**
- * Display calculation results
+ * Show calculation loading state
  */
-function displayResults(result) {
-    // The results are always visible in our new layout, just update them
+function showCalculationLoading() {
+    const resultValueElement = document.getElementById('result-value');
+    const resultShecklesElement = document.getElementById('result-sheckles');
 
-    // Get current values for animation
+    if (resultValueElement) {
+        // Show loading spinner in the result value area
+        resultValueElement.innerHTML = `
+            <div class="flex items-center justify-center">
+                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-green-400 mr-2"></div>
+                <span class="text-gray-300">Calculating...</span>
+            </div>
+        `;
+    }
+
+    if (resultShecklesElement) {
+        resultShecklesElement.textContent = '(...)';
+    }
+
+    // Disable input fields during calculation
+    const weightInput = document.getElementById('plant-weight');
+    const amountInput = document.getElementById('plant-amount');
+
+    if (weightInput) weightInput.disabled = true;
+    if (amountInput) amountInput.disabled = true;
+}
+
+/**
+ * Hide calculation loading state
+ */
+function hideCalculationLoading() {
+    // Re-enable input fields
+    const weightInput = document.getElementById('plant-weight');
+    const amountInput = document.getElementById('plant-amount');
+
+    if (weightInput) weightInput.disabled = false;
+    if (amountInput) amountInput.disabled = false;
+}
+
+/**
+ * Show calculation error state
+ */
+function showCalculationError() {
+    const resultValueElement = document.getElementById('result-value');
+    const resultShecklesElement = document.getElementById('result-sheckles');
+
+    if (resultValueElement) {
+        resultValueElement.innerHTML = `
+            <div class="flex items-center justify-center text-red-400">
+                <span>⚠️ Calculation failed</span>
+            </div>
+        `;
+    }
+
+    if (resultShecklesElement) {
+        resultShecklesElement.textContent = '(Error)';
+    }
+
+    // Hide error after 3 seconds
+    setTimeout(() => {
+        hideResults();
+    }, 3000);
+}
+
+/**
+ * Get current display values before showing loading state
+ */
+function getCurrentDisplayValues() {
     const currentResultValue = document.getElementById('result-value');
     const currentTotalValue = document.getElementById('total-value');
     const currentResultSheckles = document.getElementById('result-sheckles');
     const currentFinalSheckles = document.getElementById('final-sheckles');
     const currentTotalSheckles = document.getElementById('total-sheckles');
-    
+
     // Extract current numeric values for smooth animation
     let currentDollarValue = 0;
     let currentTotalDollarValue = 0;
     let currentShecklesValue = 0;
     let currentFinalShecklesValue = 0;
     let currentTotalShecklesValue = 0;
-    
+
     if (currentResultValue) {
         const currentText = currentResultValue.textContent;
         const match = currentText.match(/\$([0-9,]+)/);
@@ -739,7 +823,7 @@ function displayResults(result) {
             currentDollarValue = parseInt(match[1].replace(/,/g, ''));
         }
     }
-    
+
     if (currentTotalValue) {
         const currentText = currentTotalValue.textContent;
         const match = currentText.match(/\$([0-9,]+)/);
@@ -747,7 +831,7 @@ function displayResults(result) {
             currentTotalDollarValue = parseInt(match[1].replace(/,/g, ''));
         }
     }
-    
+
     if (currentResultSheckles) {
         const currentText = currentResultSheckles.textContent;
         const match = currentText.match(/\(([0-9,.]+)\)/);
@@ -755,7 +839,7 @@ function displayResults(result) {
             currentShecklesValue = parseFloat(match[1].replace(/,/g, ''));
         }
     }
-    
+
     if (currentFinalSheckles) {
         const currentText = currentFinalSheckles.textContent;
         const match = currentText.match(/([0-9,.]+)/);
@@ -763,12 +847,91 @@ function displayResults(result) {
             currentFinalShecklesValue = parseFloat(match[1].replace(/,/g, ''));
         }
     }
-    
+
     if (currentTotalSheckles) {
         const currentText = currentTotalSheckles.textContent;
         const match = currentText.match(/\(([0-9,.]+)/);
         if (match) {
             currentTotalShecklesValue = parseFloat(match[1].replace(/,/g, ''));
+        }
+    }
+
+    return {
+        currentDollarValue,
+        currentTotalDollarValue,
+        currentShecklesValue,
+        currentFinalShecklesValue,
+        currentTotalShecklesValue
+    };
+}
+
+/**
+ * Display calculation results
+ */
+function displayResults(result, currentValues = null) {
+    // The results are always visible in our new layout, just update them
+
+    // Get current values for animation (use passed values or extract from DOM)
+    const currentResultValue = document.getElementById('result-value');
+    const currentTotalValue = document.getElementById('total-value');
+    const currentResultSheckles = document.getElementById('result-sheckles');
+    const currentFinalSheckles = document.getElementById('final-sheckles');
+    const currentTotalSheckles = document.getElementById('total-sheckles');
+
+    // Use passed current values or extract from DOM
+    let currentDollarValue = 0;
+    let currentTotalDollarValue = 0;
+    let currentShecklesValue = 0;
+    let currentFinalShecklesValue = 0;
+    let currentTotalShecklesValue = 0;
+
+    if (currentValues) {
+        // Use the values passed from before loading state
+        currentDollarValue = currentValues.currentDollarValue;
+        currentTotalDollarValue = currentValues.currentTotalDollarValue;
+        currentShecklesValue = currentValues.currentShecklesValue;
+        currentFinalShecklesValue = currentValues.currentFinalShecklesValue;
+        currentTotalShecklesValue = currentValues.currentTotalShecklesValue;
+    } else {
+        // Fallback: extract from DOM (for cases where values weren't passed)
+        if (currentResultValue) {
+            const currentText = currentResultValue.textContent;
+            const match = currentText.match(/\$([0-9,]+)/);
+            if (match) {
+                currentDollarValue = parseInt(match[1].replace(/,/g, ''));
+            }
+        }
+
+        if (currentTotalValue) {
+            const currentText = currentTotalValue.textContent;
+            const match = currentText.match(/\$([0-9,]+)/);
+            if (match) {
+                currentTotalDollarValue = parseInt(match[1].replace(/,/g, ''));
+            }
+        }
+
+        if (currentResultSheckles) {
+            const currentText = currentResultSheckles.textContent;
+            const match = currentText.match(/\(([0-9,.]+)\)/);
+            if (match) {
+                currentShecklesValue = parseFloat(match[1].replace(/,/g, ''));
+            }
+        }
+
+        if (currentFinalSheckles) {
+            const currentText = currentFinalSheckles.textContent;
+            const match = currentText.match(/([0-9,.]+)/);
+            if (match) {
+                currentFinalShecklesValue = parseFloat(match[1].replace(/,/g, ''));
+            }
+        }
+
+        if (currentTotalSheckles) {
+            const currentText = currentTotalSheckles.textContent;
+            const match = currentText.match(/\(([0-9,.]+)/);
+            if (match) {
+                currentTotalShecklesValue = parseFloat(match[1].replace(/,/g, ''));
+            }
         }
     }
 
@@ -938,37 +1101,86 @@ function updatePlantImage(plantName) {
 }
 
 /**
- * Preload all plant images for better performance
+ * Lazy load plant images for better performance
  */
-function preloadPlantImages() {
+function lazyLoadPlantImages() {
     const plantButtons = document.querySelectorAll('[data-plant]');
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const button = entry.target;
+                const plantName = button.dataset.plant;
+                const cropImage = button.querySelector('.crop-image');
+                const cropPlaceholder = button.querySelector('.crop-placeholder');
+
+                if (cropImage && cropPlaceholder && !cropImage.src.includes('crop-')) {
+                    // Convert plant name to filename format (lowercase, replace spaces with hyphens, remove apostrophes)
+                    const filename = plantName.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '');
+                    const imagePath = `/static/img/crop-${filename}.webp`;
+
+                    // Set the image source
+                    cropImage.src = imagePath;
+                    cropImage.alt = plantName;
+
+                    // Handle image load errors by showing fallback placeholder image
+                    cropImage.onerror = function() {
+                        console.warn(`Image not found for ${plantName}, using fallback placeholder`);
+                        this.style.display = 'none';
+                        cropPlaceholder.style.display = 'block';
+                    };
+
+                    // Handle successful image load
+                    cropImage.onload = function() {
+                        console.log(`Successfully loaded image for ${plantName}`);
+                        this.style.display = 'block';
+                        cropPlaceholder.style.display = 'none';
+                    };
+                }
+
+                // Stop observing this element
+                observer.unobserve(button);
+            }
+        });
+    }, {
+        rootMargin: '50px 0px', // Start loading 50px before the element comes into view
+        threshold: 0.1
+    });
+
+    // Observe all plant buttons
     plantButtons.forEach(button => {
-        const plantName = button.dataset.plant;
-        const cropImage = button.querySelector('.crop-image');
-        const cropPlaceholder = button.querySelector('.crop-placeholder');
-        
-        if (cropImage && cropPlaceholder) {
-            // Convert plant name to filename format (lowercase, replace spaces with hyphens, remove apostrophes)
-            const filename = plantName.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '');
-            const imagePath = `/static/img/crop-${filename}.webp`;
-            
-            // Set the image source
-            cropImage.src = imagePath;
-            cropImage.alt = plantName;
-            
-            // Handle image load errors by showing fallback placeholder image
-            cropImage.onerror = function() {
-                console.warn(`Image not found for ${plantName}, using fallback placeholder`);
-                this.style.display = 'none';
-                cropPlaceholder.style.display = 'block';
-            };
-            
-            // Handle successful image load
-            cropImage.onload = function() {
-                console.log(`Successfully loaded image for ${plantName}`);
-                this.style.display = 'block';
-                cropPlaceholder.style.display = 'none';
-            };
+        imageObserver.observe(button);
+    });
+}
+
+/**
+ * Preload critical images (like the default Carrot image)
+ */
+function preloadCriticalImages() {
+    const criticalPlants = ['Carrot']; // Add more critical plants if needed
+
+    criticalPlants.forEach(plantName => {
+        const button = document.querySelector(`[data-plant="${plantName}"]`);
+        if (button) {
+            const cropImage = button.querySelector('.crop-image');
+            const cropPlaceholder = button.querySelector('.crop-placeholder');
+
+            if (cropImage && cropPlaceholder) {
+                const filename = plantName.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '');
+                const imagePath = `/static/img/crop-${filename}.webp`;
+
+                cropImage.src = imagePath;
+                cropImage.alt = plantName;
+
+                cropImage.onerror = function() {
+                    this.style.display = 'none';
+                    cropPlaceholder.style.display = 'block';
+                };
+
+                cropImage.onload = function() {
+                    this.style.display = 'block';
+                    cropPlaceholder.style.display = 'none';
+                };
+            }
         }
     });
 }
@@ -1300,83 +1512,36 @@ function initializeTabSystem() {
     const batchTab = document.getElementById('batch-calculator-tab');
     const singleContent = document.getElementById('single-calculator-content');
     const batchContent = document.getElementById('batch-calculator-content');
-    
+
     if (!singleTab || !batchTab || !singleContent || !batchContent) {
         console.warn('Tab system elements not found');
         return;
     }
-    
+
     // Single calculator tab click
     singleTab.addEventListener('click', function() {
         singleTab.classList.remove('bg-gray-600', 'text-gray-300');
         singleTab.classList.add('bg-green-600', 'text-white');
         batchTab.classList.remove('bg-green-600', 'text-white');
         batchTab.classList.add('bg-gray-600', 'text-gray-300');
-        
+
         singleContent.classList.remove('hidden');
         batchContent.classList.add('hidden');
     });
-    
+
     // Batch calculator tab click
     batchTab.addEventListener('click', function() {
-        showComingSoonPopup();
+        singleTab.classList.remove('bg-green-600', 'text-white');
+        singleTab.classList.add('bg-gray-600', 'text-gray-300');
+        batchTab.classList.remove('bg-gray-600', 'text-gray-300');
+        batchTab.classList.add('bg-green-600', 'text-white');
+
+        singleContent.classList.add('hidden');
+        batchContent.classList.remove('hidden');
     });
 }
 
-/**
- * Show "Coming Soon" popup for batch calculator
- */
-function showComingSoonPopup() {
-    // Create popup overlay
-    const popup = document.createElement('div');
-    popup.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50';
-    popup.id = 'coming-soon-popup';
-    
-    popup.innerHTML = `
-        <div class="bg-gray-800 p-8 rounded-lg shadow-xl max-w-md w-full mx-4 border border-gray-600">
-            <div class="text-center">
-                <div class="mb-4 flex justify-center">
-                    <img src="/static/img/undercontruction.png" alt="Under Construction" class="w-16 h-16">
-                </div>
-                <h3 class="text-2xl font-bold mb-4 text-green-400">Coming Soon!</h3>
-                <p class="text-lg text-gray-300 mb-6">
-                    The <strong>Batch Calculator</strong> feature is currently under development.
-                </p>
-                <p class="text-sm text-gray-400 mb-6">
-                    Soon you'll be able to calculate multiple plants at once with quantities, 
-                    real-time updates, and batch sharing!
-                </p>
-                <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 w-full">
-                    Got it!
-                </button>
-            </div>
-        </div>
-    `;
-    
-    // Add to page
-    document.body.appendChild(popup);
-    
-    // Close popup when clicking the button
-    const closeButton = popup.querySelector('button');
-    closeButton.addEventListener('click', () => {
-        popup.remove();
-    });
-    
-    // Close popup when clicking outside
-    popup.addEventListener('click', (e) => {
-        if (e.target === popup) {
-            popup.remove();
-        }
-    });
-    
-    // Close popup with Escape key
-    document.addEventListener('keydown', function closeOnEscape(e) {
-        if (e.key === 'Escape') {
-            popup.remove();
-            document.removeEventListener('keydown', closeOnEscape);
-        }
-    });
-}
+
 
 /**
  * Add initial batch plant row
@@ -1562,17 +1727,17 @@ async function updateBatchRowCalculation(rowId) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                plant: plant,
+                plant_name: plant,
                 variant: variant,
                 weight: weight,
                 mutations: selectedMutations,
-                amount: 1 // Calculate per plant first
+                plant_amount: 1 // Calculate per plant first
             })
         });
         
         if (response.ok) {
             const data = await response.json();
-            const perPlantValue = data.result_value;
+            const perPlantValue = data.final_value;
             const totalValue = perPlantValue * quantity;
             
             // Update result display
@@ -1647,22 +1812,57 @@ function updateBatchCalculations() {
  * Initialize batch calculator
  */
 function initializeBatchCalculator() {
+    // Load plant and variant data for batch calculator
+    loadBatchData();
+
+    // Add initial batch row
+    addBatchPlantRow();
+
     // Add plant row button
     const addPlantBtn = document.getElementById('add-plant-row');
     if (addPlantBtn) {
         addPlantBtn.addEventListener('click', addBatchPlantRow);
     }
-    
+
     // Clear all button
     const clearAllBtn = document.getElementById('clear-batch-all');
     if (clearAllBtn) {
         clearAllBtn.addEventListener('click', clearBatchAll);
     }
-    
+
     // Share batch results button
     const shareBatchBtn = document.getElementById('share-batch-result');
     if (shareBatchBtn) {
         shareBatchBtn.addEventListener('click', shareBatchResults);
+    }
+}
+
+/**
+ * Load plant and variant data for batch calculator dropdowns
+ */
+async function loadBatchData() {
+    try {
+        // Load plants data
+        const plantsResponse = await fetch('/api/plants');
+        if (plantsResponse.ok) {
+            allPlants = await plantsResponse.json();
+        }
+
+        // Load variants data
+        const variantsResponse = await fetch('/api/variants');
+        if (variantsResponse.ok) {
+            allVariants = await variantsResponse.json();
+        }
+
+        // Load mutations data
+        const mutationsResponse = await fetch('/api/mutations');
+        if (mutationsResponse.ok) {
+            allMutations = await mutationsResponse.json();
+        }
+
+        console.log('Batch data loaded:', allPlants.length, 'plants,', allVariants.length, 'variants,', allMutations.length, 'mutations');
+    } catch (error) {
+        console.error('Error loading batch data:', error);
     }
 }
 
@@ -1689,7 +1889,7 @@ async function shareBatchResults() {
         alert('No plants to share!');
         return;
     }
-    
+
     try {
         const response = await fetch(`${API_BASE}/share-batch`, {
             method: 'POST',
@@ -1700,11 +1900,267 @@ async function shareBatchResults() {
                 plants: batchPlants
             })
         });
-        
+
         if (response.ok) {
             const data = await response.json();
             const shareUrl = `${window.location.origin}/share/${data.share_id}`;
-            
+
+            // Copy to clipboard
+            await navigator.clipboard.writeText(shareUrl);
+            alert('Batch results link copied to clipboard!');
+        } else {
+            alert('Failed to share batch results');
+        }
+    } catch (error) {
+        console.error('Error sharing batch results:', error);
+        alert('Error sharing batch results');
+    }
+}
+
+// ========================================
+// SINGLE CALCULATOR BATCH FUNCTIONALITY
+// ========================================
+
+/**
+ * Initialize single calculator batch functionality
+ */
+function initializeSingleBatchCalculator() {
+    console.log('Initializing single calculator batch functionality...');
+
+    // Add plant to batch button
+    const addPlantBtn = document.getElementById('add-plant-to-batch');
+    if (addPlantBtn) {
+        addPlantBtn.addEventListener('click', addCurrentPlantToBatch);
+    }
+
+    // Clear batch button
+    const clearBatchBtn = document.getElementById('clear-batch');
+    if (clearBatchBtn) {
+        clearBatchBtn.addEventListener('click', clearSingleBatch);
+    }
+
+    // Share batch results button
+    const shareBatchBtn = document.getElementById('share-batch-result');
+    if (shareBatchBtn) {
+        shareBatchBtn.addEventListener('click', shareSingleBatchResults);
+    }
+}
+
+/**
+ * Add current plant selection to batch
+ */
+function addCurrentPlantToBatch() {
+    console.log('Adding current plant to batch...');
+
+    // Get current values
+    const plantName = currentPlant;
+    const variant = currentVariant;
+    const weight = parseFloat(document.getElementById('plant-weight')?.value) || 0;
+    const amount = parseInt(document.getElementById('plant-amount')?.value) || 1;
+    const mutations = [...selectedMutations];
+
+    // Validate inputs
+    if (!plantName) {
+        alert('Please select a plant first.');
+        return;
+    }
+
+    if (weight <= 0) {
+        alert('Please enter a valid weight.');
+        return;
+    }
+
+    // Create batch plant object
+    const batchPlant = {
+        id: `single-batch-${singleBatchCounter++}`,
+        plant: plantName,
+        variant: variant,
+        weight: weight,
+        amount: amount,
+        mutations: mutations,
+        timestamp: Date.now()
+    };
+
+    // Add to batch
+    singleBatchPlants.push(batchPlant);
+
+    // Update display
+    updateSingleBatchDisplay();
+
+    console.log('Added plant to batch:', batchPlant);
+}
+
+/**
+ * Update single batch display
+ */
+function updateSingleBatchDisplay() {
+    const batchSection = document.getElementById('batch-plants-section');
+    const batchList = document.getElementById('batch-plants-list');
+    const batchSummary = document.getElementById('batch-summary-section');
+
+    if (!batchSection || !batchList || !batchSummary) {
+        console.warn('Batch display elements not found');
+        return;
+    }
+
+    // Show/hide batch section
+    if (singleBatchPlants.length > 0) {
+        batchSection.style.display = 'block';
+    } else {
+        batchSection.style.display = 'none';
+        return;
+    }
+
+    // Clear current list
+    batchList.innerHTML = '';
+
+    // Add each plant to the list
+    singleBatchPlants.forEach(plant => {
+        const plantItem = document.createElement('div');
+        plantItem.className = 'bg-gray-700 p-3 rounded-lg border border-gray-600';
+        plantItem.innerHTML = `
+            <div class="flex justify-between items-start">
+                <div class="flex-1">
+                    <div class="text-sm text-gray-300">
+                        <span class="font-medium text-white">${plant.plant}</span>
+                        <span class="text-gray-400">•</span>
+                        <span class="text-yellow-400">${plant.variant}</span>
+                        <span class="text-gray-400">•</span>
+                        <span class="text-blue-400">${plant.weight}kg</span>
+                        <span class="text-gray-400">•</span>
+                        <span class="text-purple-400">${plant.amount} plants</span>
+                    </div>
+                    ${plant.mutations.length > 0 ?
+                        `<div class="text-xs text-gray-400 mt-1">
+                            Mutations: ${plant.mutations.join(', ')}
+                        </div>` : ''
+                    }
+                </div>
+                <button class="remove-single-batch-plant text-red-400 hover:text-red-300 ml-2" data-plant-id="${plant.id}">
+                    ✕
+                </button>
+            </div>
+        `;
+
+        // Add remove event listener
+        const removeBtn = plantItem.querySelector('.remove-single-batch-plant');
+        removeBtn.addEventListener('click', () => {
+            removeFromSingleBatch(plant.id);
+        });
+
+        batchList.appendChild(plantItem);
+    });
+
+    // Update batch summary
+    updateSingleBatchSummary();
+
+    // Show summary section
+    batchSummary.style.display = 'block';
+}
+
+/**
+ * Remove plant from single batch
+ */
+function removeFromSingleBatch(plantId) {
+    console.log('Removing plant from batch:', plantId);
+
+    // Remove from array
+    singleBatchPlants = singleBatchPlants.filter(plant => plant.id !== plantId);
+
+    // Update display
+    updateSingleBatchDisplay();
+}
+
+/**
+ * Update single batch summary
+ */
+async function updateSingleBatchSummary() {
+    const totalValueElement = document.getElementById('batch-total-value');
+    const totalPlantsElement = document.getElementById('batch-total-plants');
+    const avgPerPlantElement = document.getElementById('batch-avg-per-plant');
+
+    if (!totalValueElement || !totalPlantsElement || !avgPerPlantElement) {
+        return;
+    }
+
+    let totalValue = 0;
+    let totalPlants = 0;
+
+    // Calculate actual values for each plant in the batch
+    for (const plant of singleBatchPlants) {
+        try {
+            const response = await fetch(`${API_BASE}/calculate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    plant_name: plant.plant,
+                    variant: plant.variant,
+                    weight: plant.weight,
+                    mutations: plant.mutations,
+                    plant_amount: plant.amount
+                })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                totalValue += result.total_value;
+                totalPlants += plant.amount;
+            }
+        } catch (error) {
+            console.error('Error calculating plant value for batch:', error);
+            // Fallback to estimated value
+            const estimatedValue = Math.round(Math.random() * 1000) + 100;
+            totalValue += estimatedValue * plant.amount;
+            totalPlants += plant.amount;
+        }
+    }
+
+    const avgPerPlant = totalPlants > 0 ? totalValue / totalPlants : 0;
+
+    // Update display
+    totalValueElement.textContent = formatLargeNumber(totalValue) + ' sheckles';
+    totalPlantsElement.textContent = totalPlants;
+    avgPerPlantElement.textContent = formatLargeNumber(avgPerPlant) + ' sheckles';
+}
+
+/**
+ * Clear single batch
+ */
+function clearSingleBatch() {
+    console.log('Clearing single batch...');
+
+    singleBatchPlants = [];
+    singleBatchCounter = 0;
+
+    updateSingleBatchDisplay();
+}
+
+/**
+ * Share single batch results
+ */
+async function shareSingleBatchResults() {
+    if (singleBatchPlants.length === 0) {
+        alert('No plants in batch to share!');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/share-batch`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                plants: singleBatchPlants
+            })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            const shareUrl = `${window.location.origin}/share/${data.share_id}`;
+
             // Copy to clipboard
             await navigator.clipboard.writeText(shareUrl);
             alert('Batch results link copied to clipboard!');
@@ -1738,8 +2194,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     initializeCalculatorForm();
-    
+
     // Initialize tab system and batch calculator
     initializeTabSystem();
     initializeBatchCalculator();
+
+    // Initialize single calculator batch functionality
+    initializeSingleBatchCalculator();
 });

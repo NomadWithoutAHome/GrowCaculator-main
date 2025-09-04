@@ -184,13 +184,52 @@
                  </p>
             </div>
             
-            <!-- Action Buttons -->
+            <!-- Add Plant Button -->
             <div class="flex flex-wrap gap-4 mt-6 justify-center">
+                <button class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 px-6 py-3 rounded-lg shadow-lg transition-all duration-200 text-white font-semibold transform hover:scale-105" id="add-plant-to-batch" aria-label="Add Plant to Batch">
+                    ➕ Add Plant to Batch
+                </button>
                 <button class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 px-6 py-3 rounded-lg shadow-lg transition-all duration-200 text-white font-semibold transform hover:scale-105" id="share-result" aria-label="Share Calculation Result">
                     Share Results
                 </button>
                 <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded shadow transition text-white" id="clear-all" aria-label="Clear All Inputs">Clear All</button>
             </div>
+        </div>
+    </section>
+
+    <!-- Batch Plants Section -->
+    <section class="bg-gray-800 p-4 rounded-lg shadow-lg mb-6" id="batch-plants-section" style="display: none;">
+        <h2 class="text-xl font-semibold mb-3 text-gray-200">🛒 Batch Plants</h2>
+
+        <!-- Batch Plants List -->
+        <div id="batch-plants-list" class="space-y-3">
+            <!-- Added plants will appear here -->
+        </div>
+
+        <!-- Batch Summary -->
+        <div id="batch-summary-section" class="mt-4 p-3 bg-gray-900 rounded-md border-l-4 border-green-500" style="display: none;">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                <div>
+                    <p class="text-sm text-gray-400">Total Batch Value</p>
+                    <p class="text-2xl font-bold text-green-400" id="batch-total-value">0 sheckles</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-400">Total Plants</p>
+                    <p class="text-xl font-bold text-blue-400" id="batch-total-plants">0</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-400">Average per Plant</p>
+                    <p class="text-xl font-bold text-purple-400" id="batch-avg-per-plant">0 sheckles</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Batch Action Buttons -->
+        <div class="flex flex-wrap gap-4 mt-4 justify-center">
+            <button class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 px-6 py-3 rounded-lg shadow-lg transition-all duration-200 text-white font-semibold transform hover:scale-105" id="share-batch-result" aria-label="Share Batch Results">
+                Share Batch Results
+            </button>
+            <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded shadow transition text-white" id="clear-batch" aria-label="Clear Batch">Clear Batch</button>
         </div>
     </section>
     </div> <!-- End Single Calculator Content -->
