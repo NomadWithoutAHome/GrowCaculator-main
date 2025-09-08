@@ -1,4 +1,7 @@
 {
+  "Abyssal": {
+    "value_multi": 240.0
+  },
   "Acidic": {
     "value_multi": 15.0
   },
@@ -14,11 +17,17 @@
   "Aromatic": {
     "value_multi": 3.0
   },
+  "AscendedChakra": {
+    "value_multi": 230.0
+  },
   "Aurora": {
     "value_multi": 90.0
   },
   "Beanbound": {
     "value_multi": 100.0
+  },
+  "Blazing": {
+    "value_multi": 52.0
   },
   "Blitzshock": {
     "value_multi": 50.0
@@ -75,7 +84,10 @@
     "value_multi": 90.0
   },
   "Cosmic": {
-    "value_multi": 210.0
+    "value_multi": 240.0
+  },
+  "Cracked": {
+    "value_multi": 4.0
   },
   "Cyclonic": {
     "value_multi": 50.0
@@ -97,6 +109,9 @@
   },
   "Enlightened": {
     "value_multi": 35.0
+  },
+  "Flaming": {
+    "value_multi": 25.0
   },
   "Fortune": {
     "value_multi": 50.0
@@ -143,6 +158,9 @@
   "Infected": {
     "value_multi": 75.0
   },
+  "Infernal": {
+    "value_multi": 180.0
+  },
   "Jackpot": {
     "value_multi": 15.0
   },
@@ -150,6 +168,9 @@
     "value_multi": 45.0
   },
   "Lightcycle": {
+    "value_multi": 50.0
+  },
+  "Luminous": {
     "value_multi": 50.0
   },
   "Maelstrom": {
@@ -210,7 +231,7 @@
     "value_multi": 8.0
   },
   "Stormcharged": {
-    "value_multi": 220.0
+    "value_multi": 180.0
   },
   "Subzero": {
     "value_multi": 40.0
