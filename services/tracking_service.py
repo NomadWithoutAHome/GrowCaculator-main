@@ -14,30 +14,33 @@ from typing import Tuple, Optional
 # Set up logger
 logger = logging.getLogger(__name__)
 
-# In-memory log storage for web display
-log_entries = []
-MAX_LOG_ENTRIES = 100  # Keep last 100 entries
+# File-based logging for tracking service
+LOG_FILE = "logging"
 
-def add_log_entry(level: str, message: str, extra_data: Optional[dict] = None):
-    """Add a log entry to the in-memory storage"""
-    global log_entries
+def write_log_entry(level: str, message: str, extra_data: Optional[dict] = None):
+    """Write a log entry to the logging file"""
+    try:
+        timestamp = datetime.now().isoformat()
+        extra_str = f" | Extra: {extra_data}" if extra_data else ""
 
-    entry = {
-        'timestamp': datetime.now().isoformat(),
-        'level': level,
-        'message': message,
-        'extra': extra_data or {}
-    }
+        log_line = f"[{timestamp}] {level}: {message}{extra_str}\n"
 
-    log_entries.append(entry)
+        with open(LOG_FILE, "a", encoding="utf-8") as f:
+            f.write(log_line)
 
-    # Keep only the last MAX_LOG_ENTRIES
-    if len(log_entries) > MAX_LOG_ENTRIES:
-        log_entries.pop(0)
+        # Keep file size manageable (keep last 1000 lines)
+        try:
+            with open(LOG_FILE, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+            if len(lines) > 1000:
+                with open(LOG_FILE, "w", encoding="utf-8") as f:
+                    f.writelines(lines[-1000:])
+        except:
+            pass  # Ignore file cleanup errors
 
-def get_log_entries():
-    """Get all log entries for display"""
-    return log_entries.copy()
+    except Exception as e:
+        # Fallback to console if file logging fails
+        print(f"Failed to write to log file: {e}")
 
 # Webhook URL will be read dynamically to work with deployment platforms
 
@@ -189,10 +192,10 @@ class TrackingService:
             response = requests.post(webhook_url, json=payload, timeout=5)
             response.raise_for_status()
             logger.info(f"Tracking webhook sent successfully - Status: {response.status_code}")
-            add_log_entry('INFO', f"Webhook sent successfully - Status: {response.status_code}", {'webhook_url': webhook_url[:50] + '...'})
+            write_log_entry('INFO', f"Webhook sent successfully - Status: {response.status_code}", {'webhook_url': webhook_url[:50] + '...'})
         except Exception as e:
             logger.error(f"Failed to send tracking webhook - Error: {str(e)}")
-            add_log_entry('ERROR', f"Failed to send webhook - {str(e)}", {'webhook_url': webhook_url[:50] + '...' if webhook_url else None})
+            write_log_entry('ERROR', f"Failed to send webhook - {str(e)}", {'webhook_url': webhook_url[:50] + '...' if webhook_url else None})
 
     @staticmethod
     def track_visitor(request, path: str):

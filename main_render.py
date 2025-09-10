@@ -86,26 +86,7 @@ async def health_check():
     """Health check endpoint for Render."""
     return {"status": "healthy", "service": "GrowCalculator"}
 
-@app.get("/logs")
-async def view_logs(request: Request):
-    """Display tracking service logs in a web interface."""
-    try:
-        from services.tracking_service import get_log_entries
-        logs = get_log_entries()
-        return templates.TemplateResponse("logs.html", {
-            "request": request,
-            "logs": logs,
-            "total_entries": len(logs),
-            "max_entries": 100
-        })
-    except Exception as e:
-        logger.error(f"Error displaying logs: {str(e)}")
-        return templates.TemplateResponse("logs.html", {
-            "request": request,
-            "logs": [],
-            "total_entries": 0,
-            "max_entries": 100
-        })
+
 
 # --------------------------------------------------------------------
 # Discord webhook integration for status embeds
