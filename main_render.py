@@ -5,10 +5,11 @@ This replaces the Vercel-specific api/index.py structure.
 import os
 import sys
 from pathlib import Path
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.templating import Jinja2Templates
 import logging
 
 # Set up logging for production
@@ -41,6 +42,9 @@ except Exception as e:
 from routes import calculator, api
 app.include_router(calculator.router)
 app.include_router(api.router, prefix="/api")
+
+# Templates
+templates = Jinja2Templates(directory="templates")
 
 # Import the shared results service for Render
 from services.vercel_shared_results_service import vercel_shared_results_service
@@ -81,6 +85,27 @@ async def startup_logic():
 async def health_check():
     """Health check endpoint for Render."""
     return {"status": "healthy", "service": "GrowCalculator"}
+
+@app.get("/logs")
+async def view_logs(request: Request):
+    """Display tracking service logs in a web interface."""
+    try:
+        from services.tracking_service import get_log_entries
+        logs = get_log_entries()
+        return templates.TemplateResponse("logs.html", {
+            "request": request,
+            "logs": logs,
+            "total_entries": len(logs),
+            "max_entries": 100
+        })
+    except Exception as e:
+        logger.error(f"Error displaying logs: {str(e)}")
+        return templates.TemplateResponse("logs.html", {
+            "request": request,
+            "logs": [],
+            "total_entries": 0,
+            "max_entries": 100
+        })
 
 # --------------------------------------------------------------------
 # Discord webhook integration for status embeds
