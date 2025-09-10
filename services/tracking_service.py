@@ -14,11 +14,13 @@ from typing import Tuple, Optional
 # Set up logger
 logger = logging.getLogger(__name__)
 
-# File-based logging for tracking service
-LOG_FILE = "logging"
+# File-based logging for tracking service (using temp directory for cloud compatibility)
+import tempfile
+
+LOG_FILE = os.path.join(tempfile.gettempdir(), "growcalculator_tracking.log")
 
 def write_log_entry(level: str, message: str, extra_data: Optional[dict] = None):
-    """Write a log entry to the logging file"""
+    """Write a log entry to the logging file in temp directory"""
     try:
         timestamp = datetime.now().isoformat()
         extra_str = f" | Extra: {extra_data}" if extra_data else ""
