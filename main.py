@@ -1,12 +1,14 @@
 """
 Main FastAPI application entry point.
 """
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.responses import JSONResponse
 
 from routes import calculator, api
 from services.shared_results_service import shared_results_service
+from services.tracking_middleware import TrackingMiddleware
 import asyncio
 import logging
 
@@ -19,6 +21,10 @@ app = FastAPI(
     description="A modern plant value calculator for Roblox Grow a Garden",
     version="1.0.0"
 )
+
+# Add tracking middleware
+from services.tracking_middleware import TrackingMiddleware
+app.add_middleware(TrackingMiddleware)
 
 # Mount static files
 app.mount("/static", StaticFiles(directory="static"), name="static")

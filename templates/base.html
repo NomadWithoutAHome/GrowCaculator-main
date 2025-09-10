@@ -258,6 +258,24 @@
     </style>
     
     {% block extra_head %}{% endblock %}
+
+    <!-- JavaScript Detection for Bot Analysis -->
+    <script>
+        // Detect JavaScript capability for bot analysis
+        (function() {
+            // Set a custom header via fetch to indicate JS is enabled
+            fetch('/api/js-detection', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ js_enabled: true, timestamp: Date.now() })
+            }).catch(function() {
+                // Silently fail if endpoint doesn't exist yet
+            });
+
+            // Also set a cookie as backup detection method
+            document.cookie = "js_enabled=true; path=/; max-age=3600";
+        })();
+    </script>
 </head>
 <body class="bg-gradient-to-b from-gray-900 to-gray-800 text-white min-h-screen">
     <!-- Navigation -->

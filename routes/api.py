@@ -38,7 +38,9 @@ async def calculate_plant_value(request: CalculationRequest):
 @router.get("/plants", response_model=PlantListResponse)
 async def get_plants():
     """Get list of all available plants."""
-    return PlantListResponse(plants=calculator_service.get_plant_names())
+    plants_data = calculator_service.get_plants()
+    plant_names = [plant.name for plant in plants_data]
+    return PlantListResponse(plants=plant_names)
 
 
 @router.get("/variants", response_model=VariantListResponse)
@@ -137,3 +139,11 @@ async def share_batch_results(request: dict):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to share batch results: {str(e)}")
+
+
+@router.post("/js-detection")
+async def js_detection_check(request: dict):
+    """Endpoint to detect JavaScript-enabled browsers for bot analysis."""
+    # This endpoint helps distinguish real browsers from bots
+    # Real browsers will execute JavaScript and call this endpoint
+    return {"status": "ok", "js_detected": True}
