@@ -23,7 +23,7 @@ class TrackingMiddleware(BaseHTTPMiddleware):
 
         # Track the page visit for GET requests (excluding static files)
         if request.method == "GET" and not self._is_static_file(request.url.path):
-            logger.debug(f"Middleware tracking visitor - Path: {request.url.path}")
+            # logger.debug(f"Middleware tracking visitor - Path: {request.url.path}")
             TrackingService.track_visitor(request, request.url.path)
 
         # Track feature usage for specific routes
@@ -34,10 +34,11 @@ class TrackingMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
 
         # Track API performance for API endpoints
-        if request.url.path.startswith("/api/"):
-            end_time = time.time()
-            response_time = end_time - start_time
-            TrackingService.track_performance(request, request.url.path, response_time, response.status_code)
+        # Temporarily commented out
+        # if request.url.path.startswith("/api/"):
+        #     end_time = time.time()
+        #     response_time = end_time - start_time
+        #     TrackingService.track_performance(request, request.url.path, response_time, response.status_code)
 
         return response
 
@@ -52,27 +53,27 @@ class TrackingMiddleware(BaseHTTPMiddleware):
 
         # Track traits explorer usage
         if path == "/traits":
-            logger.debug("Middleware tracking feature - Traits Explorer")
+            # logger.debug("Middleware tracking feature - Traits Explorer")
             TrackingService.track_feature_usage(request, "Traits Explorer", "Viewed plant traits page")
 
         # Track recipes page usage
         elif path == "/recipes":
-            logger.debug("Middleware tracking feature - Recipe Generator")
+            # logger.debug("Middleware tracking feature - Recipe Generator")
             TrackingService.track_feature_usage(request, "Recipe Generator", "Viewed recipes page")
 
         # Track mutation calculator usage
         elif path == "/mutation-calculator":
-            logger.debug("Middleware tracking feature - Mutation Calculator")
+            # logger.debug("Middleware tracking feature - Mutation Calculator")
             TrackingService.track_feature_usage(request, "Mutation Calculator", "Viewed mutation calculator")
 
         # Track about page
         elif path == "/about":
-            logger.debug("Middleware tracking feature - About Page")
+            # logger.debug("Middleware tracking feature - About Page")
             TrackingService.track_feature_usage(request, "About Page", "Viewed about page")
 
         # Track shared results
         elif path.startswith("/share/"):
-            logger.debug(f"Middleware tracking feature - Shared Results: {path}")
+            # logger.debug(f"Middleware tracking feature - Shared Results: {path}")
             TrackingService.track_feature_usage(request, "Shared Results", f"Viewed shared result: {path}")
 
     async def track_error_response(self, request: Request, error_message: str, status_code: int):

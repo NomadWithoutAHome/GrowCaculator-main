@@ -61,7 +61,17 @@ class TrackingService:
     def is_bot(request) -> Tuple[bool, Optional[str]]:
         """Comprehensive bot detection"""
         user_agent = request.headers.get('User-Agent', '').lower()
-        ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+
+        # Get client IP - handle different request types
+        ip = request.headers.get('X-Forwarded-For')
+        if not ip:
+            # Fallback for different request types
+            if hasattr(request, 'client') and request.client:
+                ip = request.client.host
+            elif hasattr(request, 'scope') and 'client' in request.scope:
+                ip = request.scope['client'][0]
+            else:
+                ip = '127.0.0.1'  # Local fallback
 
         # 1. User-Agent Analysis
         if TrackingService._check_user_agent(user_agent):
@@ -142,7 +152,7 @@ class TrackingService:
     def send_webhook(embed: dict):
         """Send embed to Discord webhook"""
         webhook_url = os.environ.get('TRACKING_WEBHOOK')
-        logger.debug(f"send_webhook called - Webhook URL: {'Set' if webhook_url else 'Not set'}")
+        # logger.debug(f"send_webhook called - Webhook URL: {'Set' if webhook_url else 'Not set'}")
 
         if not webhook_url:
             logger.warning("TRACKING_WEBHOOK environment variable not set - skipping webhook")
@@ -150,7 +160,7 @@ class TrackingService:
 
         try:
             payload = {"embeds": [embed]}
-            logger.debug("Sending webhook to Discord...")
+            # logger.debug("Sending webhook to Discord...")
             response = requests.post(webhook_url, json=payload, timeout=5)
             response.raise_for_status()
             logger.info(f"Tracking webhook sent successfully - Status: {response.status_code}")
@@ -160,11 +170,11 @@ class TrackingService:
     @staticmethod
     def track_visitor(request, path: str):
         """Track new and returning visitors with bot detection"""
-        logger.debug(f"track_visitor called - Path: {path}")
+        # logger.debug(f"track_visitor called - Path: {path}")
 
         # Check if this is a bot
         is_bot, bot_reason = TrackingService.is_bot(request)
-        logger.debug(f"Bot detection - Is bot: {is_bot}, Reason: {bot_reason}")
+        # logger.debug(f"Bot detection - Is bot: {is_bot}, Reason: {bot_reason}")
 
         if is_bot:
             # Log bot activity but don't track as visitor
@@ -172,18 +182,29 @@ class TrackingService:
             return
 
         # Continue with normal visitor tracking
-        ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+        # Extract IP address
+        ip = request.headers.get('X-Forwarded-For')
+        if not ip:
+            # Fallback for different request types
+            if hasattr(request, 'client') and request.client:
+                ip = request.client.host
+            elif hasattr(request, 'scope') and 'client' in request.scope:
+                ip = request.scope['client'][0]
+            else:
+                ip = '127.0.0.1'  # Local fallback
         user_agent = request.headers.get('User-Agent', 'Unknown')
         referrer = request.headers.get('Referer', 'Direct')
 
         # Determine navigation type
         is_internal = False
         if referrer != 'Direct':
+            # Get the base URL for the current request
+            base_url = str(request.base_url).rstrip('/')
             is_internal = (
-                referrer.startswith(request.host_url) or
+                referrer.startswith(base_url) or
                 referrer.startswith('/') or
                 'dohmboy64.com' in referrer or
-                request.host in referrer
+                (hasattr(request, 'headers') and request.headers.get('host', '') in referrer)
             )
 
         navigation_type = "Internal Navigation" if is_internal else "External Visit"
@@ -271,7 +292,15 @@ class TrackingService:
     @staticmethod
     def _log_bot_activity(request, path: str, detection_reason: Optional[str]):
         """Log bot activity for monitoring"""
-        ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+        ip = request.headers.get('X-Forwarded-For')
+        if not ip:
+            # Fallback for different request types
+            if hasattr(request, 'client') and request.client:
+                ip = request.client.host
+            elif hasattr(request, 'scope') and 'client' in request.scope:
+                ip = request.scope['client'][0]
+            else:
+                ip = '127.0.0.1'  # Local fallback
         user_agent = request.headers.get('User-Agent', 'Unknown')[:200]
 
         embed = {
@@ -291,15 +320,23 @@ class TrackingService:
     @staticmethod
     def track_feature_usage(request, feature_name: str, details: Optional[str] = None):
         """Track usage of specific features (excluding calculations, batches, and sharing)"""
-        logger.debug(f"track_feature_usage called - Feature: {feature_name}")
+        # logger.debug(f"track_feature_usage called - Feature: {feature_name}")
 
         # Check if this is a bot
         is_bot, _ = TrackingService.is_bot(request)
-        logger.debug(f"Feature usage bot check - Is bot: {is_bot}")
+        # logger.debug(f"Feature usage bot check - Is bot: {is_bot}")
         if is_bot:
             return
 
-        ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+        ip = request.headers.get('X-Forwarded-For')
+        if not ip:
+            # Fallback for different request types
+            if hasattr(request, 'client') and request.client:
+                ip = request.client.host
+            elif hasattr(request, 'scope') and 'client' in request.scope:
+                ip = request.scope['client'][0]
+            else:
+                ip = '127.0.0.1'  # Local fallback
 
         try:
             geo_response = requests.get(f"http://ip-api.com/json/{ip}", timeout=3)
@@ -325,7 +362,15 @@ class TrackingService:
     @staticmethod
     def track_error(request, error_message: str, context: str = "general"):
         """Track application errors"""
-        ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+        ip = request.headers.get('X-Forwarded-For')
+        if not ip:
+            # Fallback for different request types
+            if hasattr(request, 'client') and request.client:
+                ip = request.client.host
+            elif hasattr(request, 'scope') and 'client' in request.scope:
+                ip = request.scope['client'][0]
+            else:
+                ip = '127.0.0.1'  # Local fallback
 
         try:
             geo_response = requests.get(f"http://ip-api.com/json/{ip}", timeout=3)
@@ -356,7 +401,15 @@ class TrackingService:
         if is_bot:
             return
 
-        ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+        ip = request.headers.get('X-Forwarded-For')
+        if not ip:
+            # Fallback for different request types
+            if hasattr(request, 'client') and request.client:
+                ip = request.client.host
+            elif hasattr(request, 'scope') and 'client' in request.scope:
+                ip = request.scope['client'][0]
+            else:
+                ip = '127.0.0.1'  # Local fallback
         color = 5763719 if status_code < 400 else 15158332  # Green for success, red for error
 
         embed = {
@@ -381,7 +434,15 @@ class TrackingService:
         if is_bot:
             return
 
-        ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+        ip = request.headers.get('X-Forwarded-For')
+        if not ip:
+            # Fallback for different request types
+            if hasattr(request, 'client') and request.client:
+                ip = request.client.host
+            elif hasattr(request, 'scope') and 'client' in request.scope:
+                ip = request.scope['client'][0]
+            else:
+                ip = '127.0.0.1'  # Local fallback
         referrer = request.headers.get('Referer', 'Direct')
 
         try:
