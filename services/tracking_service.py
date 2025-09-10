@@ -6,13 +6,13 @@ import json
 import re
 import time
 import os
+import logging
 from datetime import datetime
 from collections import defaultdict
 from typing import Tuple, Optional
 
-# You'll need to add these imports when you set up Redis
-# from services.redis_service import redis
-# from utils.logging_config import app_logger as logger
+# Set up logger
+logger = logging.getLogger(__name__)
 
 # Webhook URL will be read dynamically to work with deployment platforms
 
@@ -142,30 +142,29 @@ class TrackingService:
     def send_webhook(embed: dict):
         """Send embed to Discord webhook"""
         webhook_url = os.environ.get('TRACKING_WEBHOOK')
-        print(f"🔗 DEBUG: send_webhook called - Webhook URL: {'Set' if webhook_url else 'Not set'}")
+        logger.debug(f"send_webhook called - Webhook URL: {'Set' if webhook_url else 'Not set'}")
 
         if not webhook_url:
-            print("⚠️  DEBUG: TRACKING_WEBHOOK environment variable not set - skipping webhook")
+            logger.warning("TRACKING_WEBHOOK environment variable not set - skipping webhook")
             return
 
         try:
             payload = {"embeds": [embed]}
-            print(f"📤 DEBUG: Sending webhook to Discord...")
+            logger.debug("Sending webhook to Discord...")
             response = requests.post(webhook_url, json=payload, timeout=5)
             response.raise_for_status()
-            print(f"✅ DEBUG: Tracking webhook sent successfully - Status: {response.status_code}")
+            logger.info(f"Tracking webhook sent successfully - Status: {response.status_code}")
         except Exception as e:
-            # In production, you'd use proper logging
-            print(f"❌ DEBUG: Failed to send tracking webhook - Error: {str(e)}")
+            logger.error(f"Failed to send tracking webhook - Error: {str(e)}")
 
     @staticmethod
     def track_visitor(request, path: str):
         """Track new and returning visitors with bot detection"""
-        print(f"🔍 DEBUG: track_visitor called - Path: {path}")
+        logger.debug(f"track_visitor called - Path: {path}")
 
         # Check if this is a bot
         is_bot, bot_reason = TrackingService.is_bot(request)
-        print(f"🤖 DEBUG: Bot detection - Is bot: {is_bot}, Reason: {bot_reason}")
+        logger.debug(f"Bot detection - Is bot: {is_bot}, Reason: {bot_reason}")
 
         if is_bot:
             # Log bot activity but don't track as visitor
@@ -292,11 +291,11 @@ class TrackingService:
     @staticmethod
     def track_feature_usage(request, feature_name: str, details: Optional[str] = None):
         """Track usage of specific features (excluding calculations, batches, and sharing)"""
-        print(f"⚡ DEBUG: track_feature_usage called - Feature: {feature_name}")
+        logger.debug(f"track_feature_usage called - Feature: {feature_name}")
 
         # Check if this is a bot
         is_bot, _ = TrackingService.is_bot(request)
-        print(f"🤖 DEBUG: Feature usage bot check - Is bot: {is_bot}")
+        logger.debug(f"Feature usage bot check - Is bot: {is_bot}")
         if is_bot:
             return
 
