@@ -142,24 +142,30 @@ class TrackingService:
     def send_webhook(embed: dict):
         """Send embed to Discord webhook"""
         webhook_url = os.environ.get('TRACKING_WEBHOOK')
+        print(f"🔗 DEBUG: send_webhook called - Webhook URL: {'Set' if webhook_url else 'Not set'}")
+
         if not webhook_url:
-            print("Warning: TRACKING_WEBHOOK environment variable not set")
+            print("⚠️  DEBUG: TRACKING_WEBHOOK environment variable not set - skipping webhook")
             return
 
         try:
             payload = {"embeds": [embed]}
+            print(f"📤 DEBUG: Sending webhook to Discord...")
             response = requests.post(webhook_url, json=payload, timeout=5)
             response.raise_for_status()
-            print(f"✅ Tracking webhook sent successfully")
+            print(f"✅ DEBUG: Tracking webhook sent successfully - Status: {response.status_code}")
         except Exception as e:
             # In production, you'd use proper logging
-            print(f"❌ Failed to send tracking webhook: {str(e)}")
+            print(f"❌ DEBUG: Failed to send tracking webhook - Error: {str(e)}")
 
     @staticmethod
     def track_visitor(request, path: str):
         """Track new and returning visitors with bot detection"""
+        print(f"🔍 DEBUG: track_visitor called - Path: {path}")
+
         # Check if this is a bot
         is_bot, bot_reason = TrackingService.is_bot(request)
+        print(f"🤖 DEBUG: Bot detection - Is bot: {is_bot}, Reason: {bot_reason}")
 
         if is_bot:
             # Log bot activity but don't track as visitor
@@ -286,8 +292,11 @@ class TrackingService:
     @staticmethod
     def track_feature_usage(request, feature_name: str, details: Optional[str] = None):
         """Track usage of specific features (excluding calculations, batches, and sharing)"""
+        print(f"⚡ DEBUG: track_feature_usage called - Feature: {feature_name}")
+
         # Check if this is a bot
         is_bot, _ = TrackingService.is_bot(request)
+        print(f"🤖 DEBUG: Feature usage bot check - Is bot: {is_bot}")
         if is_bot:
             return
 

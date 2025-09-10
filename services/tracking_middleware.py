@@ -19,6 +19,7 @@ class TrackingMiddleware(BaseHTTPMiddleware):
 
         # Track the page visit for GET requests (excluding static files)
         if request.method == "GET" and not self._is_static_file(request.url.path):
+            print(f"🏠 DEBUG: Middleware tracking visitor - Path: {request.url.path}")
             TrackingService.track_visitor(request, request.url.path)
 
         # Track feature usage for specific routes
@@ -47,22 +48,27 @@ class TrackingMiddleware(BaseHTTPMiddleware):
 
         # Track traits explorer usage
         if path == "/traits":
+            print(f"🌱 DEBUG: Middleware tracking feature - Traits Explorer")
             TrackingService.track_feature_usage(request, "Traits Explorer", "Viewed plant traits page")
 
         # Track recipes page usage
         elif path == "/recipes":
+            print(f"🍽️ DEBUG: Middleware tracking feature - Recipe Generator")
             TrackingService.track_feature_usage(request, "Recipe Generator", "Viewed recipes page")
 
         # Track mutation calculator usage
         elif path == "/mutation-calculator":
+            print(f"🧬 DEBUG: Middleware tracking feature - Mutation Calculator")
             TrackingService.track_feature_usage(request, "Mutation Calculator", "Viewed mutation calculator")
 
         # Track about page
         elif path == "/about":
+            print(f"ℹ️ DEBUG: Middleware tracking feature - About Page")
             TrackingService.track_feature_usage(request, "About Page", "Viewed about page")
 
         # Track shared results
         elif path.startswith("/share/"):
+            print(f"📤 DEBUG: Middleware tracking feature - Shared Results: {path}")
             TrackingService.track_feature_usage(request, "Shared Results", f"Viewed shared result: {path}")
 
     async def track_error_response(self, request: Request, error_message: str, status_code: int):
