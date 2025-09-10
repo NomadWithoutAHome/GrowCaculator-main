@@ -14,8 +14,7 @@ from typing import Tuple, Optional
 # from services.redis_service import redis
 # from utils.logging_config import app_logger as logger
 
-# Get webhook URL from environment variable
-WEBHOOK_URL = os.environ.get('TRACKING_WEBHOOK')
+# Webhook URL will be read dynamically to work with deployment platforms
 
 class TrackingService:
     """Comprehensive tracking service with bot detection"""
@@ -142,17 +141,19 @@ class TrackingService:
     @staticmethod
     def send_webhook(embed: dict):
         """Send embed to Discord webhook"""
-        if not WEBHOOK_URL:
+        webhook_url = os.environ.get('TRACKING_WEBHOOK')
+        if not webhook_url:
             print("Warning: TRACKING_WEBHOOK environment variable not set")
             return
 
         try:
             payload = {"embeds": [embed]}
-            response = requests.post(WEBHOOK_URL, json=payload, timeout=5)
+            response = requests.post(webhook_url, json=payload, timeout=5)
             response.raise_for_status()
+            print(f"✅ Tracking webhook sent successfully")
         except Exception as e:
             # In production, you'd use proper logging
-            print(f"Failed to send webhook: {str(e)}")
+            print(f"❌ Failed to send tracking webhook: {str(e)}")
 
     @staticmethod
     def track_visitor(request, path: str):
