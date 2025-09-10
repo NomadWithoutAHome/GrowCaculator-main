@@ -22,7 +22,7 @@ class DiscordWebhookService:
         self.enabled = bool(self.webhook_url)
         
         # Recipe webhook (separate channel)
-        self.recipe_webhook_url = os.getenv('RECIPE_DISCORD_WEBHOOK_URL', 'https://discord.com/api/webhooks/1412235342479753297/8fpw0FlVyv89SOTVr0ItnGmMM_5j3sMxJ6AnuC-EiNCbvMU1Ib-cfq3ben4bsQXbm12E')
+        self.recipe_webhook_url = os.getenv('RECIPE_DISCORD_WEBHOOK_URL')
         self.recipe_enabled = bool(self.recipe_webhook_url)
         
         if self.enabled:
