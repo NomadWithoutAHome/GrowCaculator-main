@@ -19,6 +19,10 @@ import tempfile
 
 LOG_FILE = os.path.join(tempfile.gettempdir(), "growcalculator_tracking.log")
 
+# Debug: Print temp directory path
+print(f"DEBUG: Temp directory: {tempfile.gettempdir()}")
+print(f"DEBUG: Log file path: {LOG_FILE}")
+
 def write_log_entry(level: str, message: str, extra_data: Optional[dict] = None):
     """Write a log entry to the logging file in temp directory"""
     try:
@@ -27,6 +31,7 @@ def write_log_entry(level: str, message: str, extra_data: Optional[dict] = None)
 
         log_line = f"[{timestamp}] {level}: {message}{extra_str}\n"
 
+        print(f"DEBUG: Writing to log file: {LOG_FILE}")
         with open(LOG_FILE, "a", encoding="utf-8") as f:
             f.write(log_line)
 
@@ -40,9 +45,12 @@ def write_log_entry(level: str, message: str, extra_data: Optional[dict] = None)
         except:
             pass  # Ignore file cleanup errors
 
+        print(f"DEBUG: Successfully wrote log entry: {level}: {message}")
+
     except Exception as e:
         # Fallback to console if file logging fails
         print(f"Failed to write to log file: {e}")
+        print(f"Log file path was: {LOG_FILE}")
 
 # Webhook URL will be read dynamically to work with deployment platforms
 
