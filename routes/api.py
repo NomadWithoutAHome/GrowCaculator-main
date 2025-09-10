@@ -147,3 +147,22 @@ async def js_detection_check(request: dict):
     # This endpoint helps distinguish real browsers from bots
     # Real browsers will execute JavaScript and call this endpoint
     return {"status": "ok", "js_detected": True}
+
+
+@router.get("/logs")
+async def get_tracking_logs():
+    """Get tracking service logs for debugging."""
+    try:
+        from services.tracking_service import get_log_entries
+        logs = get_log_entries()
+        return {
+            "logs": logs,
+            "total_entries": len(logs),
+            "max_entries": 100
+        }
+    except Exception as e:
+        return {
+            "error": f"Failed to retrieve logs: {str(e)}",
+            "logs": [],
+            "total_entries": 0
+        }

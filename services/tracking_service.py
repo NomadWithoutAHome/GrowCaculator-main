@@ -14,6 +14,31 @@ from typing import Tuple, Optional
 # Set up logger
 logger = logging.getLogger(__name__)
 
+# In-memory log storage for web display
+log_entries = []
+MAX_LOG_ENTRIES = 100  # Keep last 100 entries
+
+def add_log_entry(level: str, message: str, extra_data: Optional[dict] = None):
+    """Add a log entry to the in-memory storage"""
+    global log_entries
+
+    entry = {
+        'timestamp': datetime.now().isoformat(),
+        'level': level,
+        'message': message,
+        'extra': extra_data or {}
+    }
+
+    log_entries.append(entry)
+
+    # Keep only the last MAX_LOG_ENTRIES
+    if len(log_entries) > MAX_LOG_ENTRIES:
+        log_entries.pop(0)
+
+def get_log_entries():
+    """Get all log entries for display"""
+    return log_entries.copy()
+
 # Webhook URL will be read dynamically to work with deployment platforms
 
 class TrackingService:
@@ -164,8 +189,10 @@ class TrackingService:
             response = requests.post(webhook_url, json=payload, timeout=5)
             response.raise_for_status()
             logger.info(f"Tracking webhook sent successfully - Status: {response.status_code}")
+            add_log_entry('INFO', f"Webhook sent successfully - Status: {response.status_code}", {'webhook_url': webhook_url[:50] + '...'})
         except Exception as e:
             logger.error(f"Failed to send tracking webhook - Error: {str(e)}")
+            add_log_entry('ERROR', f"Failed to send webhook - {str(e)}", {'webhook_url': webhook_url[:50] + '...' if webhook_url else None})
 
     @staticmethod
     def track_visitor(request, path: str):
