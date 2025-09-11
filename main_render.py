@@ -34,6 +34,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Add tracking middleware
+from services.tracking_middleware import TrackingMiddleware
+app.add_middleware(TrackingMiddleware)
+
 # Mount static files (Render handles this differently than Vercel)
 try:
     app.mount("/static", StaticFiles(directory="static"), name="static")
