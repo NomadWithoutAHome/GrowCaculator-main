@@ -14,43 +14,24 @@ from typing import Tuple, Optional
 # Set up logger
 logger = logging.getLogger(__name__)
 
-# File-based logging for tracking service (using temp directory for cloud compatibility)
-import tempfile
+# Console-based logging for tracking service (visible in server logs/browser console-like interfaces)
+def log_tracking_event(level: str, message: str, extra_data: Optional[dict] = None):
+    """Log tracking events to console (visible in Render logs, terminal, etc.)"""
+    timestamp = datetime.now().isoformat()
+    extra_str = f" | Extra: {extra_data}" if extra_data else ""
 
-LOG_FILE = os.path.join(tempfile.gettempdir(), "growcalculator_tracking.log")
+    log_line = f"[{timestamp}] TRACKING-{level}: {message}{extra_str}"
+    print(log_line)
 
-# Debug: Print temp directory path
-print(f"DEBUG: Temp directory: {tempfile.gettempdir()}")
-print(f"DEBUG: Log file path: {LOG_FILE}")
-
-def write_log_entry(level: str, message: str, extra_data: Optional[dict] = None):
-    """Write a log entry to the logging file in temp directory"""
-    try:
-        timestamp = datetime.now().isoformat()
-        extra_str = f" | Extra: {extra_data}" if extra_data else ""
-
-        log_line = f"[{timestamp}] {level}: {message}{extra_str}\n"
-
-        print(f"DEBUG: Writing to log file: {LOG_FILE}")
-        with open(LOG_FILE, "a", encoding="utf-8") as f:
-            f.write(log_line)
-
-        # Keep file size manageable (keep last 1000 lines)
-        try:
-            with open(LOG_FILE, "r", encoding="utf-8") as f:
-                lines = f.readlines()
-            if len(lines) > 1000:
-                with open(LOG_FILE, "w", encoding="utf-8") as f:
-                    f.writelines(lines[-1000:])
-        except:
-            pass  # Ignore file cleanup errors
-
-        print(f"DEBUG: Successfully wrote log entry: {level}: {message}")
-
-    except Exception as e:
-        # Fallback to console if file logging fails
-        print(f"Failed to write to log file: {e}")
-        print(f"Log file path was: {LOG_FILE}")
+    # Also log to Python logger for additional visibility
+    if level == 'INFO':
+        logger.info(f"TRACKING: {message}")
+    elif level == 'ERROR':
+        logger.error(f"TRACKING: {message}")
+    elif level == 'WARNING':
+        logger.warning(f"TRACKING: {message}")
+    else:
+        logger.debug(f"TRACKING: {message}")
 
 # Webhook URL will be read dynamically to work with deployment platforms
 
@@ -202,10 +183,10 @@ class TrackingService:
             response = requests.post(webhook_url, json=payload, timeout=5)
             response.raise_for_status()
             logger.info(f"Tracking webhook sent successfully - Status: {response.status_code}")
-            write_log_entry('INFO', f"Webhook sent successfully - Status: {response.status_code}", {'webhook_url': webhook_url[:50] + '...'})
+            log_tracking_event('INFO', f"Webhook sent successfully - Status: {response.status_code}", {'webhook_url': webhook_url[:50] + '...'})
         except Exception as e:
             logger.error(f"Failed to send tracking webhook - Error: {str(e)}")
-            write_log_entry('ERROR', f"Failed to send webhook - {str(e)}", {'webhook_url': webhook_url[:50] + '...' if webhook_url else None})
+            log_tracking_event('ERROR', f"Failed to send webhook - {str(e)}", {'webhook_url': webhook_url[:50] + '...' if webhook_url else None})
 
     @staticmethod
     def track_visitor(request, path: str):
