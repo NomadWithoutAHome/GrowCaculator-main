@@ -15,6 +15,8 @@ from typing import Tuple, Optional
 logger = logging.getLogger(__name__)
 
 # Console-based logging for tracking service (visible in server logs/browser console-like interfaces)
+print("TRACKING SERVICE: Module loaded and ready")
+
 def log_tracking_event(level: str, message: str, extra_data: Optional[dict] = None):
     """Log tracking events to console (visible in Render logs, terminal, etc.)"""
     timestamp = datetime.now().isoformat()
