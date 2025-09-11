@@ -23,6 +23,8 @@ app = FastAPI(
     version="1.0.0"
 )
 
+print('hello from main_render')
+
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
