@@ -14,8 +14,50 @@ from typing import Tuple, Optional
 # Set up logger
 logger = logging.getLogger(__name__)
 
-# Console-based logging for tracking service (visible in server logs/browser console-like interfaces)
+# Background webhook processing using threading
+import threading
+import queue
+
 print("TRACKING SERVICE: Module loaded and ready")
+
+# Thread-safe queue for webhooks
+webhook_queue = queue.Queue()
+
+def send_webhook_background(embed: dict):
+    """Send webhook in background thread"""
+    try:
+        payload = {"embeds": [embed]}
+        response = requests.post(
+            os.environ.get('TRACKING_WEBHOOK', ''),
+            json=payload,
+            timeout=10
+        )
+        response.raise_for_status()
+        log_tracking_event('INFO', f"Background webhook sent successfully - Status: {response.status_code}")
+    except Exception as e:
+        log_tracking_event('ERROR', f"Background webhook failed: {str(e)}")
+
+def process_webhook_queue():
+    """Background worker to process webhook queue"""
+    while True:
+        try:
+            # Get next webhook from queue (blocking)
+            embed = webhook_queue.get(timeout=1)
+            if embed:
+                # Send in background thread
+                thread = threading.Thread(target=send_webhook_background, args=(embed,))
+                thread.daemon = True
+                thread.start()
+                webhook_queue.task_done()
+        except queue.Empty:
+            continue
+        except Exception as e:
+            log_tracking_event('ERROR', f"Webhook queue processing error: {str(e)}")
+            time.sleep(1)
+
+# Start background worker thread
+worker_thread = threading.Thread(target=process_webhook_queue, daemon=True)
+worker_thread.start()
 
 def log_tracking_event(level: str, message: str, extra_data: Optional[dict] = None):
     """Log tracking events to console (visible in Render logs, terminal, etc.)"""
@@ -183,24 +225,19 @@ class TrackingService:
 
     @staticmethod
     def send_webhook(embed: dict):
-        """Send embed to Discord webhook"""
+        """Queue embed for background Discord webhook processing"""
         webhook_url = os.environ.get('TRACKING_WEBHOOK')
-        # logger.debug(f"send_webhook called - Webhook URL: {'Set' if webhook_url else 'Not set'}")
 
         if not webhook_url:
-            logger.warning("TRACKING_WEBHOOK environment variable not set - skipping webhook")
+            log_tracking_event('WARNING', "TRACKING_WEBHOOK environment variable not set - skipping webhook")
             return
 
+        # Queue webhook for background processing (non-blocking)
         try:
-            payload = {"embeds": [embed]}
-            # logger.debug("Sending webhook to Discord...")
-            response = requests.post(webhook_url, json=payload, timeout=5)
-            response.raise_for_status()
-            logger.info(f"Tracking webhook sent successfully - Status: {response.status_code}")
-            log_tracking_event('INFO', f"Webhook sent successfully - Status: {response.status_code}", {'webhook_url': webhook_url[:50] + '...'})
+            webhook_queue.put_nowait(embed)
+            log_tracking_event('INFO', "Webhook queued for background processing")
         except Exception as e:
-            logger.error(f"Failed to send tracking webhook - Error: {str(e)}")
-            log_tracking_event('ERROR', f"Failed to send webhook - {str(e)}", {'webhook_url': webhook_url[:50] + '...' if webhook_url else None})
+            log_tracking_event('ERROR', f"Failed to queue webhook: {str(e)}")
 
     @staticmethod
     def track_visitor(request, path: str):
