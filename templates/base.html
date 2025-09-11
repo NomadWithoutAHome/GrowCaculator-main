@@ -15,7 +15,7 @@
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{% block og_url %}https://www.fruitcalculator.dohmboy64.com{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}https://www.fruitcalculator.dohmboy64.com{% if request.url.path != '/' %}{{ request.url.path }}{% endif %}{% endblock %}">
     <meta property="og:title" content="{% block og_title %}Grow Calculator - Plant Value Calculator for Roblox Grow a Garden{% endblock %}">
     <meta property="og:description" content="{% block og_description %}Calculate fruit values for Roblox Grow a Garden! The most accurate calculator for plant mutations, variants, and weight calculations with 96-100% accuracy.{% endblock %}">
     <meta property="og:image" content="{% block og_image %}https://www.fruitcalculator.dohmboy64.com/static/img/og-image.png{% endblock %}">
@@ -26,7 +26,7 @@
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="{% block twitter_url %}https://www.fruitcalculator.dohmboy64.com{% endblock %}">
+    <meta property="twitter:url" content="{% block twitter_url %}https://www.fruitcalculator.dohmboy64.com{% if request.url.path != '/' %}{{ request.url.path }}{% endif %}{% endblock %}">
     <meta property="twitter:title" content="{% block twitter_title %}Grow Calculator - Plant Value Calculator for Roblox Grow a Garden{% endblock %}">
     <meta property="twitter:description" content="{% block twitter_description %}Calculate fruit values for Roblox Grow a Garden! The most accurate calculator for plant mutations, variants, and weight calculations with 96-100% accuracy.{% endblock %}">
     <meta property="twitter:image" content="{% block twitter_image %}https://www.fruitcalculator.dohmboy64.com/static/img/og-image.png{% endblock %}">
@@ -39,7 +39,7 @@
     <meta name="apple-mobile-web-app-title" content="Grow Calculator">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="{% block canonical_url %}https://www.fruitcalculator.dohmboy64.com{% endblock %}">
+    <link rel="canonical" href="{% block canonical_url %}https://www.fruitcalculator.dohmboy64.com{% if request.url.path != '/' %}{{ request.url.path }}{% endif %}{% endblock %}">
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="/static/img/calcsymbol.png">
