@@ -110,6 +110,9 @@
   "Enlightened": {
     "value_multi": 35.0
   },
+  "Fall": {
+    "value_multi": 4.0
+  },
   "Flaming": {
     "value_multi": 25.0
   },
@@ -142,6 +145,9 @@
   },
   "Gnomed": {
     "value_multi": 15.0
+  },
+  "Graceful": {
+    "value_multi": 77.0
   },
   "HarmonisedChakra": {
     "value_multi": 35.0
