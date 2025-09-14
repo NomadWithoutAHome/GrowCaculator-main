@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}Fall Event Stock Guide - Grow Calculator{% endblock %}
+
+{% block description %}Complete guide to fall event items and stock chances in Roblox's Grow a Garden game. View all 30+ seasonal items, their in-game stock probabilities, and optimize your event shop strategy.{% endblock %}
+
+{% block keywords %}roblox grow a garden, roblox game, fall event, event items, stock chances, seasonal items, event shop, grow calculator, maple items, harvest items, event stock guide, fall items stock, roblox event{% endblock %}
+
+{% block og_title %}Fall Event Stock Guide - Roblox Grow a Garden Event Items{% endblock %}
+
+{% block og_description %}Master the fall event in Roblox's Grow a Garden! View all seasonal items, stock chances, and in-game shopping strategies. Lower numbers = higher stock chances.{% endblock %}
+
+{% block twitter_title %}Fall Event Stock Guide - Roblox Grow a Garden{% endblock %}
+
+{% block twitter_description %}Complete fall event item guide for Roblox's Grow a Garden with stock chances. Optimize your seasonal shopping!{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="text-center py-12 bg-gradient-to-b from-orange-600 to-orange-800 text-white">
+    <div class="max-w-4xl mx-auto px-4">
+        <h1 class="text-4xl md:text-6xl font-bold mb-4">Fall Event Stock Guide</h1>
+        <p class="text-xl md:text-2xl text-orange-100">
+            Complete guide to all fall event items and their stock chances in Roblox Grow A Garden
+        </p>
+    </div>
+</section>
+
+<!-- Quick Stats Section -->
+<section class="w-full max-w-6xl mx-auto px-4 mt-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-gray-800 p-4 rounded-lg text-center">
+            <div class="text-3xl font-bold text-orange-400">{{ fall_items|length }}</div>
+            <div class="text-sm text-gray-300">Fall Event Items</div>
+        </div>
+        <div class="bg-gray-800 p-4 rounded-lg text-center">
+            <div class="text-3xl font-bold text-green-400">60</div>
+            <div class="text-sm text-gray-300">Lowest Stock Chance</div>
+        </div>
+        <div class="bg-gray-800 p-4 rounded-lg text-center">
+            <div class="text-3xl font-bold text-red-400">1</div>
+            <div class="text-sm text-gray-300">Highest Stock Chance</div>
+        </div>
+        <div class="bg-gray-800 p-4 rounded-lg text-center">
+            <div class="text-3xl font-bold text-blue-400">11.87</div>
+            <div class="text-sm text-gray-300">Average Stock Chance</div>
+            <div class="text-xs text-gray-400 mt-1">Lower = More Chance</div>
+        </div>
+    </div>
+</section>
+
+<!-- Event Items Grid -->
+<section class="w-full max-w-6xl mx-auto px-4 mt-6">
+    <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
+        <h2 class="text-xl font-semibold mb-3 text-gray-200">Fall Event Items</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {% for item_name, item_data in fall_items %}
+            <div class="bg-gray-700 p-4 rounded-lg shadow-md hover:bg-gray-600 transition-colors">
+                <div class="flex flex-col items-center text-center">
+                    <!-- Item Image -->
+                    <div class="w-16 h-16 mb-3 flex items-center justify-center">
+                        <img src="/static/img/placeholder.png" alt="Placeholder" class="w-full h-full object-contain">
+                    </div>
+
+                    <!-- Item Name -->
+                    <h3 class="text-lg font-semibold text-white mb-2">{{ item_name }}</h3>
+
+                    <!-- Stock Chance -->
+                    <div class="text-sm text-gray-300 mb-1">
+                        <span class="text-yellow-400 font-medium">Stock Chance:</span>
+                        <span class="text-green-400">{{ item_data.StockChance }}</span>
+                    </div>
+
+                    <!-- Stock Amount -->
+                    <div class="text-sm text-gray-300">
+                        <span class="text-blue-400 font-medium">Amount:</span>
+                        <span class="text-white">
+                            {% if item_data.StockAmount[0] == item_data.StockAmount[1] %}
+                                {{ item_data.StockAmount[0] }}
+                            {% else %}
+                                {{ item_data.StockAmount[0] }}-{{ item_data.StockAmount[1] }}
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Stock Chance Ranking Section -->
+<section class="w-full max-w-6xl mx-auto px-4 mt-6">
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold text-center text-green-400 mb-6">📊 Stock Chance Ranking</h2>
+        <p class="text-gray-300 text-center mb-6">
+            Items ranked from <strong class="text-green-400">highest chance to be stocked</strong> (lowest numbers)
+            to <strong class="text-red-400">lowest chance to be stocked</strong> (highest numbers)
+        </p>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-gray-300">
+                <thead class="text-xs text-gray-400 uppercase bg-gray-700">
+                    <tr>
+                        <th class="px-4 py-3 text-left">Rank</th>
+                        <th class="px-4 py-3 text-left">Item Name</th>
+                        <th class="px-4 py-3 text-center">Stock Chance</th>
+                        <th class="px-4 py-3 text-center">Amount</th>
+                        <th class="px-4 py-3 text-center">Rarity</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-600">
+                    {% for item_name, item_data in fall_items %}
+                    <tr class="hover:bg-gray-700 transition-colors">
+                        <td class="px-4 py-3 font-medium text-white">{{ loop.index }}</td>
+                        <td class="px-4 py-3 font-semibold text-white">{{ item_name }}</td>
+                        <td class="px-4 py-3 text-center">
+                            <span class="px-2 py-1 rounded text-sm font-bold
+                                {% if item_data.StockChance <= 5 %}bg-green-600 text-white
+                                {% elif item_data.StockChance <= 15 %}bg-yellow-600 text-white
+                                {% elif item_data.StockChance <= 30 %}bg-orange-600 text-white
+                                {% else %}bg-red-600 text-white{% endif %}">
+                                {{ item_data.StockChance }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 text-center text-blue-400">
+                            {% if item_data.StockAmount[0] == item_data.StockAmount[1] %}
+                                {{ item_data.StockAmount[0] }}
+                            {% else %}
+                                {{ item_data.StockAmount[0] }}-{{ item_data.StockAmount[1] }}
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-3 text-center">
+                            {% if item_data.StockChance <= 5 %}
+                                <span class="px-2 py-1 bg-green-600 text-white rounded text-xs font-medium">Common</span>
+                            {% elif item_data.StockChance <= 15 %}
+                                <span class="px-2 py-1 bg-yellow-600 text-white rounded text-xs font-medium">Uncommon</span>
+                            {% elif item_data.StockChance <= 30 %}
+                                <span class="px-2 py-1 bg-orange-600 text-white rounded text-xs font-medium">Rare</span>
+                            {% else %}
+                                <span class="px-2 py-1 bg-red-600 text-white rounded text-xs font-medium">Very Rare</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+
+    </div>
+</section>
+
+<!-- Information Section -->
+<section class="w-full max-w-6xl mx-auto px-4 my-12">
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold text-center text-green-400 mb-6">How Stock Chances Work</h2>
+        <div class="text-gray-300 space-y-4">
+            <p class="text-lg">
+                <strong class="text-white">Lower numbers = Higher stock chances!</strong> The stock chance value represents how likely an item is to appear in the event shop.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <h3 class="text-green-400 font-semibold mb-2">Common (1-5)</h3>
+                    <p class="text-sm">Items with stock chances between 1-5 are very likely to be in stock and replenish quickly.</p>
+                </div>
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <h3 class="text-yellow-400 font-semibold mb-2">Uncommon (6-15)</h3>
+                    <p class="text-sm">Items with stock chances between 6-15 are moderately common and should be available most of the time.</p>
+                </div>
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <h3 class="text-orange-400 font-semibold mb-2">Rare (16-30)</h3>
+                    <p class="text-sm">Items with stock chances between 16-30 are less common and may take longer to restock.</p>
+                </div>
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <h3 class="text-red-400 font-semibold mb-2">Very Rare (31-60)</h3>
+                    <p class="text-sm">Items with stock chances between 31-60 are very rare and may only appear occasionally.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Fall Event Stock Guide - Grow Calculator",
+    "description": "Complete guide to fall event items and stock chances in Roblox Grow A Garden",
+    "url": "https://www.fruitcalculator.dohmboy64.com/event-stock",
+    "mainEntity": {
+        "@type": "ItemList",
+        "name": "Fall Event Items",
+        "description": "List of all fall event items with their stock chances",
+        "numberOfItems": "{{ fall_items|length }}",
+        "itemListElement": [
+            {% for item_name, item_data in fall_items %}
+            {
+                "@type": "Product",
+                "name": "{{ item_name }}",
+                "description": "Fall event item with stock chance {{ item_data.StockChance }}",
+                "additionalProperty": {
+                    "@type": "PropertyValue",
+                    "name": "Stock Chance",
+                    "value": "{{ item_data.StockChance }}"
+                },
+                "offers": {
+                    "@type": "Offer",
+                    "availability": "https://schema.org/InStock",
+                    "priceRange": "{{ item_data.StockAmount[0] }}{% if item_data.StockAmount[0] != item_data.StockAmount[1] %}-{{ item_data.StockAmount[1] }}{% endif %}"
+                }
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ]
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "Grow Calculator",
+        "url": "https://www.fruitcalculator.dohmboy64.com"
+    },
+    "datePublished": "2025-09-14",
+    "dateModified": "2025-09-14"
+}
+</script>
+{% endblock %}

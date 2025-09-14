@@ -77,6 +77,35 @@ async def recipes_page(request: Request):
     return templates.TemplateResponse("recipes.html", {"request": request})
 
 
+@router.get("/event-stock", response_class=HTMLResponse)
+async def event_stock_page(request: Request):
+    """Event stock page."""
+    import json
+    from pathlib import Path
+
+    # Load fall items data
+    data_dir = Path(__file__).parent.parent / "data" / "event"
+    fall_items_path = data_dir / "fall_items.json"
+
+    try:
+        with open(fall_items_path, 'r') as f:
+            fall_items = json.load(f)
+    except Exception as e:
+        logger.error(f"Failed to load fall items: {e}")
+        fall_items = {}
+
+    # Sort items by stock chance (lower number = higher chance to be stocked)
+    sorted_items = sorted(fall_items.items(), key=lambda x: x[1]['StockChance'])
+
+    return templates.TemplateResponse(
+        "event_stock.html",
+        {
+            "request": request,
+            "fall_items": sorted_items
+        }
+    )
+
+
 @router.post("/api/share", response_model=SharedResultResponse)
 async def create_shared_result(share_data: dict):
     """Create a new shared result."""
