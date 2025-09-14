@@ -148,8 +148,8 @@
     "priority": 10,
     "base_time": 400,
     "base_weight": 1.2,
-    "ingredients": {"Fruit": 2},
-    "count": 2,
+    "ingredients": {"Base": 1, "Cream": 1, "Fruit": 1},
+    "count": 3,
     "results": ["Smoothie"],
     "description": "Refreshing smoothie made with two fruits"
   },
