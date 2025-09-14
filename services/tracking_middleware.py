@@ -71,6 +71,11 @@ class TrackingMiddleware(BaseHTTPMiddleware):
             # logger.debug("Middleware tracking feature - About Page")
             TrackingService.track_feature_usage(request, "About Page", "Viewed about page")
 
+        # Track event stock page
+        elif path == "/event-stock":
+            # logger.debug("Middleware tracking feature - Event Stock")
+            TrackingService.track_feature_usage(request, "Event Stock", "Viewed fall event stock guide")
+
         # Track shared results
         elif path.startswith("/share/"):
             # logger.debug(f"Middleware tracking feature - Shared Results: {path}")
