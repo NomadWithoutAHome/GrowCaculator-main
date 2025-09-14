@@ -58,7 +58,37 @@
                 <div class="flex flex-col items-center text-center">
                     <!-- Item Image -->
                     <div class="w-16 h-16 mb-3 flex items-center justify-center">
+                        {% set image_map = {
+                            "Turnip": "event_turnip.webp",
+                            "Parsley": "event_parsely.webp",
+                            "Meyer Lemon": "event_meyerlemon.webp",
+                            "Carnival Pumpkin": "event_carnivalpumpkin.webp",
+                            "Kniphofia": "event_kniphofiaproduce.webp",
+                            "Golden Peach": "event_goldenpeachproduce.webp",
+                            "Maple Resin": "event_mapleresinproduce.webp",
+                            "Firefly Jar": "event_fireflyJar.webp",
+                            "Sky Lantern": "event_skyLantern.webp",
+                            "Maple Leaf Kite": "event_mapleleafkite.webp",
+                            "Leaf Blower": "event_leafblower.webp",
+                            "Maple Syrup": "event_maplesyrup.webp",
+                            "Maple Sprinkler": "event_maplesprinkler.webp",
+                            "Bonfire": "event_bonfire.webp",
+                            "Harvest Basket": "event_harvestbasket.webp",
+                            "Maple Leaf Charm": "event_mapleleafcharm.webp",
+                            "Golden Acorn": "event_goldenacorn.webp",
+                            "Fall Egg": "event_fallegg.webp",
+                            "Chipmunk": "event_chipmunk.webp",
+                            "Red Squirrel": "event_redsquirrel.webp",
+                            "Marmot": "event_marmot.webp",
+                            "Sugar Glider": "event_sugarglider.webp",
+                            "Space Squirrel": "event_spacesquirrel.webp",
+                            "Fall Crate": "event_fallcrate.webp"
+                        } %}
+                        {% if item_name in image_map %}
+                        <img src="/static/img/event/fall/{{ image_map[item_name] }}" alt="{{ item_name }}" class="w-full h-full object-contain">
+                        {% else %}
                         <img src="/static/img/placeholder.png" alt="Placeholder" class="w-full h-full object-contain">
+                        {% endif %}
                     </div>
 
                     <!-- Item Name -->
