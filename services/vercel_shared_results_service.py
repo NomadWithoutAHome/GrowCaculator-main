@@ -34,7 +34,7 @@ class VercelSharedResultsService:
         else:
             logger.info("VercelSharedResultsService initialized with in-memory storage (fallback)")
     
-    def _get_redis_client(self) -> Optional[redis.Redis]:
+    def _get_redis_client(self) -> Optional['redis.Redis']:
         """Get Redis client from environment variables."""
         try:
             redis_url = os.getenv('REDIS_URL') or os.getenv('REDIS_RV_URL')
