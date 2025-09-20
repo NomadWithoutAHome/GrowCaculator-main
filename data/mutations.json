@@ -23,6 +23,9 @@
   "Aurora": {
     "value_multi": 90.0
   },
+  "Azure": {
+    "value_multi": 75.0
+  },
   "Beanbound": {
     "value_multi": 100.0
   },
