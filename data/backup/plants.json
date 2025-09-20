@@ -179,6 +179,11 @@
         "base_price": 34000,
         "rarity": 250
     },
+    "Carnival Pumpkin": {
+        "base_weight": 5,
+        "base_price": 48000,
+        "rarity": 200
+    },
     "Carrot": {
         "base_weight": 0.275,
         "base_price": 20,
@@ -424,6 +429,16 @@
         "base_price": 250000,
         "rarity": 50
     },
+    "Golden Peach": {
+        "base_weight": 2,
+        "base_price": 88000,
+        "rarity": 250
+    },
+    "Gooseberry": {
+        "base_weight": 2,
+        "base_price": 350,
+        "rarity": 75
+    },
     "Grand Tomato": {
         "base_weight": 8,
         "base_price": 88000,
@@ -503,6 +518,11 @@
         "base_weight": 5,
         "base_price": 2750,
         "rarity": 300
+    },
+    "Kniphofia": {
+        "base_weight": 7,
+        "base_price": 110000,
+        "rarity": 400
     },
     "Lavender": {
         "base_weight": 0.275,
@@ -584,6 +604,11 @@
         "base_price": 50000,
         "rarity": 150
     },
+    "Mangrove": {
+        "base_weight": 1.65,
+        "base_price": 100000,
+        "rarity": 400
+    },
     "Manuka Flower": {
         "base_weight": 0.3,
         "base_price": 25000,
@@ -594,6 +619,11 @@
         "base_price": 77777,
         "rarity": 350
     },
+    "Maple Resin": {
+        "base_weight": 2,
+        "base_price": 190000,
+        "rarity": 50
+    },
     "Mega Mushroom": {
         "base_weight": 70,
         "base_price": 500,
@@ -603,6 +633,11 @@
         "base_weight": 30,
         "base_price": 40000,
         "rarity": 20
+    },
+    "Meyer Lemon": {
+        "base_weight": 1,
+        "base_price": 32000,
+        "rarity": 220
     },
     "Mint": {
         "base_weight": 1,
@@ -698,6 +733,11 @@
         "base_weight": 6,
         "base_price": 200000,
         "rarity": 350
+    },
+    "Parsley": {
+        "base_weight": 2,
+        "base_price": 20000,
+        "rarity": 150
     },
     "Passionfruit": {
         "base_weight": 3,
@@ -964,6 +1004,11 @@
         "base_price": 30,
         "rarity": 100
     },
+    "Torchflare": {
+        "base_weight": 3,
+        "base_price": 350,
+        "rarity": 75
+    },
     "Tranquil Bloom": {
         "base_weight": 4,
         "base_price": 93333,
@@ -973,6 +1018,11 @@
         "base_weight": 15,
         "base_price": 59000,
         "rarity": 500
+    },
+    "Turnip": {
+        "base_weight": 2,
+        "base_price": 12000,
+        "rarity": 100
     },
     "Twisted Tangle": {
         "base_weight": 3,

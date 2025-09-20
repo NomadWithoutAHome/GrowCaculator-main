@@ -4,6 +4,11 @@
         "base_price": 88888,
         "rarity": 350
     },
+    "Acorn Squash": {
+        "base_weight": 3,
+        "base_price": 40000,
+        "rarity": 250
+    },
     "Aetherfruit": {
         "base_weight": 9,
         "base_price": 100000,
@@ -34,6 +39,11 @@
         "base_price": 30000,
         "rarity": 75
     },
+    "Auburn Pine": {
+        "base_weight": 2.5,
+        "base_price": 73555,
+        "rarity": 250
+    },
     "Aura Flora": {
         "base_weight": 2.9,
         "base_price": 29000,
@@ -43,6 +53,11 @@
         "base_weight": 4.5,
         "base_price": 120000,
         "rarity": 100
+    },
+    "Autumn Shroom": {
+        "base_weight": 3,
+        "base_price": 25000,
+        "rarity": 150
     },
     "Avocado": {
         "base_weight": 6.5,
@@ -63,6 +78,11 @@
         "base_weight": 1.5,
         "base_price": 1750,
         "rarity": 100
+    },
+    "Banana Orchid": {
+        "base_weight": 2,
+        "base_price": 2500,
+        "rarity": 95
     },
     "Beanstalk": {
         "base_weight": 10,
@@ -89,10 +109,25 @@
         "base_price": 77000,
         "rarity": 200
     },
+    "Black Bat Flower": {
+        "base_weight": 1.75,
+        "base_price": 2500,
+        "rarity": 95
+    },
+    "Black Magic Ears": {
+        "base_weight": 18,
+        "base_price": 77000,
+        "rarity": 500
+    },
     "Blood Banana": {
         "base_weight": 1.5,
         "base_price": 6000,
         "rarity": 200
+    },
+    "Blooming Cactus": {
+        "base_weight": 9,
+        "base_price": 32500,
+        "rarity": 250
     },
     "Blue Lollipop": {
         "base_weight": 1,
@@ -234,6 +269,11 @@
         "base_price": 40,
         "rarity": 100
     },
+    "Corpse Flower": {
+        "base_weight": 8,
+        "base_price": 2500,
+        "rarity": 200
+    },
     "Cranberry": {
         "base_weight": 1,
         "base_price": 3500,
@@ -349,6 +389,11 @@
         "base_price": 62000,
         "rarity": 200
     },
+    "Fall Berry": {
+        "base_weight": 3,
+        "base_price": 45222,
+        "rarity": 155
+    },
     "Feijoa": {
         "base_weight": 10,
         "base_price": 13000,
@@ -363,6 +408,11 @@
         "base_weight": 5,
         "base_price": 72000,
         "rarity": 400
+    },
+    "Firewell": {
+        "base_weight": 4.5,
+        "base_price": 112111,
+        "rarity": 325
     },
     "Firework Flower": {
         "base_weight": 20,
@@ -464,6 +514,11 @@
         "base_price": 70500,
         "rarity": 400
     },
+    "Helenium": {
+        "base_weight": 15,
+        "base_price": 129000,
+        "rarity": 600
+    },
     "Hinomai": {
         "base_weight": 10,
         "base_price": 80000,
@@ -498,6 +553,11 @@
         "base_weight": 4,
         "base_price": 4500,
         "rarity": 200
+    },
+    "Inferno Quince": {
+        "base_weight": 3,
+        "base_price": 15000,
+        "rarity": 180
     },
     "Jalapeno": {
         "base_weight": 4,
@@ -594,6 +654,11 @@
         "base_price": 50000,
         "rarity": 80
     },
+    "Mandrone Berry": {
+        "base_weight": 2,
+        "base_price": 4000,
+        "rarity": 90
+    },
     "Mango": {
         "base_weight": 15,
         "base_price": 6500,
@@ -674,6 +739,11 @@
         "base_price": 25000,
         "rarity": 400
     },
+    "Multitrap": {
+        "base_weight": 9,
+        "base_price": 4000,
+        "rarity": 250
+    },
     "Mushroom": {
         "base_weight": 25,
         "base_price": 151000,
@@ -683,6 +753,11 @@
         "base_weight": 10,
         "base_price": 18000,
         "rarity": 90
+    },
+    "Naval Wort": {
+        "base_weight": 8,
+        "base_price": 77000,
+        "rarity": 500
     },
     "Nectar Thorn": {
         "base_weight": 7,
@@ -788,6 +863,11 @@
         "base_weight": 3,
         "base_price": 30000,
         "rarity": 100
+    },
+    "Plumwillow": {
+        "base_weight": 3,
+        "base_price": 2500,
+        "rarity": 500
     },
     "Pomegranate": {
         "base_weight": 2,
@@ -914,6 +994,11 @@
         "base_price": 7750,
         "rarity": 200
     },
+    "Speargrass": {
+        "base_weight": 3,
+        "base_price": 51000,
+        "rarity": 155
+    },
     "Spectralis": {
         "base_weight": 3,
         "base_price": 7500,
@@ -979,6 +1064,11 @@
         "base_price": 80000,
         "rarity": 400
     },
+    "Sundew": {
+        "base_weight": 2,
+        "base_price": 4000,
+        "rarity": 65
+    },
     "Sunflower": {
         "base_weight": 16.5,
         "base_price": 160000,
@@ -1006,8 +1096,8 @@
     },
     "Torchflare": {
         "base_weight": 3,
-        "base_price": 350,
-        "rarity": 75
+        "base_price": 66250,
+        "rarity": 400
     },
     "Tranquil Bloom": {
         "base_weight": 4,
