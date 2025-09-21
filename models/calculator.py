@@ -33,6 +33,7 @@ class CalculationRequest(BaseModel):
     weight: float = Field(..., gt=0, description="Weight in kg")
     mutations: List[str] = Field(default=[], description="List of mutation names")
     plant_amount: int = Field(default=1, ge=1, le=10000, description="Number of plants")
+    fruit_version: int = Field(default=0, ge=0, le=2, description="Fruit version (0=none, 1=capped, 2+=interpolated)")
 
 
 class CalculationResponse(BaseModel):
@@ -47,6 +48,10 @@ class CalculationResponse(BaseModel):
     final_value: int
     plant_amount: int
     total_value: int  # final_value * plant_amount
+    fruit_version: int
+    uncapped_value: int  # Value before fruit version capping/interpolation
+    capped_value: int  # Value after fruit version logic (for display)
+    is_capped: bool  # Whether the value was affected by fruit version logic
 
 
 class PlantListResponse(BaseModel):
@@ -79,6 +84,9 @@ class SharedResult(BaseModel):
     mutation_breakdown: str = Field(..., description="Mutation breakdown description")
     weight_min: str = Field(..., description="Minimum weight range")
     weight_max: str = Field(..., description="Maximum weight range")
+    fruit_version: int = Field(default=0, description="Fruit version used in calculation")
+    uncapped_value: int = Field(default=0, description="Calculated value before fruit version capping")
+    is_capped: bool = Field(default=False, description="Whether the value was capped by fruit version logic")
     created_at: datetime = Field(default_factory=datetime.utcnow, description="Creation timestamp")
     expires_at: datetime = Field(..., description="Expiration timestamp (24 hours from creation)")
 

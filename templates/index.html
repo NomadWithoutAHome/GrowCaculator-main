@@ -177,12 +177,15 @@
                     <span class="text-yellow-200" id="mutation-breakdown"></span>
                 </p>
                                  <p class="text-sm mt-2 text-gray-400" id="result-summary">
-                     <img src="/static/img/currency.png" alt="Currency" class="w-4 h-4 inline-block mr-1"> <span class="text-green-300 font-semibold" id="plant-name"></span> weighing 
-                     <span class="text-blue-300" id="weight-display"></span> kg, after 
-                     <span class="text-purple-400" id="multiplier-display"></span> mutation, worth 
+                     <img src="/static/img/currency.png" alt="Currency" class="w-4 h-4 inline-block mr-1"> <span class="text-green-300 font-semibold" id="plant-name"></span> weighing
+                     <span class="text-blue-300" id="weight-display"></span> kg, after
+                     <span class="text-purple-400" id="multiplier-display"></span> mutation, worth
                      <span class="text-green-400" id="final-sheckles"></span> Sheckles.
                  </p>
             </div>
+
+            <!-- Capping Warning -->
+            <div id="capping-warning" class="hidden"></div>
             
             <!-- Action Buttons -->
             <div class="flex flex-wrap gap-4 mt-6 justify-center">
@@ -326,6 +329,9 @@
                      <span class="text-green-400" id="batch-final-sheckles"></span> Sheckles.
                  </p>
             </div>
+
+            <!-- Batch Capping Warning -->
+            <div id="batch-capping-warning" class="hidden"></div>
 
             <!-- Add Plant Button -->
             <div class="flex flex-wrap gap-4 mt-6 justify-center">

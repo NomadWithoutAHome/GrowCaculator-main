@@ -17,20 +17,30 @@ logger = logging.getLogger(__name__)
 
 class CalculatorService:
     """Service class for plant value calculations."""
-    
+
+    # Fruit version interpolation breakpoints from game source code
+    FRUIT_INTERPOLATION_BREAKPOINTS = [
+        {"X": 0, "Y": 0},
+        {"X": 1000000000000, "Y": 1000000000000},  # 1e12
+        {"X": 20000000000000, "Y": 15000000000000},  # 2e13
+        {"X": 50000000000000, "Y": 35000000000000},  # 5e13
+        {"X": 100000000000000, "Y": 60000000000000},  # 1e14
+        {"X": 750000000000000, "Y": 340000000000000},  # 7.5e14
+    ]
+
     def __init__(self):
         """Initialize the service by loading data files."""
         self.data_dir = Path(__file__).parent.parent / "data"
         self.plants: Dict[str, PlantData] = {}
         self.variants: Dict[str, VariantData] = {}
         self.mutations: Dict[str, MutationData] = {}
-        
+
         logger.info(f"CalculatorService initializing...")
         logger.info(f"Current file: {__file__}")
         logger.info(f"Data directory: {self.data_dir}")
         logger.info(f"Data directory exists: {self.data_dir.exists()}")
         logger.info(f"Working directory: {Path.cwd()}")
-        
+
         # List all files in data directory if it exists
         if self.data_dir.exists():
             logger.info("Files found in data directory:")
@@ -38,7 +48,7 @@ class CalculatorService:
                 logger.info(f"  - {file.name}")
         else:
             logger.error(f"Data directory does not exist: {self.data_dir}")
-        
+
         self._load_data()
     
     def _decode_plant_name(self, plant_name: str) -> str:
@@ -223,14 +233,46 @@ class CalculatorService:
         
         # Ensure minimum value is 1
         return max(1.0, total)
-    
+
+    def _apply_piecewise_linear_interpolation(self, value: float) -> float:
+        """
+        Apply piecewise linear interpolation using the fruit version breakpoints.
+        Based on the v_u_12 function from the decompiled game code.
+        """
+        breakpoints = self.FRUIT_INTERPOLATION_BREAKPOINTS
+
+        # Find the appropriate segment
+        for i in range(1, len(breakpoints)):
+            prev_point = breakpoints[i - 1]
+            curr_point = breakpoints[i]
+
+            if prev_point["X"] <= value and value <= curr_point["X"]:
+                # Linear interpolation between prev_point and curr_point
+                if curr_point["X"] == prev_point["X"]:
+                    return curr_point["Y"]  # Avoid division by zero
+
+                slope = (curr_point["Y"] - prev_point["Y"]) / (curr_point["X"] - prev_point["X"])
+                interpolated = slope * (value - prev_point["X"]) + prev_point["Y"]
+                return max(interpolated, 0)
+
+        # If value is beyond the last breakpoint, use the slope from the last two points
+        if len(breakpoints) >= 2:
+            last_point = breakpoints[-1]
+            prev_point = breakpoints[-2]
+            slope = (last_point["Y"] - prev_point["Y"]) / (last_point["X"] - prev_point["X"])
+            extrapolated = slope * (value - prev_point["X"]) + prev_point["Y"]
+            return max(extrapolated, 0)
+
+        return max(value, 0)
+
     def calculate_plant_value(
         self,
         plant_name: str,
         variant: str,
         weight: float,
         mutation_multi: float,
-        plant_amount: int = 1
+        plant_amount: int = 1,
+        fruit_version: int = 0
     ) -> CalculationResponse:
         """
         Calculate plant value using the exact formula from the game.
@@ -266,13 +308,26 @@ class CalculatorService:
         clamped_ratio = max(0.95, min(weight_ratio, 100000000))
         
         # Final value = base_value * (clamped_ratio^2)
-        final_value = base_value * (clamped_ratio * clamped_ratio)
-        
+        uncapped_value = base_value * (clamped_ratio * clamped_ratio)
+        final_value = uncapped_value
+
+        # Apply fruit version logic from game source code
+        is_capped = False
+        if fruit_version >= 2:
+            # Apply piecewise linear interpolation
+            final_value = self._apply_piecewise_linear_interpolation(final_value)
+            is_capped = final_value != uncapped_value
+        elif fruit_version >= 1:
+            # Cap at 1 trillion
+            if final_value > 1000000000000:
+                final_value = 1000000000000
+                is_capped = True
+
         # Calculate bulk totals
         total_value = round(final_value) * plant_amount
-        
+
         # Calculation complete (removed verbose logging)
-        
+
         return CalculationResponse(
             plant_name=decoded_plant_name,  # Use decoded name in response
             variant=variant,
@@ -283,7 +338,11 @@ class CalculatorService:
             weight_ratio=weight_ratio,
             final_value=round(final_value),
             plant_amount=plant_amount,
-            total_value=total_value
+            total_value=total_value,
+            fruit_version=fruit_version,
+            uncapped_value=round(uncapped_value),
+            capped_value=round(final_value),
+            is_capped=is_capped
         )
     
     def calculate_full_value(
@@ -292,22 +351,23 @@ class CalculatorService:
         variant: str,
         weight: float,
         mutations: List[str],
-        plant_amount: int = 1
+        plant_amount: int = 1,
+        fruit_version: int = 0
     ) -> CalculationResponse:
         """
         Calculate full plant value including mutations.
         """
         # Calculate mutation multiplier
         mutation_multi = self.calculate_mutation_multiplier(mutations)
-        
+
         # Calculate plant value
         result = self.calculate_plant_value(
-            plant_name, variant, weight, mutation_multi, plant_amount
+            plant_name, variant, weight, mutation_multi, plant_amount, fruit_version
         )
-        
+
         # Add mutations to response
         result.mutations = mutations
-        
+
         return result
     
     def get_plants(self) -> List[PlantData]:
@@ -325,11 +385,11 @@ class CalculatorService:
         mutations_list = sorted(self.mutations.values(), key=lambda x: x.name)
         return mutations_list
     
-    def get_plant_data(self, plant_name: str) -> PlantData:
+    def get_plant_data(self, plant_name: str) -> PlantData | None:
         """Get data for a specific plant."""
         # Decode URL-encoded plant names
         decoded_plant_name = self._decode_plant_name(plant_name)
-        
+
         plant_data = self.plants.get(decoded_plant_name)
         if plant_data:
             logger.info(f"get_plant_data('{plant_name}') -> decoded to '{decoded_plant_name}' - found plant with base_weight: {plant_data.base_weight}")

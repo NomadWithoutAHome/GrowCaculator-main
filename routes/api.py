@@ -26,7 +26,8 @@ async def calculate_plant_value(request: CalculationRequest):
             variant=request.variant,
             weight=request.weight,
             mutations=request.mutations,
-            plant_amount=request.plant_amount
+            plant_amount=request.plant_amount,
+            fruit_version=request.fruit_version
         )
         return result
     except KeyError as e:
@@ -60,6 +61,8 @@ async def get_plant_data(plant_name: str):
     """Get data for a specific plant."""
     try:
         plant_data = calculator_service.get_plant_data(plant_name)
+        if plant_data is None:
+            raise HTTPException(status_code=404, detail="Plant not found")
         return {
             "name": plant_data.name,
             "base_weight": plant_data.base_weight,

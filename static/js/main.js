@@ -995,6 +995,28 @@ function displayResults(result, currentValues = null) {
             breakdownSpan.textContent = 'Default';
         }
     }
+
+    // Show capping warning if value exceeds 1 trillion (commented out is_capped logic for now)
+    const cappingWarning = document.getElementById('capping-warning');
+    if (cappingWarning) {
+        // if (result.is_capped) {  // Commented out for now - using simple 1T threshold
+        if (result.final_value >= 1000000000000) {  // Show warning for any value >= 1 trillion
+            cappingWarning.classList.remove('hidden');
+            cappingWarning.innerHTML = `
+                <div class="bg-yellow-900/50 border border-yellow-600 rounded-lg p-3 mt-4">
+                    <div class="flex items-center">
+                        <span class="text-yellow-400 mr-2">⚠️</span>
+                        <div class="text-sm text-yellow-200">
+                            <strong>In-game value capped:</strong> This plant's calculated value (${formatLargeNumber(result.final_value)}) exceeds the game's 1 trillion sheckle limit.
+                            In Grow a Garden, it would only sell for 1,000,000,000,000 sheckles.
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            cappingWarning.classList.add('hidden');
+        }
+    }
 }
 
 /**
@@ -2476,6 +2498,28 @@ function displayBatchResults(result, currentValues = null) {
             breakdownSpan.textContent = `Mutations: ${result.mutations.join(', ')}`;
         } else {
             breakdownSpan.textContent = 'Default';
+        }
+    }
+
+    // Show capping warning if value exceeds 1 trillion (commented out is_capped logic for now)
+    const batchCappingWarning = document.getElementById('batch-capping-warning');
+    if (batchCappingWarning) {
+        // if (result.is_capped) {  // Commented out for now - using simple 1T threshold
+        if (result.final_value >= 1000000000000) {  // Show warning for any value >= 1 trillion
+            batchCappingWarning.classList.remove('hidden');
+            batchCappingWarning.innerHTML = `
+                <div class="bg-yellow-900/50 border border-yellow-600 rounded-lg p-3 mt-4">
+                    <div class="flex items-center">
+                        <span class="text-yellow-400 mr-2">⚠️</span>
+                        <div class="text-sm text-yellow-200">
+                            <strong>In-game value capped:</strong> This plant's calculated value (${formatLargeNumber(result.final_value)}) exceeds the game's 1 trillion sheckle limit.
+                            In Grow a Garden, it would only sell for 1,000,000,000,000 sheckles.
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            batchCappingWarning.classList.add('hidden');
         }
     }
 }
